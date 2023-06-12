@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RootNamespace>Sis_Pdv_Controle_Estoque_Form</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Polly" Version="7.2.3" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.5.0" />
+    <PackageReference Include="MediatR" Version="11.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sis-Pdv-Controle-Estoque-API\Sis-Pdv-Controle-Estoque-API.csproj" />
+    <ProjectReference Include="..\Sis-Pdv-Controle-Estoque-Infra\Sis-Pdv-Controle-Estoque-Infra.csproj" />
+    <ProjectReference Include="..\Sis-Pdv-Controle-Estoque\Sis-Pdv-Controle-Estoque-Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dto\Usuario\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FontAwesome.Sharp">
+      <HintPath>DLL\FontAwesome.Sharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

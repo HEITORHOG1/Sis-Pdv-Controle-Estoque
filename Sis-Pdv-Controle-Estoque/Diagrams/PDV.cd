@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Colaborador">
+    <Position X="12.25" Y="3" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAgAAAEAAAAABAAAAAAAAAAACAFAABAAAA=</HashCode>
+      <FileName>Model\Colaborador.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Departamento" />
+      <Property Name="Usuario" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Departamento">
+    <Position X="13.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Departamento.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Fornecedor">
+    <Position X="0.5" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAEAAABIAAAAACBIAAAAAQAAAAAgAAAAQI=</HashCode>
+      <FileName>Model\Fornecedor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Pedido">
+    <Position X="7.75" Y="0.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAEAAAAAAAAAACQAABAAAAAAAAAAAAAAAAAAEA=</HashCode>
+      <FileName>Model\Pedido.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Colaborador" />
+      <Property Name="Cliente" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Produto">
+    <Position X="3.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAQAAEAIAgAAQAAAAAAAAAAABBAQACAAAAAQA=</HashCode>
+      <FileName>Model\Produto.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Fornecedor" />
+      <Property Name="Categoria" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.ProdutoPedido">
+    <Position X="5.5" Y="4.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAEEAAAAAAAAAgAAAAABAAAAAAAAAAE=</HashCode>
+      <FileName>Model\ProdutoPedido.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Pedido" />
+      <Property Name="Produto" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Usuario">
+    <Position X="9.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAQAAAAAQA=</HashCode>
+      <FileName>Model\Usuario.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Categoria">
+    <Position X="0.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Categoria.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Cliente">
+    <Position X="11" Y="0.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAEAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Cliente.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Sis_Pdv_Controle_Estoque.Model.Base.EntityBase">
+    <Position X="10.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Model\Base\EntityBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
