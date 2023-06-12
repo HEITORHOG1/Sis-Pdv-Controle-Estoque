@@ -50,7 +50,20 @@ Este é um projeto open-source destinado àqueles interessados em aprender sobre
 Princípios SOLID de programação e práticas de Clean Code para garantir um código limpo, manutenível e testável. Nosso código é bem documentado, com foco em manter as funções e classes pequenas e focadas, facilitando a legibilidade e a manutenção do código.
 
 
+## Configuração do Banco de Dados
 
+1. Abra o arquivo `appsettings.json`
+2. Configure a string de conexão do banco de dados no campo `ControleFluxoCaixaConnectionString`
+
+Exemplo da string de conexão:
+```json
+"ControleFluxoCaixaConnectionString": "Server=localhost;Database=PDV_02;Uid=root;Pwd=q1w2e3r4;"
+
+Executando a Aplicação
+Restaure as dependências: dotnet restore
+Execute as migrações do banco de dados: dotnet ef migrations add InitialMigration
+Aplique as migrações no banco de dados: dotnet ef database update
+Execute o projeto: dotnet run
 
 
 
