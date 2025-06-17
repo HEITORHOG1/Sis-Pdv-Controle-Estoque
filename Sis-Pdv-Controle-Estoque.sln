@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBus", "ClassLibrary1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sis-Pdv-Controle-Estoque-Form", "Sis-Pdv-Controle-Estoque-Form\Sis-Pdv-Controle-Estoque-Form.csproj", "{C60EA593-FBB4-4B87-947D-6253A1DD204A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sis-Pdv-Controle-Estoque.Tests", "Sis-Pdv-Controle-Estoque.Tests\Sis-Pdv-Controle-Estoque.Tests.csproj", "{2392F6AF-DFFC-45BC-9949-497DDC853000}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{C60EA593-FBB4-4B87-947D-6253A1DD204A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C60EA593-FBB4-4B87-947D-6253A1DD204A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C60EA593-FBB4-4B87-947D-6253A1DD204A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2392F6AF-DFFC-45BC-9949-497DDC853000}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2392F6AF-DFFC-45BC-9949-497DDC853000}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2392F6AF-DFFC-45BC-9949-497DDC853000}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2392F6AF-DFFC-45BC-9949-497DDC853000}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
