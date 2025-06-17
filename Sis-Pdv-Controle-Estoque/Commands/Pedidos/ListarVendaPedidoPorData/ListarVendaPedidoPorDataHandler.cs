@@ -1,10 +1,7 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System.Text.RegularExpressions;
 
-namespace Commands.Pedido.ListarVendaPedidoPorData
+namespace Commands.Pedidos.ListarVendaPedidoPorData
 {
     public class ListarVendaPedidoPorDataHandler : Notifiable, IRequestHandler<ListarVendaPedidoPorDataRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
     {
@@ -28,7 +25,7 @@ namespace Commands.Pedido.ListarVendaPedidoPorData
 
             var Collection = _repositoryPedido.ListarVendaPedidoPorData(request.DataInicio, request.DataFim);
 
-            if (!Collection.Result.Any()) 
+            if (!Collection.Result.Any())
             {
                 AddNotification("ATENÇÃO", "Pedido NÃO ENCONTRADA");
                 return new Sis_Pdv_Controle_Estoque.Commands.Response(this);

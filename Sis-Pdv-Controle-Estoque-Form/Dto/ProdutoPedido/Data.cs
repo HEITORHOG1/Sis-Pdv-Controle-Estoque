@@ -2,7 +2,7 @@
 
 namespace Sis_Pdv_Controle_Estoque_Form.Dto.ProdutoPedido
 {
-    public  class Data
+    public class Data
     {
         public Guid Id { get; set; }
         public PedidoDto? Pedido { get; set; }

@@ -1,25 +1,20 @@
 ﻿using prmToolkit.NotificationPattern;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque.Commands
+namespace Commands
 {
     public class Response
     {
         public Response(INotifiable notifiable)
         {
-            this.Success = notifiable.IsValid();
-            this.Notifications = notifiable.Notifications;
+            Success = notifiable.IsValid();
+            Notifications = notifiable.Notifications;
         }
 
         public Response(INotifiable notifiable, object data)
         {
-            this.Success = notifiable.IsValid();
-            this.Data = data;
-            this.Notifications = notifiable.Notifications;
+            Success = notifiable.IsValid();
+            Data = data;
+            Notifications = notifiable.Notifications;
         }
 
         public IEnumerable<Notification> Notifications { get; }

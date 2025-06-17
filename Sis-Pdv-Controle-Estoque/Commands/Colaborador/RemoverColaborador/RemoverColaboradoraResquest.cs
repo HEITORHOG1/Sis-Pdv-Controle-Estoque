@@ -1,8 +1,6 @@
 ﻿using MediatR;
-using Sis_Pdv_Controle_Estoque.Commands;
-using System;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.RemoverColaborador
+namespace Commands.Colaborador.RemoverColaborador
 {
     public class RemoverColaboradorResquest : IRequest<Response>
     {

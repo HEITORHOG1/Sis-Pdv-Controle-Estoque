@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sis_Pdv_Controle_Estoque_Form.Dto.Categoria
+﻿namespace Sis_Pdv_Controle_Estoque_Form.Dto.Categoria
 {
 
     public class CategoriaDto

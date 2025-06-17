@@ -1,15 +1,8 @@
 ﻿using MediatR;
-using Sis_Pdv_Controle_Estoque.Commands;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Commands.Pedido.AdicionarPedido
+namespace Commands.Pedidos.AdicionarPedido
 {
-    public class AdicionarPedidoRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class AdicionarPedidoRequest : IRequest<Response>
     {
         public Guid Id { get; set; }
         public Guid ColaboradorId { get; set; }

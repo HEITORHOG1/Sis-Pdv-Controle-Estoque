@@ -1,12 +1,6 @@
-﻿using Commands.Categoria.AlterarCategoria;
-using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace AlterarCategoria
+namespace Commands.Categoria.AlterarCategoria
 {
     public class AlterarCategoriaRequestValidator : AbstractValidator<AlterarCategoriaRequest>
     {

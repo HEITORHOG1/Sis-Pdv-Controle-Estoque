@@ -1,9 +1,7 @@
-﻿using AlterarUsuario;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Usuarios.AlterarUsuario
+namespace Commands.Usuarios.AlterarUsuario
 {
     public class AlterarUsuarioHandler : Notifiable, IRequestHandler<AlterarUsuarioRequest, Response>
     {

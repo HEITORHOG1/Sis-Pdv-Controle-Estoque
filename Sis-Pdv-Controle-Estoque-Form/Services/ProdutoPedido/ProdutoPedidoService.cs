@@ -1,9 +1,7 @@
 ﻿using Commands.ProdutoPedido.AdicionarProdutoPedido;
 using Commands.ProdutoPedido.AlterarProdutoPedido;
-using Sis_Pdv_Controle_Estoque.Model;
 using Sis_Pdv_Controle_Estoque_Form.Dto.ProdutoPedido;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
-using System.Security.Cryptography;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Services.ProdutoPedido
 {

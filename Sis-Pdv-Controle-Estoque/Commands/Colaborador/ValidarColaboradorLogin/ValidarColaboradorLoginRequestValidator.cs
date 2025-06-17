@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.ValidarColaboradorLogin;
 
-namespace ValidarColaboradorLogin
+namespace Commands.Colaborador.ValidarColaboradorLogin
 {
     public class ValidarColaboradorLoginRequestValidator : AbstractValidator<ValidarColaboradorLoginRequest>
     {

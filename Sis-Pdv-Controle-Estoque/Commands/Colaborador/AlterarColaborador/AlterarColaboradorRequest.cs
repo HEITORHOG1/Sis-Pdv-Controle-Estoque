@@ -1,15 +1,9 @@
 ﻿using MediatR;
-using Sis_Pdv_Controle_Estoque.Commands;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Model;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.AlterarColaborador
+namespace Commands.Colaborador.AlterarColaborador
 {
-    public class AlterarColaboradorRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class AlterarColaboradorRequest : IRequest<Response>
     {
         public AlterarColaboradorRequest()
         {

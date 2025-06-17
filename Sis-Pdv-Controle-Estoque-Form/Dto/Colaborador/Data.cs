@@ -2,7 +2,7 @@
 
 namespace Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador
 {
-    public  class Data
+    public class Data
     {
         public string nomeColaborador { get; set; }
         public string departamentoId { get; set; }

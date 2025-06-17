@@ -1,13 +1,6 @@
-﻿using Sis_Pdv_Controle_Estoque.Model.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sis_Pdv_Controle_Estoque.Model
+﻿namespace Model
 {
-    public  class Pedido : EntityBase
+    public class Pedido : EntityBase
     {
         public Pedido()
         {
@@ -18,7 +11,7 @@ namespace Sis_Pdv_Controle_Estoque.Model
         {
             this.ColaboradorId = ColaboradorId;
             this.ClienteId = ClienteId;
-            this.Status = status;
+            Status = status;
             this.dataDoPedido = dataDoPedido;
             this.formaPagamento = formaPagamento;
             this.totalPedido = totalPedido;
@@ -36,7 +29,7 @@ namespace Sis_Pdv_Controle_Estoque.Model
         {
             this.ColaboradorId = ColaboradorId;
             this.ClienteId = ClienteId;
-            this.Status = status;
+            Status = status;
             this.dataDoPedido = dataDoPedido;
             this.formaPagamento = formaPagamento;
             this.totalPedido = totalPedido;

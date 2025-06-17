@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using Sis_Pdv_Controle_Estoque.Commands.Usuarios.AlterarUsuario;
 
-namespace AlterarUsuario
+namespace Commands.Usuarios.AlterarUsuario
 {
     public class AlterarUsuarioRequestValidator : AbstractValidator<AlterarUsuarioRequest>
     {

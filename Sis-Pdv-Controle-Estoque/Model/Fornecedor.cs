@@ -1,30 +1,24 @@
-﻿using Sis_Pdv_Controle_Estoque.Model.Base;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sis_Pdv_Controle_Estoque.Model
+namespace Model
 {
     [Table("Fornecedor")]
-    public  class Fornecedor : EntityBase
+    public class Fornecedor : EntityBase
     {
         public Fornecedor()
         {
-                
+
         }
-        public Fornecedor(string inscricaoEstadual, string nomeFantasia, string uf, string numero, 
+        public Fornecedor(string inscricaoEstadual, string nomeFantasia, string uf, string numero,
             string complemento, string bairro, string cidade, int cepFornecedor, int statusAtivo, string cnpj, string rua)
         {
             this.inscricaoEstadual = inscricaoEstadual;
             this.nomeFantasia = nomeFantasia;
-            this.Uf = uf;
-            this.Numero = numero;
-            this.Complemento = complemento;
-            this.Bairro = bairro;
-            this.Cidade = cidade;
+            Uf = uf;
+            Numero = numero;
+            Complemento = complemento;
+            Bairro = bairro;
+            Cidade = cidade;
             this.cepFornecedor = cepFornecedor;
             this.statusAtivo = statusAtivo;
             Cnpj = cnpj;
@@ -48,17 +42,17 @@ namespace Sis_Pdv_Controle_Estoque.Model
         {
             this.inscricaoEstadual = inscricaoEstadual;
             this.nomeFantasia = nomeFantasia;
-            this.Uf = uf;
-            this.Numero = numero;
-            this.Complemento = complemento;
-            this.Bairro = bairro;
-            this.Cidade = cidade;
+            Uf = uf;
+            Numero = numero;
+            Complemento = complemento;
+            Bairro = bairro;
+            Cidade = cidade;
             this.cepFornecedor = cepFornecedor;
             this.statusAtivo = statusAtivo;
             Cnpj = cnpj;
             Rua = rua;
             Cidade = cidade;
-            this.Id = id;
+            Id = id;
         }
     }
 }

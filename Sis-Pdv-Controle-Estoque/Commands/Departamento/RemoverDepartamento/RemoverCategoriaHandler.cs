@@ -1,13 +1,5 @@
-﻿using Commands.Departamento.RemoverDepartamento;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using prmToolkit.NotificationPattern.Extensions;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Commands.Departamento.RemoverDepartamento
 

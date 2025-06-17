@@ -1,21 +1,16 @@
-﻿using MediatR;
+﻿using Interfaces;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaborador
+namespace Commands.Colaborador.ListarColaborador
 {
     public class ListarColaboradorPorIdHandler : Notifiable, IRequestHandler<ListarColaboradorRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryColaborador _repositoryColaborador;
         private readonly IRepositoryDepartamento _repositoryDepartamento;
-        public ListarColaboradorPorIdHandler(IMediator mediator, IRepositoryColaborador repositoryColaborador, 
+        public ListarColaboradorPorIdHandler(IMediator mediator, IRepositoryColaborador repositoryColaborador,
             IRepositoryDepartamento repositoryDepartamento)
         {
             _mediator = mediator;
@@ -32,7 +27,7 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaborador
                 return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
             }
 
-           
+
             var grupoCollection = _repositoryColaborador.Listar().Include(x => x.Usuario).Include(x => x.Departamento).ToList();
 
 

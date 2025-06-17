@@ -1,8 +1,5 @@
-﻿using AlterarProdutoPedido;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Response = Sis_Pdv_Controle_Estoque.Commands.Response;
 
 namespace Commands.ProdutoPedido.AlterarProdutoPedido
 {

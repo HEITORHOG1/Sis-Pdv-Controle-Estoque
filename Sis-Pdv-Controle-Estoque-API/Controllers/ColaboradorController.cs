@@ -1,13 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.AdicionarColaborador;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.AlterarColaborador;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaborador;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaboradorPorId;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaboradorPorNomeColaborador;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.RemoverColaborador;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.ValidarColaboradorLogin;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
@@ -15,7 +7,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ColaboradorController> _logger;
-        public ColaboradorController(IMediator mediator, IUnitOfWork unitOfWork , ILogger<ColaboradorController> logger) : base(unitOfWork)
+        public ColaboradorController(IMediator mediator, IUnitOfWork unitOfWork, ILogger<ColaboradorController> logger) : base(unitOfWork)
         {
             _mediator = mediator;
             _logger = logger;
@@ -30,7 +22,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna a resposta da validação do login.</returns>
         [HttpGet]
         [Route("api/Colaborador/ValidarLogin/{Login}/{Senha}")]
-        public async Task<IActionResult> ValidaLogin(string Login , string Senha)
+        public async Task<IActionResult> ValidaLogin(string Login, string Senha)
         {
             try
             {
@@ -186,7 +178,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
 
-        
+
         #endregion
     }
 }

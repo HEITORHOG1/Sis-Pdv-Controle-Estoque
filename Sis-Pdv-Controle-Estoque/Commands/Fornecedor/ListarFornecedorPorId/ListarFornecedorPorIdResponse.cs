@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Commands.Fornecedor.ListarFornecedorPorId
+﻿namespace Commands.Fornecedor.ListarFornecedorPorId
 {
     public class ListarFornecedorPorIdResponse
     {

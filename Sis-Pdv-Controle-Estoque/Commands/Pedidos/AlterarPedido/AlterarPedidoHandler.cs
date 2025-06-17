@@ -1,10 +1,7 @@
-﻿using AlterarPedido;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Response = Sis_Pdv_Controle_Estoque.Commands.Response;
 
-namespace Commands.Pedido.AlterarPedido
+namespace Commands.Pedidos.AlterarPedido
 {
     public class AlterarPedidoHandler : Notifiable, IRequestHandler<AlterarPedidoRequest, Response>
     {
@@ -38,12 +35,12 @@ namespace Commands.Pedido.AlterarPedido
 
             Sis_Pdv_Controle_Estoque.Model.Pedido Pedido = new Sis_Pdv_Controle_Estoque.Model.Pedido();
 
-            Pedido.AlterarPedido(       request.ColaboradorId,
+            Pedido.AlterarPedido(request.ColaboradorId,
                                         request.ClienteId,
                                         request.Status,
                                         request.dataDoPedido,
                                         request.formaPagamento,
-                                        request.totalPedido     );
+                                        request.totalPedido);
 
             var retornoExist = _repositoryPedido.Listar().Where(x => x.Id == request.Id);
             if (!retornoExist.Any())

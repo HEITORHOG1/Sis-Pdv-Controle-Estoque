@@ -1,10 +1,5 @@
-﻿using Commands.Pedido.AdicionarPedido;
-using Commands.Pedido.AlterarPedido;
-using Sis_Pdv_Controle_Estoque.Model;
-using Sis_Pdv_Controle_Estoque_Form.Dto.Pedido;
+﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Pedido;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
-using System.Security.Cryptography;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Services.Pedido
 {
@@ -87,7 +82,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Pedido
             else throw new Exception("Something went wrong when calling API");
         }
 
-        public async Task<PedidoResponseListGrid> ListarVendaPedidoPorData(DateTime DataInicio,DateTime DataFim)
+        public async Task<PedidoResponseListGrid> ListarVendaPedidoPorData(DateTime DataInicio, DateTime DataFim)
         {
             _client = new HttpClient();
 

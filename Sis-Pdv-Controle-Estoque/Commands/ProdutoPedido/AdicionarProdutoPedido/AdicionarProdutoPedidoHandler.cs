@@ -1,10 +1,7 @@
-﻿using AdicionarProdutoPedido;
-using Commands.ProdutoPedido.AdicionarProdutoPedido;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.AdicionarProdutoPedido
+namespace Commands.ProdutoPedido.AdicionarProdutoPedido
 {
     public class AdicionarProdutoPedidoHandler : Notifiable, IRequestHandler<AdicionarProdutoPedidoRequest, Response>
     {
@@ -37,7 +34,7 @@ namespace Sis_Pdv_Controle_Estoque.Commands.AdicionarProdutoPedido
             }
 
             Model.ProdutoPedido ProdutoPedido = new(
-                                                     request.PedidoId ,
+                                                     request.PedidoId,
                                                      request.ProdutoId,
                                                      request.codBarras,
                                                      request.quantidadeItemPedido,

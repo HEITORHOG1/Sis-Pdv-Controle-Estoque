@@ -1,12 +1,10 @@
 ﻿using Commands.Categoria.AdicionarCategoria;
 using Commands.Categoria.AlterarCategoria;
 using Commands.Categoria.ListarCategoria;
-using Commands.Categoria.ListarCategoria.ListarCategoriaPorNomeCategoria;
 using Commands.Categoria.ListarCategoriaPorId;
 using Commands.Categoria.RemoverCategoria;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
@@ -18,7 +16,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         public CategoriaController(IMediator mediator, IUnitOfWork unitOfWork, ILogger<CategoriaController> logger) : base(unitOfWork)
         {
             _mediator = mediator;
-            _logger = logger;   
+            _logger = logger;
         }
 
         #region Categoria

@@ -1,15 +1,7 @@
-﻿using Commands.Pedido.ListarPedidoPorId;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Commands.Pedido.ListarPedidoPorId
+namespace Commands.Pedidos.ListarPedidorPorId
 {
     public class ListarPedidoPorIdHandler : Notifiable, IRequestHandler<ListarPedidoPorIdRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
     {
@@ -31,7 +23,7 @@ namespace Commands.Pedido.ListarPedidoPorId
                 return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Pedido Collection = _repositoryPedido.ListarPor(x=> x.Id == request.Id).FirstOrDefault();
+            Sis_Pdv_Controle_Estoque.Model.Pedido Collection = _repositoryPedido.ListarPor(x => x.Id == request.Id).FirstOrDefault();
 
             if (Collection == null)
             {

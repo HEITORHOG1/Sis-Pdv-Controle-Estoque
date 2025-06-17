@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.AdicionarColaborador;
 
-namespace AdicionarColaborador
+namespace Commands.Colaborador.AdicionarColaborador
 {
     public class AdicionarColaboradorRequestValidator : AbstractValidator<AdicionarColaboradorRequest>
     {

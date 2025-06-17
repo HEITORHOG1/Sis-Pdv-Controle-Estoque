@@ -1,15 +1,7 @@
-﻿using Commands.Pedido.RemoverPedido;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using prmToolkit.NotificationPattern.Extensions;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Commands.Pedido.RemoverPedido
+namespace Commands.Pedidos.RemoverPedido
 
 {
     public class RemoverPedidoHandler : Notifiable, IRequestHandler<RemoverPedidoResquest, Sis_Pdv_Controle_Estoque.Commands.Response>
@@ -42,7 +34,7 @@ namespace Commands.Pedido.RemoverPedido
 
             _repositoryPedido.Remover(Pedido);
 
-            var result = new { Id = Pedido.Id };
+            var result = new { Pedido.Id };
 
             //Cria objeto de resposta
             var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, result);

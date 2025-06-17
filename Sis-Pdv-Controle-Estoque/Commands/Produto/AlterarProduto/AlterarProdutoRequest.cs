@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Sis_Pdv_Controle_Estoque.Commands;
 
 namespace Commands.Produto.AlterarProduto
 {

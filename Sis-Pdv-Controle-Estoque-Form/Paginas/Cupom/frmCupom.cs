@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Serilog.Events;
-using Sis_Pdv_Controle_Estoque.Model;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
 using System.Data;
 using System.Text;
@@ -9,12 +7,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
 {
     public partial class frmCupom : Form
     {
-        private string _IdPedido;
-        private string _Colaborador;
+        private readonly string _IdPedido;
+        private readonly string _Colaborador;
         RabbitMQMessageSender _rabbitMQMessageSender;
         readonly ILogger _logger;
 
-        public frmCupom(string IdPedido,string colaborador)
+        public frmCupom(string IdPedido, string colaborador)
         {
             InitializeComponent();
             _IdPedido = IdPedido;
@@ -25,7 +23,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
         {
         }
 
-        List<ProdutoPedidoBase> produtos = new List<ProdutoPedidoBase>();
+        readonly List<ProdutoPedidoBase> produtos = new List<ProdutoPedidoBase>();
         public List<string> _Layout = new List<string>();
 
         public void CumpomImpresso(string codItem, string codBarras, string descricao, string quantidade,
@@ -52,7 +50,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
         private void EnviarCupomFila(CupomDTO cupom)
         {
             try
-            { 
+            {
                 _rabbitMQMessageSender = new RabbitMQMessageSender();
 
                 _rabbitMQMessageSender.SendMessage(cupom, "CUPOM_QUEUE");

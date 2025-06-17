@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Polly;
 using Sis_Pdv_Controle_Estoque_Form.Services.Exceptions;
 using System.Net.Http.Json;
 using System.Text;
-using Newtonsoft.Json;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Services.HttpClientHelpers
 {

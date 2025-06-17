@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
 
 namespace Commands.Departamento.AlterarDepartamento
 {

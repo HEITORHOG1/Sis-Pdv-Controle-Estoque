@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Commands.Produto.ListarProdutoPorId
+﻿namespace Commands.Produto.ListarProdutoPorId
 {
     public class ListarProdutoPorIdResponse
     {
@@ -37,7 +30,7 @@ namespace Commands.Produto.ListarProdutoPorId
                 dataVencimento = request.dataVencimento,
                 quatidadeEstoqueProduto = request.quatidadeEstoqueProduto,
                 Fornecedor = new Sis_Pdv_Controle_Estoque.Model.Fornecedor { Id = request.Id },
-                Categoria =  new Sis_Pdv_Controle_Estoque.Model.Categoria { Id = request.Id } ,
+                Categoria = new Sis_Pdv_Controle_Estoque.Model.Categoria { Id = request.Id },
                 statusAtivo = request.statusAtivo
             };
         }

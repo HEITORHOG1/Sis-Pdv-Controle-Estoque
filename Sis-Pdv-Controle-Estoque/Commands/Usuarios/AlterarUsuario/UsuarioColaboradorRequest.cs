@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Usuarios.AlterarUsuario
+namespace Commands.Usuarios.AlterarUsuario
 {
     public class AlterarUsuarioRequest : IRequest<Response>
     {

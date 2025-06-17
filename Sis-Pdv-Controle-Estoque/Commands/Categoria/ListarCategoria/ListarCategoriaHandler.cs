@@ -1,13 +1,8 @@
-﻿using MediatR;
+﻿using Interfaces;
+using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Commands.Categoria.ListarCategoria.ListarCategoria
+namespace Commands.Categoria.ListarCategoria
 {
     public class ListarCategoriaHandler : Notifiable, IRequestHandler<ListarCategoriaRequest, Response>
     {

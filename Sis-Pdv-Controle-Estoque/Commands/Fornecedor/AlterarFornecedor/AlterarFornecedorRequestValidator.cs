@@ -1,8 +1,7 @@
-﻿using Commands.Fornecedor.AlterarFornecedor;
-using Extensions;
+﻿using Extensions;
 using FluentValidation;
 
-namespace AlterarFornecedor
+namespace Commands.Fornecedor.AlterarFornecedor
 {
     public class AlterarFornecedorRequestValidator : AbstractValidator<AlterarFornecedorRequest>
     {

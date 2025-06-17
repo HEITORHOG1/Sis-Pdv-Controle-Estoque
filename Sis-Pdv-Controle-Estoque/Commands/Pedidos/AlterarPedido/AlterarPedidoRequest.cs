@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Commands.Pedido.AlterarPedido
+namespace Commands.Pedidos.AlterarPedido
 {
     public class AlterarPedidoRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
     {

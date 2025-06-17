@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Utils
 {
     public static class HttpClientExtensions
     {
-        private static MediaTypeHeaderValue contentType
+        private static readonly MediaTypeHeaderValue contentType
             = new MediaTypeHeaderValue("application/json");
         public static async Task<T> ReadContentAs<T>(
             this HttpResponseMessage response)

@@ -1,8 +1,6 @@
-﻿using AlterarCategoria;
+﻿using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Response = Sis_Pdv_Controle_Estoque.Commands.Response;
 
 namespace Commands.Categoria.AlterarCategoria
 {
@@ -36,9 +34,9 @@ namespace Commands.Categoria.AlterarCategoria
                 return new Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Categoria categoria = new Sis_Pdv_Controle_Estoque.Model.Categoria();
+            Model.Categoria categoria = new Model.Categoria();
 
-            categoria.AlterarCategoria(request.Id,request.NomeCategoria);
+            categoria.AlterarCategoria(request.Id, request.NomeCategoria);
             var retornoExist = _repositoryCategoria.Listar().Where(x => x.Id == request.Id);
             if (!retornoExist.Any())
             {

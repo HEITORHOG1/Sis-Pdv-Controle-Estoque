@@ -1,10 +1,8 @@
-﻿
-using AdicionarColaborador;
+﻿using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.AdicionarColaborador
+namespace Commands.Colaborador.AdicionarColaborador
 {
     public class AdicionarColaboradorHandler : Notifiable, IRequestHandler<AdicionarColaboradorRequest, Response>
     {

@@ -1,10 +1,8 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System.Text.RegularExpressions;
 
-namespace Commands.Pedido.ListarPedidoPorNomeCpfCnpj
+namespace Commands.Pedidos.ListarPedidoPorNomeCpfCnpj
 {
     public class ListarPedidoPorNomeCpfCnpjHandler : Notifiable, IRequestHandler<ListarPedidoPorNomeCpfCnpjRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
     {
@@ -29,8 +27,8 @@ namespace Commands.Pedido.ListarPedidoPorNomeCpfCnpj
             var Collection = _repositoryPedido.Listar()
                                 .Include(x => x.Colaborador)
                                 .Include(x => x.Cliente)
-                                .Where(x => x.Cliente.CpfCnpj == request.Cnpj); 
-            if (!Collection.Any()) 
+                                .Where(x => x.Cliente.CpfCnpj == request.Cnpj);
+            if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "Pedido NÃO ENCONTRADA");
                 return new Sis_Pdv_Controle_Estoque.Commands.Response(this);

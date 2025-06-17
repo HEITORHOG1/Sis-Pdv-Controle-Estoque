@@ -1,18 +1,15 @@
-﻿using AdicionarColaborador;
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using ValidarColaboradorLogin;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ValidarColaboradorLogin
+namespace Commands.Colaborador.ValidarColaboradorLogin
 {
     public class ValidarColaboradorLoginHandler : Notifiable, IRequestHandler<ValidarColaboradorLoginRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryColaborador _repositoryColaborador;
         private readonly IRepositoryDepartamento _repositoryDepartamento;
-        public ValidarColaboradorLoginHandler(IMediator mediator, IRepositoryColaborador repositoryColaborador, 
+        public ValidarColaboradorLoginHandler(IMediator mediator, IRepositoryColaborador repositoryColaborador,
             IRepositoryDepartamento repositoryDepartamento)
         {
             _mediator = mediator;

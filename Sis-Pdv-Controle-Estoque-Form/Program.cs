@@ -14,7 +14,7 @@ namespace Sis_Pdv_Controle_Estoque_Form
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            Application.Run(new frmLogin ());
+            Application.Run(new frmLogin());
         }
     }
 }

@@ -1,8 +1,5 @@
-﻿using AtualizarEstoque;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Response = Sis_Pdv_Controle_Estoque.Commands.Response;
 
 namespace Commands.Produto.AtualizarEstoque
 {
@@ -38,7 +35,7 @@ namespace Commands.Produto.AtualizarEstoque
 
             Sis_Pdv_Controle_Estoque.Model.Produto Produto = new Sis_Pdv_Controle_Estoque.Model.Produto();
 
-            var retornoExist = _repositoryProduto.Listar().Where(x => x.Id == request.Id).FirstOrDefault(); 
+            var retornoExist = _repositoryProduto.Listar().Where(x => x.Id == request.Id).FirstOrDefault();
 
             if (retornoExist == null)
             {

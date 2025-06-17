@@ -1,13 +1,7 @@
-﻿using Commands.Fornecedor.AdicionarFornecedor;
-using Extensions;
+﻿using Extensions;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AdicionarFornecedor
+namespace Commands.Fornecedor.AdicionarFornecedor
 {
     public class AdicionarFornecedorRequestValidator : AbstractValidator<AdicionarFornecedorRequest>
     {

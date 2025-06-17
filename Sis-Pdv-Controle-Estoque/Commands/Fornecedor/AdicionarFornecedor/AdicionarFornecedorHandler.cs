@@ -1,11 +1,7 @@
-﻿using AdicionarColaborador;
-using AdicionarFornecedor;
-using Commands.Fornecedor.AdicionarFornecedor;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.AdicionarFornecedor
+namespace Commands.Fornecedor.AdicionarFornecedor
 {
     public class AdicionarFornecedorHandler : Notifiable, IRequestHandler<AdicionarFornecedorRequest, Response>
     {
@@ -45,16 +41,16 @@ namespace Sis_Pdv_Controle_Estoque.Commands.AdicionarFornecedor
             }
 
             Model.Fornecedor Fornecedor = new(
-                                request.inscricaoEstadual, 
-                                request.nomeFantasia, 
-                                request.Uf, 
-                                request.Numero, 
-                                request.Complemento, 
-                                request.Bairro, 
-                                request.Cidade, 
-                                request.cepFornecedor, 
-                                request.statusAtivo, 
-                                request.Cnpj, 
+                                request.inscricaoEstadual,
+                                request.nomeFantasia,
+                                request.Uf,
+                                request.Numero,
+                                request.Complemento,
+                                request.Bairro,
+                                request.Cidade,
+                                request.cepFornecedor,
+                                request.statusAtivo,
+                                request.Cnpj,
                                 request.Rua);
 
             if (IsInvalid())

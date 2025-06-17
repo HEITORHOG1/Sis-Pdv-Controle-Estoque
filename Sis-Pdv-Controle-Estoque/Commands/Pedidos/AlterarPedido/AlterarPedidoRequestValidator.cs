@@ -1,13 +1,6 @@
-﻿using Commands.Pedido.AlterarPedido;
-using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
 
-namespace AlterarPedido
+namespace Commands.Pedidos.AlterarPedido
 {
     public class AlterarPedidoRequestValidator : AbstractValidator<AlterarPedidoRequest>
     {

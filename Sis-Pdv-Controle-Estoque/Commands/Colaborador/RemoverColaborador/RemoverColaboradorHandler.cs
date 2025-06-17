@@ -1,17 +1,8 @@
-﻿
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using prmToolkit.NotificationPattern;
-using prmToolkit.NotificationPattern.Extensions;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.RemoverColaborador
+namespace Commands.Colaborador.RemoverColaborador
 
 {
     public class RemoverColaboradorHandler : Notifiable, IRequestHandler<RemoverColaboradorResquest, Sis_Pdv_Controle_Estoque.Commands.Response>
@@ -37,7 +28,7 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.RemoverColaborador
 
             Sis_Pdv_Controle_Estoque.Model.Colaborador Colaborador = _repositoryColaborador.Listar().
                 Include(x => x.Usuario).
-                Where(x=> x.Id == request.Id).FirstOrDefault();
+                Where(x => x.Id == request.Id).FirstOrDefault();
 
             if (Colaborador == null)
             {
@@ -57,7 +48,7 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.RemoverColaborador
             _repositoryUsuario.Remover(Colaborador.Usuario);
             _repositoryColaborador.Remover(Colaborador);
 
-            var result = new { Id = Colaborador.Id };
+            var result = new { Colaborador.Id };
 
             //Cria objeto de resposta
             var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, Colaborador);

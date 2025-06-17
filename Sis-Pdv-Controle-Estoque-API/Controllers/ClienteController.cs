@@ -1,8 +1,5 @@
-﻿using Commands.Categoria.AdicionarCliente;
-using Commands.Categoria.ListarCategoria.ListarClientePorCpfCnpj;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
@@ -62,7 +59,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 return NotFound(ex.Message);
             }
         }
-        
+
         #endregion
     }
 }

@@ -1,14 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Sis_Pdv_Controle_Estoque.Interfaces.Repositories.Base;
-using Sis_Pdv_Controle_Estoque.Model.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque_Infra.Repositories.Base
+namespace Repositories.Base
 {
     public class RepositoryBase<TEntidade, TId> : IRepositoryBase<TEntidade, TId>
       where TEntidade : EntityBase
@@ -66,7 +59,7 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Repositories.Base
 
         public TEntidade Adicionar(TEntidade entidade)
         {
-            var entity = _context.Add<TEntidade>(entidade);
+            var entity = _context.Add(entidade);
             return entity.Entity;
             //return _context.Set<TEntidade>().Add(entidade);
         }

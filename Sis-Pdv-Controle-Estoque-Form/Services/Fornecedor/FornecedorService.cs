@@ -2,7 +2,6 @@
 using Commands.Fornecedor.AlterarFornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
-using System.Security.Cryptography;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Services.Fornecedor
 {

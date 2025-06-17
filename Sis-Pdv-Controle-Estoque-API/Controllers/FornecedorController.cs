@@ -2,11 +2,9 @@
 using Commands.Fornecedor.AlterarFornecedor;
 using Commands.Fornecedor.ListarFornecedor;
 using Commands.Fornecedor.ListarFornecedorPorId;
-using Commands.Fornecedor.ListarFornecedorPorNomeFornecedor;
 using Commands.Fornecedor.RemoverFornecedor;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
@@ -17,7 +15,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         public FornecedorController(IMediator mediator, IUnitOfWork unitOfWork, ILogger<FornecedorController> logger) : base(unitOfWork)
         {
             _mediator = mediator;
-            _logger = logger;   
+            _logger = logger;
         }
 
         #region Fornecedor
@@ -57,7 +55,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 _logger.LogInformation("ListarFornecedor");
                 var request = new ListarFornecedorRequest();
                 var result = await _mediator.Send(request, CancellationToken.None);
-                _logger.LogInformation("ListarFornecedor - Response: {@response}", result); 
+                _logger.LogInformation("ListarFornecedor - Response: {@response}", result);
                 return Ok(result);
             }
             catch (System.Exception ex)

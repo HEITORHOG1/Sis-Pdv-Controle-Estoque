@@ -1,10 +1,7 @@
-﻿using AdicionarPedido;
-using Commands.Pedido.AdicionarPedido;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.AdicionarPedido
+namespace Commands.Pedidos.AdicionarPedido
 {
     public class AdicionarPedidoHandler : Notifiable, IRequestHandler<AdicionarPedidoRequest, Response>
     {

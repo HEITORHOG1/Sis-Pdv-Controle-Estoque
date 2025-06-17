@@ -1,7 +1,6 @@
-﻿using Commands.ProdutoPedido.AdicionarProdutoPedido;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace AdicionarProdutoPedido
+namespace Commands.ProdutoPedido.AdicionarProdutoPedido
 {
     public class AdicionarProdutoPedidoRequestValidator : AbstractValidator<AdicionarProdutoPedidoRequest>
     {

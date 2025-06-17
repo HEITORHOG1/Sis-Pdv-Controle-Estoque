@@ -1,10 +1,5 @@
-using System.Threading;
-using System.Threading.Tasks;
-using Commands.Categoria.AdicionarCliente;
 using MediatR;
 using Moq;
-using Sis_Pdv_Controle_Estoque.Commands.Cliente;
-using Sis_Pdv_Controle_Estoque.Interfaces;
 using Xunit;
 
 namespace Sis_Pdv_Controle_Estoque.Tests

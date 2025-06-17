@@ -1,6 +1,6 @@
 ﻿namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
 {
-    public  class Data
+    public class Data
     {
         public string id { get; set; }
         public string inscricaoEstadual { get; set; }

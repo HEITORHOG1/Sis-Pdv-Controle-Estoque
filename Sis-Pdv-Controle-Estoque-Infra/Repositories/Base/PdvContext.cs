@@ -1,15 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Sis_Pdv_Controle_Estoque.Model;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Map;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque_Infra.Repositories.Base
+namespace Repositories.Base
 {
     public class PdvContext : DbContext
     {

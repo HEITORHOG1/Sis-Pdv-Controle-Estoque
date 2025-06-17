@@ -1,12 +1,8 @@
-﻿using Commands.Pedido.ListarVendaPedidoPorData;
-using Commands.ProdutoPedido.ListarProdutoPedidoPorId;
+﻿using Commands.ProdutoPedido.ListarProdutoPedidoPorId;
 using Dapper;
 using MySql.Data.MySqlClient;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Base;
 
-namespace Sis_Pdv_Controle_Estoque_Infra.Repositories
+namespace Repositories
 {
     public class RepositoryProdutoPedido : RepositoryBase<ProdutoPedido, Guid>, IRepositoryProdutoPedido
     {

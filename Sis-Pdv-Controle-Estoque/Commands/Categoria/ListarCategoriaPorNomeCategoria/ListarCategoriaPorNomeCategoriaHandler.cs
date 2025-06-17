@@ -1,9 +1,8 @@
-﻿using MediatR;
+﻿using Interfaces;
+using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System.Text.RegularExpressions;
 
-namespace Commands.Categoria.ListarCategoria.ListarCategoriaPorNomeCategoria
+namespace Commands.Categoria.ListarCategoriaPorNomeCategoria
 {
     public class ListarCategoriaPorNomeCategoriaHandler : Notifiable, IRequestHandler<ListarCategoriaPorNomeCategoriaRequest, ListarCategoriaPorNomeCategoriaResponse>
     {
@@ -25,8 +24,8 @@ namespace Commands.Categoria.ListarCategoria.ListarCategoriaPorNomeCategoria
                 return new ListarCategoriaPorNomeCategoriaResponse(this);
             }
 
-            var Collection = _repositoryCategoria.Listar().Where(x => x.NomeCategoria == request.NomeCategoria); 
-            if (!Collection.Any()) 
+            var Collection = _repositoryCategoria.Listar().Where(x => x.NomeCategoria == request.NomeCategoria);
+            if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "CATEGORIA NÃO ENCONTRADA");
                 return new ListarCategoriaPorNomeCategoriaResponse(this);
