@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Commands.Fornecedor.ListarFornecedorPorId
+﻿namespace Commands.Fornecedor.ListarFornecedorPorId
 {
     public class ListarFornecedorPorIdResponse
     {
@@ -22,7 +15,7 @@ namespace Commands.Fornecedor.ListarFornecedorPorId
         public string Cnpj { get; set; }
         public string Rua { get; set; }
 
-        public static explicit operator ListarFornecedorPorIdResponse(Sis_Pdv_Controle_Estoque.Model.Fornecedor request)
+        public static explicit operator ListarFornecedorPorIdResponse(Model.Fornecedor request)
         {
             return new ListarFornecedorPorIdResponse()
             {

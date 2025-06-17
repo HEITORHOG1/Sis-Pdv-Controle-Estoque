@@ -1,14 +1,8 @@
 ﻿using MediatR;
-using prmToolkit.NotificationPattern;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Commands.Produto.ListarProduto
 {
-    public class ListarProdutoRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarProdutoRequest : IRequest<Commands.Response>
     {
         public Guid? Id { get; set; }
         public string codBarras { get; set; }

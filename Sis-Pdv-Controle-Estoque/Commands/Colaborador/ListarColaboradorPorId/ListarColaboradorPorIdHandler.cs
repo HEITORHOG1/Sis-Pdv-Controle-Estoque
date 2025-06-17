@@ -1,14 +1,8 @@
-﻿using MediatR;
+﻿using Interfaces;
+using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaboradorPorId
+namespace Commands.Colaborador.ListarColaboradorPorId
 {
     public class ListarColaboradorPorIdHandler : Notifiable, IRequestHandler<ListarColaboradorPorIdRequest, ListarColaboradorPorIdResponse>
     {
@@ -30,7 +24,7 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaboradorPorId
                 return null;
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Colaborador Collection = _repositoryColaborador.ObterPor(x=> x.Id == request.Id);
+            Model.Colaborador Collection = _repositoryColaborador.ObterPor(x => x.Id == request.Id);
 
             if (Collection == null)
             {

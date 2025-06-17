@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System.Text.RegularExpressions;
 
-namespace Commands.Fornecedor.ListarFornecedorPorNomeFornecedor
+namespace Commands.Fornecedor.ListarFornecedorPorNomeDepartamento
 {
     public class ListarFornecedorPorNomeFornecedorHandler : Notifiable, IRequestHandler<ListarFornecedorPorNomeFornecedorRequest, ListarFornecedorPorNomeFornecedorResponse>
     {
@@ -25,8 +23,8 @@ namespace Commands.Fornecedor.ListarFornecedorPorNomeFornecedor
                 return new ListarFornecedorPorNomeFornecedorResponse(this);
             }
 
-            var Collection = _repositoryFornecedor.Listar().Where(x => x.Cnpj == request.Cnpj); 
-            if (!Collection.Any()) 
+            var Collection = _repositoryFornecedor.Listar().Where(x => x.Cnpj == request.Cnpj);
+            if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "Fornecedor NÃO ENCONTRADA");
                 return new ListarFornecedorPorNomeFornecedorResponse(this);

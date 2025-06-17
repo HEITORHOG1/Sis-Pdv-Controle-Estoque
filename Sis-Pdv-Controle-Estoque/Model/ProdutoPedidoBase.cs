@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sis_Pdv_Controle_Estoque.Model
+namespace Model
 {
     [Table("ProdutoPedido")]
     public class ProdutoPedidoBase
@@ -16,11 +16,11 @@ namespace Sis_Pdv_Controle_Estoque.Model
         {
             this.codItem = codItem;
             this.codigoBarras = codigoBarras;
-            this.NomeProduto = novaDescricao;
+            NomeProduto = novaDescricao;
             this.quantidade = quantidade;
             this.valorUnitario = valorUnitario;
             this.total = total;
-            this.StatusAtivo = status;
+            StatusAtivo = status;
         }
 
         public ProdutoPedidoBase()

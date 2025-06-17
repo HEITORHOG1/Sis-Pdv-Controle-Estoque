@@ -1,8 +1,5 @@
-﻿using AlterarFornecedor;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Response = Sis_Pdv_Controle_Estoque.Commands.Response;
 
 namespace Commands.Fornecedor.AlterarFornecedor
 {
@@ -36,7 +33,7 @@ namespace Commands.Fornecedor.AlterarFornecedor
                 return new Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Fornecedor Fornecedor = new Sis_Pdv_Controle_Estoque.Model.Fornecedor();
+            Model.Fornecedor Fornecedor = new Model.Fornecedor();
 
             Fornecedor.AlterarFornecedor(request.Id, request.inscricaoEstadual, request.nomeFantasia, request.Uf, request.Numero,
             request.Complemento, request.Bairro, request.Cidade, request.cepFornecedor, request.statusAtivo, request.Cnpj, request.Rua);

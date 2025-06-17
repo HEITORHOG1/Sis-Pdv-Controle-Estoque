@@ -1,15 +1,6 @@
 ﻿using Sis_Pdv_Controle_Estoque_Form.Paginas.PDV;
 using Sis_Pdv_Controle_Estoque_Form.Services.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Login
 {
@@ -91,9 +82,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Login
             var response = await _colaboradorService.ValidarLogin(txtLogin.Text, txtSenha.Text);
             if (response.success == false)
                 foreach (var error in response.notifications)
-            {
-                MessageBox.Show(error.ToString());
-            }
+                {
+                    MessageBox.Show(error.ToString());
+                }
             else
             {
                 cargo = response.data.cargoColaborador;

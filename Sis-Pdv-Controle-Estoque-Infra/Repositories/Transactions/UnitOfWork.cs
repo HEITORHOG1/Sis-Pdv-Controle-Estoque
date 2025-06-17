@@ -1,6 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Infra.Repositories.Base;
-
-namespace Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions
+﻿namespace Repositories.Transactions
 {
     public class UnitOfWork : IUnitOfWork
     {

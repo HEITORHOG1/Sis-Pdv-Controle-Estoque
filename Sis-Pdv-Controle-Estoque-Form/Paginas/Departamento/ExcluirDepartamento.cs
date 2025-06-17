@@ -1,17 +1,6 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Categoria;
-using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
-using Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria;
-using Sis_Pdv_Controle_Estoque_Form.Services.Categoria;
+﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
 {
@@ -45,7 +34,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
 
                 if (qrForm != null && qrForm.Count() > 0)
                 {
-                  await  ((CadDepartamento)qrForm.First()).Consultar();
+                    await ((CadDepartamento)qrForm.First()).Consultar();
                 }
 
                 this.Close();

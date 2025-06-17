@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ValidarColaboradorLogin
+namespace Commands.Colaborador.ValidarColaboradorLogin
 {
     public class ValidarColaboradorLoginRequest : IRequest<Response>
     {

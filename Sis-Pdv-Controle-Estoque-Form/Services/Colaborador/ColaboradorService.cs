@@ -1,7 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque.Commands.Colaborador.AdicionarColaborador;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.AlterarColaborador;
-using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
-using Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento;
+﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
@@ -101,7 +98,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
             else throw new Exception("Something went wrong when calling API");
         }
 
-        public async Task<ColaboradorResponse> ValidarLogin(string Login,string Senha)
+        public async Task<ColaboradorResponse> ValidarLogin(string Login, string Senha)
         {
             _client = new HttpClient();
 

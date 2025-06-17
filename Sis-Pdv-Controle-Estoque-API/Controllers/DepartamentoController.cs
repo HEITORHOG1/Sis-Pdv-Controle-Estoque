@@ -6,7 +6,6 @@ using Commands.Departamento.ListarDepartamentoPorNomeDepartamento;
 using Commands.Departamento.RemoverDepartamento;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
@@ -17,7 +16,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         public DepartamentoController(IMediator mediator, IUnitOfWork unitOfWork, ILogger<DepartamentoController> logger) : base(unitOfWork)
         {
             _mediator = mediator;
-            _logger = logger;   
+            _logger = logger;
         }
 
         #region Departamento

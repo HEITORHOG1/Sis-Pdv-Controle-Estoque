@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Sis_Pdv_Controle_Estoque.Commands;
-using System;
 
 namespace Commands.Categoria.RemoverCategoria
 {

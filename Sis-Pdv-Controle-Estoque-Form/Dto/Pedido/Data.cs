@@ -3,7 +3,7 @@ using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Dto.Pedido
 {
-    public  class Data
+    public class Data
     {
         public virtual ColaboradorDto? Colaborador { get; set; }
         public virtual ClienteDto? Cliente { get; set; }

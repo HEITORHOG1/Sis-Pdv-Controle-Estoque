@@ -1,7 +1,6 @@
-﻿using Commands.ProdutoPedido.AlterarProdutoPedido;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace AlterarProdutoPedido
+namespace Commands.ProdutoPedido.AlterarProdutoPedido
 {
     public class AlterarProdutoPedidoRequestValidator : AbstractValidator<AlterarProdutoPedidoRequest>
     {

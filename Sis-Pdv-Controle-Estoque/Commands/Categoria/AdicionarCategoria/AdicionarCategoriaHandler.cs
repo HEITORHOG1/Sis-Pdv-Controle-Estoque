@@ -1,9 +1,8 @@
-﻿using Commands.Categoria.AdicionarCategoria;
+﻿using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Categoria
+namespace Commands.Categoria.AdicionarCategoria
 {
     public class AdicionarCategoriaHandler : Notifiable, IRequestHandler<AdicionarCategoriaRequest, Response>
     {
@@ -42,7 +41,7 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Categoria
             categoria = _repositoryCategoria.Adicionar(categoria);
 
             //Criar meu objeto de resposta
-            var result = new { Id = categoria.Id, NomeCategoria = categoria.NomeCategoria};
+            var result = new { categoria.Id, categoria.NomeCategoria };
 
             //Criar meu objeto de resposta
             var response = new Response(this, result);

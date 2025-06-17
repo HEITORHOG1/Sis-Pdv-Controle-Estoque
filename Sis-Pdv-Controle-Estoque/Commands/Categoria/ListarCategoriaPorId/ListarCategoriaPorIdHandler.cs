@@ -1,15 +1,8 @@
-﻿using Commands.Categoria.ListarCategoriaPorId;
+﻿using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Commands.Categoria.ListarCategoria.ListarCategoriaPorId
+namespace Commands.Categoria.ListarCategoriaPorId
 {
     public class ListarCategoriaPorIdHandler : Notifiable, IRequestHandler<ListarCategoriaPorIdRequest, ListarCategoriaPorIdResponse>
     {
@@ -31,7 +24,7 @@ namespace Commands.Categoria.ListarCategoria.ListarCategoriaPorId
                 return null;
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Categoria Collection = _repositoryCategoria.ObterPor(x=> x.Id == request.Id);
+           Model.Categoria Collection = _repositoryCategoria.ObterPor(x => x.Id == request.Id);
 
             if (Collection == null)
             {

@@ -1,8 +1,8 @@
 ﻿namespace Sis_Pdv_Controle_Estoque_Form.Dto.Produto
 {
-    public  class Data
+    public class Data
     {
-        public Guid Id { get; set; }    
+        public Guid Id { get; set; }
         public string codBarras { get; set; }
         public string nomeProduto { get; set; }
         public string descricaoProduto { get; set; }

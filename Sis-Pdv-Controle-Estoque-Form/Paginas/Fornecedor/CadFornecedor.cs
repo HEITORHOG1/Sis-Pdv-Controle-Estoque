@@ -1,9 +1,4 @@
-﻿using MediatR;
-using Org.BouncyCastle.Asn1.Cmp;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
-using Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor;
-using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
+﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Services.Fornecedor;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -63,7 +58,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
             //"Ativo",
             //"CNPJ",
             //"Rua"
-           
+
 
             txbId.Text = this.dgvFornecedor.CurrentRow.Cells[0].Value.ToString();
             txbInscricaoEstadual.Text = this.dgvFornecedor.CurrentRow.Cells[1].Value.ToString();
@@ -229,7 +224,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
             var request = await fornecedorService.ListarFornecedor();
 
             dgvFornecedor.DataSource = request.data;
-            await DefinirCabecalhos(new List<string>() { "Id", "Insc. Estadual" ,"Nome","Estado","Numero", "Complemnto" , "Bairro", "Cidade","CEP", "Ativo", "CNPJ", "Rua" });
+            await DefinirCabecalhos(new List<string>() { "Id", "Insc. Estadual", "Nome", "Estado", "Numero", "Complemnto", "Bairro", "Cidade", "CEP", "Ativo", "CNPJ", "Rua" });
         }
         private async Task CadastrarFornecedor()
         {

@@ -1,29 +1,16 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Base;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories;
-using Commands.Categoria.AdicionarCategoria;
+﻿using Commands.Categoria.AdicionarCategoria;
+using Commands.Categoria.RemoverCategoria;
 using Commands.Departamento.AdicionarDepartamento;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.AdicionarColaborador;
-using Sis_Pdv_Controle_Estoque.Commands.Usuarios.AlterarUsuario;
 using Commands.Fornecedor.AdicionarFornecedor;
 using Commands.Fornecedor.AlterarFornecedor;
 using Commands.Fornecedor.ListarFornecedor;
 using Commands.Fornecedor.ListarFornecedorPorId;
-using Commands.Fornecedor.ListarFornecedorPorNomeFornecedor;
-using Commands.Categoria.RemoverCategoria;
 using Commands.Produto.AdicionarProduto;
 using Commands.Produto.AlterarProduto;
 using Commands.Produto.RemoverProduto;
-using Commands.Categoria.AdicionarCliente;
-using Commands.Produto.ListarProdutoPorCodBarras;
+using MediatR;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
+using System.Reflection;
 
 namespace Sis_Pdv_Controle_Estoque_API
 {

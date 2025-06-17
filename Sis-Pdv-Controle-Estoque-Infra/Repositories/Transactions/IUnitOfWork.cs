@@ -1,4 +1,4 @@
-﻿namespace Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions
+﻿namespace Repositories.Transactions
 {
     public interface IUnitOfWork
     {

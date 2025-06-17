@@ -1,11 +1,9 @@
 ﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System.Text.RegularExpressions;
 
-namespace Commands.Produto.ListarProdutoPorCodBarras
+namespace Commands.Produto.ListarProdutoPorNomeProduto
 {
-    public class ListarProdutoPorCodBarrasHandler : Notifiable, IRequestHandler<ListarProdutoPorCodBarrasRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarProdutoPorCodBarrasHandler : Notifiable, IRequestHandler<ListarProdutoPorCodBarrasRequest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryProduto _repositoryProduto;
@@ -16,24 +14,24 @@ namespace Commands.Produto.ListarProdutoPorCodBarras
             _repositoryProduto = repositoryProduto;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(ListarProdutoPorCodBarrasRequest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(ListarProdutoPorCodBarrasRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
-            var Collection = _repositoryProduto.Listar().Where(x => x.codBarras == request.codBarras); 
-            if (!Collection.Any()) 
+            var Collection = _repositoryProduto.Listar().Where(x => x.codBarras == request.codBarras);
+            if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "PRODUTO NÃO ENCONTRADA");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             //Criar meu objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, Collection);
+            var response = new Commands.Response(this, Collection);
             //Cria objeto de resposta
 
             ////Retorna o resultado

@@ -1,7 +1,6 @@
-﻿using Commands.Produto.AtualizarEstoque;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace AtualizarEstoque
+namespace Commands.Produto.AtualizarEstoque
 {
     public class AtualizarEstoqueRequestValidator : AbstractValidator<AtualizarEstoqueRequest>
     {

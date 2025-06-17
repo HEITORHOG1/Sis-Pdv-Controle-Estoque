@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
-namespace Sis_Pdv_Controle_Estoque.Extensions
+namespace Extensions
 {
     public static class StringExtension
     {
         public static string ConvertToMD5(this string text)
         {
             if (string.IsNullOrEmpty(text)) return "";
-            var password = (text += "|2d331cca-f6c0-40c0-bb43-6e32989c2881");
+            var password = text += "|2d331cca-f6c0-40c0-bb43-6e32989c2881";
             var md5 = System.Security.Cryptography.MD5.Create();
             var data = md5.ComputeHash(Encoding.Default.GetBytes(password));
             var sbString = new StringBuilder();

@@ -1,13 +1,7 @@
-﻿using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model.Base;
-using System;
-using System.Collections.Generic;
+﻿using Model.Base;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque.Model
+namespace Model
 {
     [Table("Colaborador")]
     public class Colaborador : EntityBase
@@ -47,7 +41,7 @@ namespace Sis_Pdv_Controle_Estoque.Model
             string telefoneColaborador, string emailPessoalColaborador, string emailCorporativo, Usuario Usuario)
         {
             this.nomeColaborador = nomeColaborador;
-            this.DepartamentoId = Departamento;
+            DepartamentoId = Departamento;
             this.cpfColaborador = cpfColaborador;
             this.cargoColaborador = cargoColaborador;
             this.telefoneColaborador = telefoneColaborador;

@@ -25,7 +25,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Categoria
         public async Task<CategoriaResponseList> ListarCategoria()
         {
             _client = new HttpClient();
-           
+
             var response = await _client.GetAsync($"{BasePath}/Categoria/ListarCategoria");
             if (response.IsSuccessStatusCode)
                 return await response.ReadContentAs<CategoriaResponseList>();

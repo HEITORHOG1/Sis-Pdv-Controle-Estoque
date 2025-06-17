@@ -1,33 +1,21 @@
 ﻿using FontAwesome.Sharp;
-using Org.BouncyCastle.Asn1.X509;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria;
+using Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor;
-using Sis_Pdv_Controle_Estoque_Form.Paginas.Produto;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.PDV;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using Sis_Pdv_Controle_Estoque_Form.Utils;
+using Sis_Pdv_Controle_Estoque_Form.Paginas.Produto;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios;
+using Sis_Pdv_Controle_Estoque_Form.Utils;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas
 {
     public partial class frmMenu : Form
     {
         private IconButton iconButton;
-        private Panel leftBorder;
+        private readonly Panel leftBorder;
         private Form formFilho;
-        private  string _nome;
+        private readonly string _nome;
         public frmMenu(string nome)
         {
             InitializeComponent();
@@ -43,11 +31,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
             this.MaximizedBounds = Screen.FromHandle(this.Handle).WorkingArea;
             AbrirForm(new frmHome());
         }
-        string produto = "Produto";
-        string colaborador = "Colaborador";
-        string home = "Home";
-        string relatorio = "Relatório";
-        string fornecedor = "Fornecedor";
+        readonly string produto = "Produto";
+        readonly string colaborador = "Colaborador";
+        readonly string home = "Home";
+        readonly string relatorio = "Relatório";
+        readonly string fornecedor = "Fornecedor";
 
         private void ActivateButton(object senderBtn, Color color)
         {
@@ -223,7 +211,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
         private void btnRelatorios_Click(object sender, EventArgs e)
         {
 
-           
+
 
         }
 

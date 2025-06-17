@@ -25,7 +25,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Departamento
         public async Task<DepartamentoResponseList> ListarDepartamento()
         {
             _client = new HttpClient();
-           
+
             var response = await _client.GetAsync($"{BasePath}/Departamento/ListarDepartamento");
             if (response.IsSuccessStatusCode)
                 return await response.ReadContentAs<DepartamentoResponseList>();
@@ -55,7 +55,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Departamento
 
             AlterarDepartamentoRequest request = new AlterarDepartamentoRequest()
             {
-                Id =Guid.Parse(dto.Id),
+                Id = Guid.Parse(dto.Id),
                 NomeDepartamento = dto.NomeDepartamento
             };
 

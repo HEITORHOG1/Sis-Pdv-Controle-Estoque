@@ -1,18 +1,8 @@
-﻿using AdicionarColaborador;
-using AlterarColaborador;
+﻿using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Commands;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.AlterarColaborador
+namespace Commands.Colaborador.AlterarColaborador
 {
     public class AlterarColaboradorHandler : Notifiable, IRequestHandler<AlterarColaboradorRequest, Response>
     {
@@ -79,11 +69,11 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.AlterarColaborador
                                             request.emailCorporativo,
                                             request.Usuario);
 
-           
-           
 
-            
-           _repositoryUsuario.Editar(Colaborador.Usuario);
+
+
+
+            _repositoryUsuario.Editar(Colaborador.Usuario);
             Colaborador = _repositoryColaborador.Editar(Colaborador);
 
             //Criar meu objeto de resposta

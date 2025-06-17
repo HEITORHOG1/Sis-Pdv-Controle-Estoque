@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Commands.ProdutoPedido.ListarProdutoPedidoPorId
+﻿namespace Commands.ProdutoPedido.ListarProdutoPedidoPorId
 {
-    public  class ListarProdutosPorPedidoIdResponse
+    public class ListarProdutosPorPedidoIdResponse
     {
         public int quantidadeItemPedido { get; set; }
         public string nomeProduto { get; set; }

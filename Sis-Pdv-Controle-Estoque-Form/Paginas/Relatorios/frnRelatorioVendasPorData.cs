@@ -1,13 +1,4 @@
 ﻿using Sis_Pdv_Controle_Estoque_Form.Services.Pedido;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios
 {
@@ -27,7 +18,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios
             var response = await _pedidoService.ListarVendaPedidoPorData(Convert.ToDateTime(dtpDataInicial.Text), Convert.ToDateTime(dtpDataFinal.Text));
 
             dgvRelatorio.DataSource = response.data;
-            DefinirCabecalhos(new List<string>() { "Data ", "Pagamento",  "Total" ,"ID" });
+            DefinirCabecalhos(new List<string>() { "Data ", "Pagamento", "Total", "ID" });
 
             decimal valor = 0;
 

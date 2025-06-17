@@ -1,13 +1,6 @@
-﻿
-using MediatR;
-using prmToolkit.NotificationPattern;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaboradorPorId
+namespace Commands.Colaborador.ListarColaboradorPorId
 {
     public class ListarColaboradorPorIdRequest : IRequest<ListarColaboradorPorIdResponse>
     {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sis_Pdv_Controle_Estoque_Form.Dto.TratamentoErro
+﻿namespace Sis_Pdv_Controle_Estoque_Form.Dto.TratamentoErro
 {
     public static class ErrorHandling
     {

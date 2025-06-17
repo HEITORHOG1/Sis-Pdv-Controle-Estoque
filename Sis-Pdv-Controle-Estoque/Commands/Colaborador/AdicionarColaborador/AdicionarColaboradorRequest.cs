@@ -1,14 +1,9 @@
 ﻿using MediatR;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Model;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.AdicionarColaborador
+namespace Commands.Colaborador.AdicionarColaborador
 {
-    public class AdicionarColaboradorRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class AdicionarColaboradorRequest : IRequest<Response>
     {
         public Guid Id { get; set; }
         public string nomeColaborador { get; set; }

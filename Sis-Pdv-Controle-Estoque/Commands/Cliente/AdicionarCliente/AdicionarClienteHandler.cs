@@ -1,18 +1,8 @@
-﻿using AdicionarCliente;
-using Commands.Categoria.AdicionarCategoria;
-using Commands.Categoria.AdicionarCliente;
+﻿using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Cliente
+namespace Commands.Cliente.AdicionarCliente
 {
     public class AdicionarClienteHandler : Notifiable, IRequestHandler<AdicionarClienteRequest, Response>
     {

@@ -2,12 +2,10 @@
 using Commands.Produto.AlterarProduto;
 using Commands.Produto.AtualizarEstoque;
 using Commands.Produto.ListarProduto;
-using Commands.Produto.ListarProdutoPorCodBarras;
 using Commands.Produto.ListarProdutoPorId;
 using Commands.Produto.RemoverProduto;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {

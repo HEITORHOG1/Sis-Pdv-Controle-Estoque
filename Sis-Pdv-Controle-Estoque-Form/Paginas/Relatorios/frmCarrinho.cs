@@ -1,13 +1,4 @@
 ﻿using Sis_Pdv_Controle_Estoque_Form.Services.ProdutoPedido;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios
 {

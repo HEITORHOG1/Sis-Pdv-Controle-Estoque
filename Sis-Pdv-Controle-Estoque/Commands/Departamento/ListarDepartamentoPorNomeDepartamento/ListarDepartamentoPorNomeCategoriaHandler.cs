@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System.Text.RegularExpressions;
 
 namespace Commands.Departamento.ListarDepartamentoPorNomeDepartamento
 {
@@ -25,8 +23,8 @@ namespace Commands.Departamento.ListarDepartamentoPorNomeDepartamento
                 return new ListarDepartamentoPorNomeDepartamentoResponse(this);
             }
 
-            var Collection = _repositoryDepartamento.Listar().Where(x => x.NomeDepartamento == request.NomeDepartamento); 
-            if (!Collection.Any()) 
+            var Collection = _repositoryDepartamento.Listar().Where(x => x.NomeDepartamento == request.NomeDepartamento);
+            if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "Departamento NÃO ENCONTRADA");
                 return new ListarDepartamentoPorNomeDepartamentoResponse(this);

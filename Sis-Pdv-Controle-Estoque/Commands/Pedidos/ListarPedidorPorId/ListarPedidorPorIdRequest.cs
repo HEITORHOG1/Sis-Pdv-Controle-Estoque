@@ -1,16 +1,8 @@
-﻿
-using MediatR;
-using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 
-namespace Commands.Pedido.ListarPedidoPorId
+namespace Commands.Pedidos.ListarPedidorPorId
 {
-    public class ListarPedidoPorIdRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarPedidoPorIdRequest : IRequest<Commands.Response>
     {
         public ListarPedidoPorIdRequest(Guid? id)
         {
@@ -18,6 +10,6 @@ namespace Commands.Pedido.ListarPedidoPorId
         }
 
         public Guid? Id { get; set; }
-        
+
     }
 }

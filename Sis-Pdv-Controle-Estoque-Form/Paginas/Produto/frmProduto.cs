@@ -2,16 +2,6 @@
 using Sis_Pdv_Controle_Estoque_Form.Services.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Services.Fornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Services.Produto;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 {
@@ -22,7 +12,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
         CategoriaService categoriaService;
 
 
-        string _perecivel = "";
+        readonly string _perecivel = "";
         int _ativo = 0;
 
         public frmProduto()
@@ -195,7 +185,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                         precoCusto = decimal.Parse(txbPrecoCusto.Text),
                         precoVenda = decimal.Parse(txbPrecoDeVenda.Text),
                         margemLucro = decimal.Parse(txbMargemDeLucro.Text),
-                        dataFabricao =DateTime.Parse(msktDataFabricacao.Text),
+                        dataFabricao = DateTime.Parse(msktDataFabricacao.Text),
                         dataVencimento = DateTime.Parse(msktDataVencimento.Text),
                         quatidadeEstoqueProduto = Int32.Parse(txbQuantidadeEstoque.Text),
                         statusAtivo = _ativo
@@ -214,7 +204,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                         MessageBox.Show(errorMsg);
                     }
                 }
-                catch (FormatException ex)
+                catch (FormatException)
                 {
                     MessageBox.Show("Ocorreu um erro ao adicionar o produto: O formato de data fornecido é inválido.");
                 }
@@ -349,7 +339,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
         }
 
-       
+
 
         private async void txbPrecoDeVenda_TextChanged(object sender, EventArgs e)
         {
@@ -407,7 +397,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             {
                 await LimpaCampos();
                 await Consultar();
-               
+
             }
         }
 
@@ -489,7 +479,6 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
         private async Task ValidarValores()
         {
             decimal precoVenda = 0;
-            decimal porcentagem = 0;
 
 
             decimal precoCusto = 0;

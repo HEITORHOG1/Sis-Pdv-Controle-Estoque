@@ -2,11 +2,9 @@
 using Commands.ProdutoPedido.AlterarProdutoPedido;
 using Commands.ProdutoPedido.ListarProdutoPedido;
 using Commands.ProdutoPedido.ListarProdutoPedidoPorId;
-using Commands.ProdutoPedido.ListarProdutoPedidoPorNomeCpfCnpj;
 using Commands.ProdutoPedido.RemoverProdutoPedido;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
@@ -57,7 +55,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 _logger.LogInformation("ListarProdutoPedido");
                 var request = new ListarProdutoPedidoRequest();
                 var result = await _mediator.Send(request, CancellationToken.None);
-                _logger.LogInformation("ListarProdutoPedido - Response: {@response}", result);  
+                _logger.LogInformation("ListarProdutoPedido - Response: {@response}", result);
                 return Ok(result);
             }
             catch (Exception ex)

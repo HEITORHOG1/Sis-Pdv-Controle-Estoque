@@ -1,7 +1,6 @@
-﻿using Commands.Categoria.AdicionarCliente;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace AdicionarCliente
+namespace Commands.Cliente.AdicionarCliente
 {
     public class AdicionarClienteRequestValidator : AbstractValidator<AdicionarClienteRequest>
     {

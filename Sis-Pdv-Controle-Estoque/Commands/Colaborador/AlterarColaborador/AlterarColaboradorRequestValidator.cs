@@ -1,12 +1,6 @@
 ﻿using FluentValidation;
-using Sis_Pdv_Controle_Estoque.Commands.Colaborador.AlterarColaborador;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AlterarColaborador
+namespace Commands.Colaborador.AlterarColaborador
 {
     public class AlterarColaboradorRequestValidator : AbstractValidator<AlterarColaboradorRequest>
     {

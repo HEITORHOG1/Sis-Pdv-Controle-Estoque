@@ -1,10 +1,8 @@
-﻿using Sis_Pdv_Controle_Estoque.Model;
-using Sis_Pdv_Controle_Estoque_Form.Dto.Cliente;
+﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Cliente;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Pedido;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Produto;
 using Sis_Pdv_Controle_Estoque_Form.Dto.ProdutoPedido;
-using Sis_Pdv_Controle_Estoque_Form.Paginas.Cliente;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Dinheiro;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Login;
@@ -13,16 +11,6 @@ using Sis_Pdv_Controle_Estoque_Form.Services.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Services.Pedido;
 using Sis_Pdv_Controle_Estoque_Form.Services.Produto;
 using Sis_Pdv_Controle_Estoque_Form.Services.ProdutoPedido;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
 {
@@ -37,7 +25,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         bool verificadorTecla = false;
         string codItem;
         bool i = false;
-        string cpfCnpjCliente;
+        readonly string cpfCnpjCliente;
         bool verificador = false;
         int codigo = 1;
         string codBarras;
@@ -45,7 +33,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         string totalProduto;
         string preco;
         string descricao;
-        string Nome;
+        readonly string Nome;
         ColaboradorResponseList colaboradorResponseList = new ColaboradorResponseList();
         public frmTelaPdv(string nome)
         {
@@ -140,7 +128,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         {
             this.Close();
         }
-        protected override  bool ProcessCmdKey(ref Message msg, Keys keyData)
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             switch (keyData)
             {
@@ -286,9 +274,6 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             _produtoPedidoService = new ProdutoPedidoService();
             _clienteService = new ClienteService();
 
-           
-            string temp = "1";
-
 
             ClienteDto clienteDto = new ClienteDto();
 
@@ -317,10 +302,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             };
 
             var response = await _pedidoService.AdicionarPedido(pedidoDto);
-           // var responsesProdutoPedido = await _produtoPedidoService.ListarProdutoPedidoPorId(response.data.Id.ToString());
+            // var responsesProdutoPedido = await _produtoPedidoService.ListarProdutoPedidoPorId(response.data.Id.ToString());
 
 
-            frmCupom cupom = new frmCupom(response.data.Id.ToString(),lblNomeOperador.Text);
+            frmCupom cupom = new frmCupom(response.data.Id.ToString(), lblNomeOperador.Text);
 
 
             foreach (DataGridViewRow coluna in dgvCarrinho.Rows)
@@ -363,17 +348,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                             await _produtoPedidoService.AdicionarProdutoPedido(produtoPedidoDto);
 
                             ProdutoDto produtoAtualizaEstoque = new ProdutoDto
-                            { 
-                               Id = responseProduto.data[0].Id,
-                               quatidadeEstoqueProduto = Convert.ToInt32(quantidade)
+                            {
+                                Id = responseProduto.data[0].Id,
+                                quatidadeEstoqueProduto = Convert.ToInt32(quantidade)
                             };
 
                             await _produtoService.AtualizarEstoque(produtoAtualizaEstoque);
 
-                            cupom.CumpomImpresso(codItem.ToString(), codBarras, descricao, 
-                                                quantidade, preco, totalProduto, 
-                                                ativo, cpfCnpjCliente, lblTotal.Text, 
-                                                lblData.Text, lblHora.Text, lblCaixa.Text, 
+                            cupom.CumpomImpresso(codItem.ToString(), codBarras, descricao,
+                                                quantidade, preco, totalProduto,
+                                                ativo, cpfCnpjCliente, lblTotal.Text,
+                                                lblData.Text, lblHora.Text, lblCaixa.Text,
                                                 lblFormaPagamento.Text, lblValorAReceber.Text, lblTroco.Text);
                         }
                     }
@@ -433,12 +418,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         }
         private async Task CalculaTotal()
         {
-            int cont = 0;
             int idex = 0;
 
 
             decimal calc = 0;
-            decimal calcNegativo = 0;
 
 
             foreach (DataGridViewRow coluna in dgvCarrinho.Rows)

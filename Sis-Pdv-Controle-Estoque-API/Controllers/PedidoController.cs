@@ -1,13 +1,5 @@
-﻿using Commands.Pedido.AdicionarPedido;
-using Commands.Pedido.AlterarPedido;
-using Commands.Pedido.ListarPedido;
-using Commands.Pedido.ListarPedidoPorId;
-using Commands.Pedido.ListarPedidoPorNomeCpfCnpj;
-using Commands.Pedido.ListarVendaPedidoPorData;
-using Commands.Pedido.RemoverPedido;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {

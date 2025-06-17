@@ -1,12 +1,6 @@
-﻿using Sis_Pdv_Controle_Estoque.Model.Base;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sis_Pdv_Controle_Estoque.Model
+namespace Model
 {
     [Table("Produto")]
     public class Produto : EntityBase
@@ -66,7 +60,7 @@ namespace Sis_Pdv_Controle_Estoque.Model
             DateTime dataVencimento, int quatidadeEstoqueProduto,
             Guid FornecedorId, Guid CategoriaId, int statusAtivo)
         {
-            this.Id = id;
+            Id = id;
             this.codBarras = codBarras;
             this.nomeProduto = nomeProduto;
             this.descricaoProduto = descricaoProduto;
@@ -82,7 +76,7 @@ namespace Sis_Pdv_Controle_Estoque.Model
         }
         internal void AtualizarEstoque(Guid id, int quatidadeEstoqueProduto)
         {
-            this.Id = id;
+            Id = id;
             this.quatidadeEstoqueProduto = quatidadeEstoqueProduto;
         }
     }

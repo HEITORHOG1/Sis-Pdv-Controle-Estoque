@@ -1,19 +1,13 @@
-﻿using Sis_Pdv_Controle_Estoque.Model.Base;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sis_Pdv_Controle_Estoque.Model
+namespace Model
 {
     [Table("ProdutoPedido")]
     public class ProdutoPedido : EntityBase
     {
         public ProdutoPedido()
         {
-           
+
         }
         public ProdutoPedido(Guid pedidoId,
                              Guid produtoId,
@@ -32,8 +26,8 @@ namespace Sis_Pdv_Controle_Estoque.Model
 
         public virtual Pedido? Pedido { get; set; }
         public virtual Produto? Produto { get; set; }
-        public  Guid PedidoId { get; set; }
-        public  Guid ProdutoId { get; set; }
+        public Guid PedidoId { get; set; }
+        public Guid ProdutoId { get; set; }
         public string? codBarras { get; set; }
         public int? quantidadeItemPedido { get; set; }
         public decimal? totalProdutoPedido { get; set; }

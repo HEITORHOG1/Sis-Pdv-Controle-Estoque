@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Sis_Pdv_Controle_Estoque. Commands;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
 {

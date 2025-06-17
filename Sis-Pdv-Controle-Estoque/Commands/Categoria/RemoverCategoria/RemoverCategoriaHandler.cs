@@ -1,17 +1,10 @@
-﻿using Commands.Categoria.RemoverCategoria;
+﻿using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
-using prmToolkit.NotificationPattern.Extensions;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Commands.Categoria.RemoverCategoria
 {
-    public class RemoverCategoriaHandler : Notifiable, IRequestHandler<RemoverCategoriaResquest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class RemoverCategoriaHandler : Notifiable, IRequestHandler<RemoverCategoriaResquest, Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryCategoria _repositoryCategoria;
@@ -22,21 +15,21 @@ namespace Commands.Categoria.RemoverCategoria
             _repositoryCategoria = repositoryCategoria;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(RemoverCategoriaResquest request, CancellationToken cancellationToken)
+        public async Task<Response> Handle(RemoverCategoriaResquest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Categoria categoria = _repositoryCategoria.ObterPorId(request.Id);
+            Model.Categoria categoria = _repositoryCategoria.ObterPorId(request.Id);
 
             if (categoria == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             _repositoryCategoria.Remover(categoria);
@@ -44,7 +37,10 @@ namespace Commands.Categoria.RemoverCategoria
             var result = new { Id = categoria.Id };
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, result);
+            var response = new Commands.Response(this, result);
+
+
+            Console.WriteLine($"Response created with Id: {categoria.Id}");
 
             ////Retorna o resultado
             return await Task.FromResult(response);

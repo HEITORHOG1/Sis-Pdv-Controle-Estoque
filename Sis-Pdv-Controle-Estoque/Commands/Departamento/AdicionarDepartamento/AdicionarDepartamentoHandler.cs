@@ -1,10 +1,7 @@
-﻿using Commands.Departamento.AdicionarDepartamento;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.AdicionarDepartamento
+namespace Commands.Departamento.AdicionarDepartamento
 {
     public class AdicionarDepartamentoHandler : Notifiable, IRequestHandler<AdicionarDepartamentoRequest, Response>
     {
@@ -48,7 +45,7 @@ namespace Sis_Pdv_Controle_Estoque.Commands.AdicionarDepartamento
             Departamento = _repositoryDepartamento.Adicionar(Departamento);
 
             //Criar meu objeto de resposta
-            var result = new { Id = Departamento.Id, NomeDepartamento = Departamento.NomeDepartamento};
+            var result = new { Departamento.Id, Departamento.NomeDepartamento };
 
             //Criar meu objeto de resposta
             var response = new Response(this, Departamento);

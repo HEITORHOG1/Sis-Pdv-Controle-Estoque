@@ -1,20 +1,11 @@
-﻿
-using MediatR;
+﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using prmToolkit.NotificationPattern;
-using prmToolkit.NotificationPattern.Extensions;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.RemoverColaborador
+namespace Commands.Colaborador.RemoverColaborador
 
 {
-    public class RemoverColaboradorHandler : Notifiable, IRequestHandler<RemoverColaboradorResquest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class RemoverColaboradorHandler : Notifiable, IRequestHandler<RemoverColaboradorResquest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryColaborador _repositoryColaborador;
@@ -26,41 +17,41 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.RemoverColaborador
             _repositoryUsuario = repositoryUsuario;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(RemoverColaboradorResquest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(RemoverColaboradorResquest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Colaborador Colaborador = _repositoryColaborador.Listar().
+            Model.Colaborador Colaborador = _repositoryColaborador.Listar().
                 Include(x => x.Usuario).
-                Where(x=> x.Id == request.Id).FirstOrDefault();
+                Where(x => x.Id == request.Id).FirstOrDefault();
 
             if (Colaborador == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
             if (Colaborador.Id == null)
             {
                 AddNotification("Request", "Colaborador.Id");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
             //if (Colaborador.Usuario.Id == null)
             //{
             //    AddNotification("Request", "Colaborador.Usuario.Id");
-            //    return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+            //    return new Commands.Response(this);
             //}
             _repositoryUsuario.Remover(Colaborador.Usuario);
             _repositoryColaborador.Remover(Colaborador);
 
-            var result = new { Id = Colaborador.Id };
+            var result = new { Colaborador.Id };
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, Colaborador);
+            var response = new Commands.Response(this, Colaborador);
 
             ////Retorna o resultado
             return await Task.FromResult(response);

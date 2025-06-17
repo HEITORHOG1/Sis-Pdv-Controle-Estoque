@@ -1,15 +1,8 @@
 ﻿using MediatR;
-using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Commands.Pedido.ListarPedidoPorNomeCpfCnpj
+namespace Commands.Pedidos.ListarPedidoPorNomeCpfCnpj
 {
-    public class ListarPedidoPorNomeCpfCnpjRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarPedidoPorNomeCpfCnpjRequest : IRequest<Commands.Response>
     {
         public ListarPedidoPorNomeCpfCnpjRequest(string cnpj)
         {

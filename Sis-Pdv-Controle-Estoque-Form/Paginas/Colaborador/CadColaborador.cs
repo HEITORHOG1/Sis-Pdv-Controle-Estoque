@@ -1,16 +1,6 @@
-﻿using Sis_Pdv_Controle_Estoque.Model;
-using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
+﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Services.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
 {
@@ -285,6 +275,6 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
             LimparCampos();
         }
 
-        
+
     }
 }

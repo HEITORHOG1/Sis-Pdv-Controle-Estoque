@@ -1,19 +1,13 @@
-﻿using Sis_Pdv_Controle_Estoque.Model.Base;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Sis_Pdv_Controle_Estoque.Model
+namespace Model
 {
     [Table("Cliente")]
-    public  class Cliente : EntityBase
+    public class Cliente : EntityBase
     {
         public Cliente()
         {
-                
+
         }
 
         public Cliente(string cpfCnpj, string tipoCliente)

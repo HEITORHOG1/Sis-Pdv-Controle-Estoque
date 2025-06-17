@@ -1,9 +1,8 @@
-﻿using MediatR;
+﻿using Interfaces;
+using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System.Text.RegularExpressions;
 
-namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaboradorPorNomeColaborador
+namespace Commands.Colaborador.ListarColaboradorPorNomeColaborador
 {
     public class ListarColaboradorPorNomeColaboradorHandler : Notifiable, IRequestHandler<ListarColaboradorPorNomeColaboradorRequest, ListarColaboradorPorNomeColaboradorResponse>
     {
@@ -25,8 +24,8 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Colaborador.ListarColaboradorPorNome
                 return new ListarColaboradorPorNomeColaboradorResponse(this);
             }
 
-            var Collection = _repositoryColaborador.Listar().Where(x => x.nomeColaborador == request.NomeColaborador); 
-            if (!Collection.Any()) 
+            var Collection = _repositoryColaborador.Listar().Where(x => x.nomeColaborador == request.NomeColaborador);
+            if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "Colaborador NÃO ENCONTRADA");
                 return new ListarColaboradorPorNomeColaboradorResponse(this);

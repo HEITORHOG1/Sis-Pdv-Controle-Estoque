@@ -1,18 +1,10 @@
-﻿using Commands.Pedido.RemoverPedido;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using prmToolkit.NotificationPattern.Extensions;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Commands.Pedido.RemoverPedido
+namespace Commands.Pedidos.RemoverPedido
 
 {
-    public class RemoverPedidoHandler : Notifiable, IRequestHandler<RemoverPedidoResquest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class RemoverPedidoHandler : Notifiable, IRequestHandler<RemoverPedidoResquest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryPedido _repositoryPedido;
@@ -23,29 +15,29 @@ namespace Commands.Pedido.RemoverPedido
             _repositoryPedido = repositoryPedido;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(RemoverPedidoResquest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(RemoverPedidoResquest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Pedido Pedido = _repositoryPedido.ObterPorId(request.Id);
+            Model.Pedido Pedido = _repositoryPedido.ObterPorId(request.Id);
 
             if (Pedido == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             _repositoryPedido.Remover(Pedido);
 
-            var result = new { Id = Pedido.Id };
+            var result = new { Pedido.Id };
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, result);
+            var response = new Commands.Response(this, result);
 
             ////Retorna o resultado
             return await Task.FromResult(response);

@@ -1,8 +1,6 @@
 ﻿using MediatR;
-using Sis_Pdv_Controle_Estoque.Commands;
-using System;
 
-namespace Commands.Pedido.RemoverPedido
+namespace Commands.Pedidos.RemoverPedido
 {
     public class RemoverPedidoResquest : IRequest<Response>
     {

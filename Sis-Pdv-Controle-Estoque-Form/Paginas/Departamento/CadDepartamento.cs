@@ -1,16 +1,5 @@
 ﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
-using Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria;
-using Sis_Pdv_Controle_Estoque_Form.Services.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
 {
@@ -24,7 +13,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
 
         private async void CadDepartamento_Load(object sender, EventArgs e)
         {
-           await Consultar();
+            await Consultar();
         }
 
         private async void btnConsultar_Click(object sender, EventArgs e)
@@ -41,7 +30,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
 
         private async void btnCadastrar_Click(object sender, EventArgs e)
         {
-           await CadastrarDepartamento(); 
+            await CadastrarDepartamento();
             await Consultar();
         }
 

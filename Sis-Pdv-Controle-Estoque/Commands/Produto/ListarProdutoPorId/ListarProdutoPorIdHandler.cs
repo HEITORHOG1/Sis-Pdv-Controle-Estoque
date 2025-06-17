@@ -1,13 +1,5 @@
-﻿using Commands.Produto.ListarProdutoPorId;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Sis_Pdv_Controle_Estoque.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Commands.Produto.ListarProdutoPorId
 {
@@ -31,7 +23,7 @@ namespace Commands.Produto.ListarProdutoPorId
                 return new ListarProdutoPorIdResponse();
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Produto Collection = _repositoryProduto.ObterPor(x=> x.Id == request.Id);
+            Model.Produto Collection = _repositoryProduto.ObterPor(x => x.Id == request.Id);
 
             if (Collection == null)
             {

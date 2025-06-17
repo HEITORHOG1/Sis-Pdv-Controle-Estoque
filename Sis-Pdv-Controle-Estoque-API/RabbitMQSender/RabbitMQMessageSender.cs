@@ -1,19 +1,17 @@
 ﻿using MessageBus;
 using RabbitMQ.Client;
-using System.Text.Json;
-using System.Text;
-using Sis_Pdv_Controle_Estoque.Model;
 using RabbitMQ.Client.Exceptions;
+using System.Text;
+using System.Text.Json;
 
 namespace Sis_Pdv_Controle_Estoque_API.RabbitMQSender
 {
     public class RabbitMQMessageSender : IRabbitMQMessageSender
     {
-        private readonly string _hostName;
-        private readonly string _password;
-        private readonly string _userName;
-        private RabbitMQ.Client.IConnection _connection;
-        private readonly ILogger<RabbitMQMessageSender> _logger;
+        private readonly string? _hostName;
+        private readonly string? _password;
+        private readonly string? _userName;
+        private readonly ILogger<RabbitMQMessageSender>? _logger;
 
         public RabbitMQMessageSender(ILogger<RabbitMQMessageSender> logger)
         {
@@ -25,35 +23,37 @@ namespace Sis_Pdv_Controle_Estoque_API.RabbitMQSender
 
         public RabbitMQMessageSender()
         {
+            _hostName = "localhost";
+            _password = "guest";
+            _userName = "guest";
         }
-
-        public void SendMessage(BaseMessage message, string queueName)
+        public async void SendMessage(BaseMessage message, string queueName)
         {
             try
             {
-                var factory = new RabbitMQ.Client.ConnectionFactory
+                var factory = new ConnectionFactory
                 {
-                    HostName = _hostName,
-                    UserName = _userName,
-                    Password = _password
+                    HostName = _hostName ?? "localhost",
+                    UserName = _userName ?? "guest",
+                    Password = _password ?? "guest"
                 };
-                _connection = factory.CreateConnection();
 
-                using var channel = _connection.CreateModel();
-                channel.QueueDeclare(queue: queueName, false, false, false, arguments: null);
+                using var connection = await factory.CreateConnectionAsync();
+                using var channel = await connection.CreateChannelAsync();
+
+                await channel.QueueDeclareAsync(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
                 byte[] body = GetMessageAsByteArray(message);
-                channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: null, body: body);
+                await channel.BasicPublishAsync(exchange: string.Empty, routingKey: queueName, body: body);
             }
             catch (BrokerUnreachableException ex)
             {
-                _logger.LogError("Não foi possível alcançar o broker do RabbitMQ. Verifique as configurações de conexão. Exceção: {0}", ex.ToString());
+                _logger?.LogError("Não foi possível alcançar o broker do RabbitMQ. Verifique as configurações de conexão. Exceção: {0}", ex.ToString());
             }
             catch (Exception ex)
             {
-                _logger.LogError("Ocorreu uma exceção durante o envio da mensagem. Exceção: {0}", ex.ToString());
+                _logger?.LogError("Ocorreu uma exceção durante o envio da mensagem. Exceção: {0}", ex.ToString());
             }
         }
-
 
         private byte[] GetMessageAsByteArray(BaseMessage message)
         {

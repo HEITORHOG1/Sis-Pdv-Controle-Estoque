@@ -1,8 +1,5 @@
-﻿using AlterarProduto;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using Response = Sis_Pdv_Controle_Estoque.Commands.Response;
 
 namespace Commands.Produto.AlterarProduto
 {
@@ -36,7 +33,7 @@ namespace Commands.Produto.AlterarProduto
                 return new Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Produto Produto = new Sis_Pdv_Controle_Estoque.Model.Produto();
+            Model.Produto Produto = new Model.Produto();
 
             Produto.AlterarProduto(
                 request.Id,

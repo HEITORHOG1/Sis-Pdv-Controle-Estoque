@@ -1,18 +1,10 @@
-﻿using Commands.Fornecedor.RemoverFornecedor;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
-using prmToolkit.NotificationPattern.Extensions;
-using Sis_Pdv_Controle_Estoque.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Commands.Fornecedor.RemoverFornecedor
 
 {
-    public class RemoverFornecedorHandler : Notifiable, IRequestHandler<RemoverFornecedorResquest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class RemoverFornecedorHandler : Notifiable, IRequestHandler<RemoverFornecedorResquest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryFornecedor _repositoryFornecedor;
@@ -23,21 +15,21 @@ namespace Commands.Fornecedor.RemoverFornecedor
             _repositoryFornecedor = repositoryFornecedor;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(RemoverFornecedorResquest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(RemoverFornecedorResquest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Fornecedor Fornecedor = _repositoryFornecedor.ObterPorId(request.Id);
+            Model.Fornecedor Fornecedor = _repositoryFornecedor.ObterPorId(request.Id);
 
             if (Fornecedor == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             _repositoryFornecedor.Remover(Fornecedor);
@@ -45,7 +37,7 @@ namespace Commands.Fornecedor.RemoverFornecedor
             var result = new { Id = Fornecedor.Id };
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, result);
+            var response = new Commands.Response(this, result);
 
             ////Retorna o resultado
             return await Task.FromResult(response);
