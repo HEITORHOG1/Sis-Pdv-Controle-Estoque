@@ -3,7 +3,7 @@ using prmToolkit.NotificationPattern;
 
 namespace Commands.Pedidos.ListarPedidorPorId
 {
-    public class ListarPedidoPorIdHandler : Notifiable, IRequestHandler<ListarPedidoPorIdRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarPedidoPorIdHandler : Notifiable, IRequestHandler<ListarPedidoPorIdRequest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryPedido _repositoryPedido;
@@ -14,25 +14,25 @@ namespace Commands.Pedidos.ListarPedidorPorId
             _repositoryPedido = repositoryPedido;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(ListarPedidoPorIdRequest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(ListarPedidoPorIdRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Pedido Collection = _repositoryPedido.ListarPor(x => x.Id == request.Id).FirstOrDefault();
+            Model.Pedido Collection = _repositoryPedido.ListarPor(x => x.Id == request.Id).FirstOrDefault();
 
             if (Collection == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, Collection);
+            var response = new Commands.Response(this, Collection);
 
             ////Retorna o resultado
             return await Task.FromResult(response);

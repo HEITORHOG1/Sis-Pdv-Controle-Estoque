@@ -3,7 +3,7 @@ using prmToolkit.NotificationPattern;
 
 namespace Commands.Fornecedor.ListarFornecedor
 {
-    public class ListarFornecedorPorIdHandler : Notifiable, IRequestHandler<ListarFornecedorRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarFornecedorPorIdHandler : Notifiable, IRequestHandler<ListarFornecedorRequest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryFornecedor _repositoryFornecedor;
@@ -14,20 +14,20 @@ namespace Commands.Fornecedor.ListarFornecedor
             _repositoryFornecedor = repositoryFornecedor;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(ListarFornecedorRequest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(ListarFornecedorRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             var grupoCollection = _repositoryFornecedor.Listar().ToList();
 
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, grupoCollection);
+            var response = new Commands.Response(this, grupoCollection);
 
             ////Retorna o resultado
             return await Task.FromResult(response);

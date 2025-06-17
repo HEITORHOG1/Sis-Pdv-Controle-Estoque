@@ -33,7 +33,7 @@ namespace Commands.Pedidos.AlterarPedido
                 return new Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Pedido Pedido = new Sis_Pdv_Controle_Estoque.Model.Pedido();
+            Model.Pedido Pedido = new Model.Pedido();
 
             Pedido.AlterarPedido(request.ColaboradorId,
                                         request.ClienteId,

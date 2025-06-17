@@ -2,7 +2,7 @@
 
 namespace Commands.Produto.ListarProdutoPorNomeProduto
 {
-    public class ListarProdutoPorCodBarrasRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarProdutoPorCodBarrasRequest : IRequest<Commands.Response>
     {
         public ListarProdutoPorCodBarrasRequest(string codBarras)
         {

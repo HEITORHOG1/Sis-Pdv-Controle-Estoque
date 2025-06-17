@@ -12,11 +12,11 @@
         public DateTime dataFabricao { get; set; }
         public DateTime dataVencimento { get; set; }
         public int quatidadeEstoqueProduto { get; set; }
-        public Sis_Pdv_Controle_Estoque.Model.Fornecedor Fornecedor { get; set; }
-        public Sis_Pdv_Controle_Estoque.Model.Categoria Categoria { get; set; }
+        public Model.Fornecedor Fornecedor { get; set; }
+        public Model.Categoria Categoria { get; set; }
         public int statusAtivo { get; set; }
 
-        public static explicit operator ListarProdutoPorIdResponse(Sis_Pdv_Controle_Estoque.Model.Produto request)
+        public static explicit operator ListarProdutoPorIdResponse(Model.Produto request)
         {
             return new ListarProdutoPorIdResponse()
             {
@@ -29,8 +29,8 @@
                 dataFabricao = request.dataFabricao,
                 dataVencimento = request.dataVencimento,
                 quatidadeEstoqueProduto = request.quatidadeEstoqueProduto,
-                Fornecedor = new Sis_Pdv_Controle_Estoque.Model.Fornecedor { Id = request.Id },
-                Categoria = new Sis_Pdv_Controle_Estoque.Model.Categoria { Id = request.Id },
+                Fornecedor = new Model.Fornecedor { Id = request.Id },
+                Categoria = new Model.Categoria { Id = request.Id },
                 statusAtivo = request.statusAtivo
             };
         }

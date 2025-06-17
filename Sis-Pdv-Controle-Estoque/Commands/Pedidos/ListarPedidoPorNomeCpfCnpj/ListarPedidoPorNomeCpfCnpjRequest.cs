@@ -2,7 +2,7 @@
 
 namespace Commands.Pedidos.ListarPedidoPorNomeCpfCnpj
 {
-    public class ListarPedidoPorNomeCpfCnpjRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarPedidoPorNomeCpfCnpjRequest : IRequest<Commands.Response>
     {
         public ListarPedidoPorNomeCpfCnpjRequest(string cnpj)
         {

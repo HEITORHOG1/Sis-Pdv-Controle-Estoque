@@ -15,7 +15,7 @@
         public string Cnpj { get; set; }
         public string Rua { get; set; }
 
-        public static explicit operator ListarFornecedorPorIdResponse(Sis_Pdv_Controle_Estoque.Model.Fornecedor request)
+        public static explicit operator ListarFornecedorPorIdResponse(Model.Fornecedor request)
         {
             return new ListarFornecedorPorIdResponse()
             {

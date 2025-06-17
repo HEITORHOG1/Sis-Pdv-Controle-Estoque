@@ -23,7 +23,7 @@ namespace Commands.Departamento.ListarDepartamentoPorId
                 return null;
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Departamento Collection = _repositoryDepartamento.ObterPor(x => x.Id == request.Id);
+            Model.Departamento Collection = _repositoryDepartamento.ObterPor(x => x.Id == request.Id);
 
             if (Collection == null)
             {

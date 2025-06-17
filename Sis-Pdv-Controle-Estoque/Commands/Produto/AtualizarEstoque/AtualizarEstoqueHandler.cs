@@ -33,7 +33,7 @@ namespace Commands.Produto.AtualizarEstoque
                 return new Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Produto Produto = new Sis_Pdv_Controle_Estoque.Model.Produto();
+            Model.Produto Produto = new Model.Produto();
 
             var retornoExist = _repositoryProduto.Listar().Where(x => x.Id == request.Id).FirstOrDefault();
 

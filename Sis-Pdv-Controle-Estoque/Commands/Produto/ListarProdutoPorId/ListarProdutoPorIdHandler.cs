@@ -23,7 +23,7 @@ namespace Commands.Produto.ListarProdutoPorId
                 return new ListarProdutoPorIdResponse();
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Produto Collection = _repositoryProduto.ObterPor(x => x.Id == request.Id);
+            Model.Produto Collection = _repositoryProduto.ObterPor(x => x.Id == request.Id);
 
             if (Collection == null)
             {

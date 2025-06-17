@@ -33,7 +33,7 @@ namespace Commands.Produto.AlterarProduto
                 return new Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Produto Produto = new Sis_Pdv_Controle_Estoque.Model.Produto();
+            Model.Produto Produto = new Model.Produto();
 
             Produto.AlterarProduto(
                 request.Id,

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Commands.ProdutoPedido.ListarProdutoPedidoPorId
 {
-    public class ListarProdutoPedidoPorIdRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarProdutoPedidoPorIdRequest : IRequest<Commands.Response>
     {
         public ListarProdutoPedidoPorIdRequest(Guid id)
         {

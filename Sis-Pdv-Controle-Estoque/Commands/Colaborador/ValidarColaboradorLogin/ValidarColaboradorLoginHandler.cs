@@ -4,7 +4,7 @@ using prmToolkit.NotificationPattern;
 
 namespace Commands.Colaborador.ValidarColaboradorLogin
 {
-    public class ValidarColaboradorLoginHandler : Notifiable, IRequestHandler<ValidarColaboradorLoginRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ValidarColaboradorLoginHandler : Notifiable, IRequestHandler<ValidarColaboradorLoginRequest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryColaborador _repositoryColaborador;
@@ -51,7 +51,7 @@ namespace Commands.Colaborador.ValidarColaboradorLogin
             }
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, result);
+            var response = new Commands.Response(this, result);
 
             ////Retorna o resultado
             return await Task.FromResult(response);
