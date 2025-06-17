@@ -34,7 +34,7 @@ namespace Sis_Pdv_Controle_Estoque.Tests
             // Assert
             Assert.False(response.Success);
             var notification = Assert.Single(response.Notifications);
-            Assert.Equal("NomeCategoria", notification.Property);
+            Assert.Equal("CpfCnpj", notification.Property);
             Assert.Equal("Categoria ja Cadastrada", notification.Message);
         }
     }
