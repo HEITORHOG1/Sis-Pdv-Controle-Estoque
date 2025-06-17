@@ -41,8 +41,10 @@ namespace Sis_Pdv_Controle_Estoque.Model
 
         internal void AlterarProdutoPedido(Guid pedidoId, Guid produtoId, string codBarras, int quantidadeItemPedido, decimal totalProdutoPedido)
         {
-            new Pedido { Id = pedidoId };
-            new Produto { Id = produtoId };
+            PedidoId = pedidoId;
+            ProdutoId = produtoId;
+            Pedido = new Pedido { Id = pedidoId };
+            Produto = new Produto { Id = produtoId };
             this.codBarras = codBarras;
             this.quantidadeItemPedido = quantidadeItemPedido;
             this.totalProdutoPedido = totalProdutoPedido;

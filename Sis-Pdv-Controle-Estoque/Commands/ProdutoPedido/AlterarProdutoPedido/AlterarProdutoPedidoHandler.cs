@@ -36,9 +36,14 @@ namespace Commands.ProdutoPedido.AlterarProdutoPedido
                 return new Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.ProdutoPedido ProdutoPedido = new Sis_Pdv_Controle_Estoque.Model.ProdutoPedido();
+            var produtoPedido = _repositoryProdutoPedido.ObterPorId(request.Id);
+            if (produtoPedido == null)
+            {
+                AddNotification("ProdutoPedido", "Registro não encontrado");
+                return new Response(this);
+            }
 
-            ProdutoPedido.AlterarProdutoPedido(
+            produtoPedido.AlterarProdutoPedido(
                                                 request.PedidoId,
                                                 request.ProdutoId,
                                                 request.codBarras,
@@ -46,17 +51,10 @@ namespace Commands.ProdutoPedido.AlterarProdutoPedido
                                                 request.totalProdutoPedido
                 );
 
-            var retornoExist = _repositoryProdutoPedido.Listar().Where(x => x.Id == request.Id);
-            if (!retornoExist.Any())
-            {
-                AddNotification("ProdutoPedido", "");
-                return new Response(this);
-            }
-
-            ProdutoPedido = _repositoryProdutoPedido.Editar(ProdutoPedido);
+            produtoPedido = _repositoryProdutoPedido.Editar(produtoPedido);
 
             //Criar meu objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, ProdutoPedido);
+            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, produtoPedido);
 
             return await Task.FromResult(response);
         }
