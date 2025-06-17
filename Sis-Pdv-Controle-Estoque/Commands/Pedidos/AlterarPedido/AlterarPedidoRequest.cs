@@ -2,7 +2,7 @@
 
 namespace Commands.Pedidos.AlterarPedido
 {
-    public class AlterarPedidoRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class AlterarPedidoRequest : IRequest<Commands.Response>
     {
         public Guid Id { get; set; }
         public Guid ColaboradorId { get; set; }

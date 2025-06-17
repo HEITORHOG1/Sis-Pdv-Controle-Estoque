@@ -4,7 +4,7 @@ using prmToolkit.NotificationPattern;
 
 namespace Commands.Pedidos.ListarPedidoPorNomeCpfCnpj
 {
-    public class ListarPedidoPorNomeCpfCnpjHandler : Notifiable, IRequestHandler<ListarPedidoPorNomeCpfCnpjRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarPedidoPorNomeCpfCnpjHandler : Notifiable, IRequestHandler<ListarPedidoPorNomeCpfCnpjRequest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryPedido _repositoryPedido;
@@ -15,13 +15,13 @@ namespace Commands.Pedidos.ListarPedidoPorNomeCpfCnpj
             _repositoryPedido = repositoryPedido;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(ListarPedidoPorNomeCpfCnpjRequest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(ListarPedidoPorNomeCpfCnpjRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             var Collection = _repositoryPedido.Listar()
@@ -31,11 +31,11 @@ namespace Commands.Pedidos.ListarPedidoPorNomeCpfCnpj
             if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "Pedido NÃO ENCONTRADA");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             //Criar meu objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, Collection);
+            var response = new Commands.Response(this, Collection);
             //Cria objeto de resposta
 
             ////Retorna o resultado

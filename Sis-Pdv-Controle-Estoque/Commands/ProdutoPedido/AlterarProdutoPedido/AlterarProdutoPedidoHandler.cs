@@ -33,7 +33,7 @@ namespace Commands.ProdutoPedido.AlterarProdutoPedido
                 return new Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.ProdutoPedido ProdutoPedido = new Sis_Pdv_Controle_Estoque.Model.ProdutoPedido();
+            Model.ProdutoPedido ProdutoPedido = new Model.ProdutoPedido();
 
             ProdutoPedido.AlterarProdutoPedido(
                                                 request.PedidoId,
@@ -53,7 +53,7 @@ namespace Commands.ProdutoPedido.AlterarProdutoPedido
             ProdutoPedido = _repositoryProdutoPedido.Editar(ProdutoPedido);
 
             //Criar meu objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, ProdutoPedido);
+            var response = new Commands.Response(this, ProdutoPedido);
 
             return await Task.FromResult(response);
         }

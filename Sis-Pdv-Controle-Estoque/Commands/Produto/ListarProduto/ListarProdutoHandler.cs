@@ -4,7 +4,7 @@ using prmToolkit.NotificationPattern;
 
 namespace Commands.Produto.ListarProduto
 {
-    public class ListarProdutoPorIdHandler : Notifiable, IRequestHandler<ListarProdutoRequest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarProdutoPorIdHandler : Notifiable, IRequestHandler<ListarProdutoRequest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryProduto _repositoryProduto;
@@ -15,13 +15,13 @@ namespace Commands.Produto.ListarProduto
             _repositoryProduto = repositoryProduto;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(ListarProdutoRequest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(ListarProdutoRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             var _produto = _repositoryProduto.Listar().Include(x => x.Fornecedor).Include(x => x.Categoria).ToList();
@@ -51,7 +51,7 @@ namespace Commands.Produto.ListarProduto
             //var result = new { Id = _produto., NomeProduto = _produto.NomeProduto};
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, _lista);
+            var response = new Commands.Response(this, _lista);
 
             ////Retorna o resultado
             return await Task.FromResult(response);

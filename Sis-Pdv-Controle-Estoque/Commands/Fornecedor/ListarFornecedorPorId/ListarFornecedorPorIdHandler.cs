@@ -23,7 +23,7 @@ namespace Commands.Fornecedor.ListarFornecedorPorId
                 return null;
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Fornecedor Collection = _repositoryFornecedor.ObterPor(x => x.Id == request.Id);
+            Model.Fornecedor Collection = _repositoryFornecedor.ObterPor(x => x.Id == request.Id);
 
             if (Collection == null)
             {

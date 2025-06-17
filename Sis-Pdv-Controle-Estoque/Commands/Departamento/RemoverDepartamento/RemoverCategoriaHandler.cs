@@ -4,7 +4,7 @@ using prmToolkit.NotificationPattern;
 namespace Commands.Departamento.RemoverDepartamento
 
 {
-    public class RemoverDepartamentoHandler : Notifiable, IRequestHandler<RemoverDepartamentoResquest, Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class RemoverDepartamentoHandler : Notifiable, IRequestHandler<RemoverDepartamentoResquest, Commands.Response>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryDepartamento _repositoryDepartamento;
@@ -15,21 +15,21 @@ namespace Commands.Departamento.RemoverDepartamento
             _repositoryDepartamento = repositoryDepartamento;
         }
 
-        public async Task<Sis_Pdv_Controle_Estoque.Commands.Response> Handle(RemoverDepartamentoResquest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(RemoverDepartamentoResquest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
-            Sis_Pdv_Controle_Estoque.Model.Departamento Departamento = _repositoryDepartamento.ObterPorId(request.Id);
+            Model.Departamento Departamento = _repositoryDepartamento.ObterPorId(request.Id);
 
             if (Departamento == null)
             {
                 AddNotification("Request", "");
-                return new Sis_Pdv_Controle_Estoque.Commands.Response(this);
+                return new Commands.Response(this);
             }
 
             _repositoryDepartamento.Remover(Departamento);
@@ -37,7 +37,7 @@ namespace Commands.Departamento.RemoverDepartamento
             var result = new { Id = Departamento.Id };
 
             //Cria objeto de resposta
-            var response = new Sis_Pdv_Controle_Estoque.Commands.Response(this, result);
+            var response = new Commands.Response(this, result);
 
             ////Retorna o resultado
             return await Task.FromResult(response);

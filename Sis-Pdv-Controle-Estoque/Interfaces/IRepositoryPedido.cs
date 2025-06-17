@@ -1,4 +1,6 @@
-﻿namespace Interfaces
+using Commands.Pedidos.ListarVendaPedidoPorData;
+
+namespace Interfaces
 {
     public interface IRepositoryPedido : IRepositoryBase<Pedido, Guid>
     {

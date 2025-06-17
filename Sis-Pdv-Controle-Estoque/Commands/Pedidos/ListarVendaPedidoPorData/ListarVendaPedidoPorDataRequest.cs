@@ -2,7 +2,7 @@
 
 namespace Commands.Pedidos.ListarVendaPedidoPorData
 {
-    public class ListarVendaPedidoPorDataRequest : IRequest<Sis_Pdv_Controle_Estoque.Commands.Response>
+    public class ListarVendaPedidoPorDataRequest : IRequest<Commands.Response>
     {
         public ListarVendaPedidoPorDataRequest(DateTime dataInicio, DateTime dataFim)
         {
