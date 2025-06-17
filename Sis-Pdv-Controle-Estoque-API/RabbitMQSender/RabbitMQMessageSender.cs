@@ -12,7 +12,7 @@ namespace Sis_Pdv_Controle_Estoque_API.RabbitMQSender
         private readonly string _hostName;
         private readonly string _password;
         private readonly string _userName;
-        private IConnection _connection;
+        private RabbitMQ.Client.IConnection _connection;
         private readonly ILogger<RabbitMQMessageSender> _logger;
 
         public RabbitMQMessageSender(ILogger<RabbitMQMessageSender> logger)
@@ -31,7 +31,7 @@ namespace Sis_Pdv_Controle_Estoque_API.RabbitMQSender
         {
             try
             {
-                var factory = new ConnectionFactory
+                var factory = new RabbitMQ.Client.ConnectionFactory
                 {
                     HostName = _hostName,
                     UserName = _userName,
