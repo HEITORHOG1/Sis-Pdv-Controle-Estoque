@@ -47,7 +47,7 @@ namespace Sis_Pdv_Controle_Estoque.Commands.Cliente
             //Verificar se o usuário já existe
             if (_repositoryCliente.Existe(x => x.CpfCnpj == request.CpfCnpj))
             {
-                AddNotification("NomeCategoria", "Categoria ja Cadastrada");
+                AddNotification("CpfCnpj", "Categoria ja Cadastrada");
                 return new Response(this);
             }
 
