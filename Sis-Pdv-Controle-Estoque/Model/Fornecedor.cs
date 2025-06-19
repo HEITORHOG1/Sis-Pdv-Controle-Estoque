@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Model
 {
-    [Table("Fornecedor")]
     public class Fornecedor : EntityBase
     {
         public Fornecedor()
