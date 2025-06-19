@@ -113,7 +113,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Login
             txtSenha.Text = "SENHA";
             txtSenha.UseSystemPasswordChar = false;
 
-            txtSenha.Text = "USUARIO";
+            txtLogin.Text = "USUARIO";
 
             this.Show();
             txtLogin.Focus();
