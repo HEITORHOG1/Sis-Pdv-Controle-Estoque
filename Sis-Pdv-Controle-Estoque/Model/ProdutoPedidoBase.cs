@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Model
 {
-    [Table("ProdutoPedido")]
     public class ProdutoPedidoBase
     {
         public string codItem { get; set; }

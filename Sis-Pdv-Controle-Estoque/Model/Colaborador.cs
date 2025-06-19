@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Model
 {
-    [Table("Colaborador")]
     public class Colaborador : EntityBase
     {
 
