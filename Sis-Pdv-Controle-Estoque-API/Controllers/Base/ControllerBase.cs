@@ -30,7 +30,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
             }
             else
             {
-                return Ok(response);
+                return BadRequest(response);
             }
         }
 
