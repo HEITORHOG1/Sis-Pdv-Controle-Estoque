@@ -19,7 +19,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
             {
                 try
                 {
-                    _unitOfWork.SaveChanges();
+                    await _unitOfWork.SaveChangesAsync();
 
                     return Ok(response);
                 }
