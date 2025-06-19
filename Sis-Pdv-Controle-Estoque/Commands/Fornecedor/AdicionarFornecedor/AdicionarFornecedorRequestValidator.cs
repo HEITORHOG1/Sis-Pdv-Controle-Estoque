@@ -32,7 +32,7 @@ namespace Commands.Fornecedor.AdicionarFornecedor
         // Método de validação de CNPJ
         private bool BeAValidCNPJ(string cnpj)
         {
-            return ValidaCPF.validarCpf(cnpj);
+            return ValidaCPF.ValidarCpf(cnpj);
         }
     }
 }

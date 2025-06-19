@@ -40,7 +40,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
 
             CupomDTO cupom = new(codItem, codBarras, descricao, quantidade, valorUnit, Total, Status, cpf, data, hora, caixa, formaPagamento, valorRecebido, troco, totalVendido);
 
-            EnviarCupomFila(cupom);
+            EnviarCupomFila(cupom).GetAwaiter().GetResult();
 
             foreach (string obj in _Layout)
             {
@@ -48,13 +48,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
             }
         }
 
-        private void EnviarCupomFila(CupomDTO cupom)
+        private async Task EnviarCupomFila(CupomDTO cupom)
         {
             try
             {
                 _rabbitMQMessageSender = new RabbitMQMessageSender();
 
-                _rabbitMQMessageSender.SendMessage(cupom, "CUPOM_QUEUE");
+                await _rabbitMQMessageSender.SendMessageAsync(cupom, "CUPOM_QUEUE");
             }
             catch (Exception ex)
             {

@@ -48,9 +48,6 @@ namespace Repositories.Base
             modelBuilder.ApplyConfiguration(new MapProduto());
             modelBuilder.ApplyConfiguration(new MapProdutoPedido());
             modelBuilder.ApplyConfiguration(new MapUsuario());
-
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }
