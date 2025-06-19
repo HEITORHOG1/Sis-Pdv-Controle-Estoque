@@ -1,4 +1,6 @@
-﻿namespace Repositories
+﻿using Repositories.Base;
+
+namespace Repositories
 {
     public class RepositoryUsuario : RepositoryBase<Usuario, Guid>, IRepositoryUsuario
     {

@@ -1,4 +1,7 @@
+using Commands.Cliente.AdicionarCliente;
+using Interfaces;
 using MediatR;
+using Model;
 using Moq;
 using Xunit;
 
@@ -12,7 +15,7 @@ namespace Sis_Pdv_Controle_Estoque.Tests
             // Arrange
             var mediator = new Mock<IMediator>();
             var repository = new Mock<IRepositoryCliente>();
-            repository.Setup(r => r.Existe(It.IsAny<Func<Sis_Pdv_Controle_Estoque.Model.Cliente, bool>>()))
+            repository.Setup(r => r.Existe(It.IsAny<Func<Cliente, bool>>()))
                       .Returns(true);
 
             var handler = new AdicionarClienteHandler(mediator.Object, repository.Object);

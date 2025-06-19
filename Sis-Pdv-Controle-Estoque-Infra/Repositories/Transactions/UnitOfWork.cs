@@ -1,4 +1,6 @@
-﻿namespace Repositories.Transactions
+﻿using Repositories.Base;
+
+namespace Repositories.Transactions
 {
     public class UnitOfWork : IUnitOfWork
     {

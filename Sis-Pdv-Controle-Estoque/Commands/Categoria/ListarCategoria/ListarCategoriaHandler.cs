@@ -1,5 +1,4 @@
-﻿using Interfaces;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Categoria.ListarCategoria

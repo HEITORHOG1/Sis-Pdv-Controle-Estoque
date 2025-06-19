@@ -2,9 +2,11 @@
 using Commands.Categoria.AlterarCategoria;
 using Commands.Categoria.ListarCategoria;
 using Commands.Categoria.ListarCategoriaPorId;
+using Commands.Categoria.ListarCategoriaPorNomeCategoria;
 using Commands.Categoria.RemoverCategoria;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {

@@ -1,5 +1,8 @@
-﻿using MediatR;
+﻿using Commands.Cliente.AdicionarCliente;
+using Commands.Cliente.ListarClientePorCpfCnpj;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {

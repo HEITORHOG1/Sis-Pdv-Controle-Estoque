@@ -1,5 +1,4 @@
-﻿using Interfaces;
-using MediatR;
+﻿using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Categoria.ListarCategoriaPorId
@@ -24,7 +23,7 @@ namespace Commands.Categoria.ListarCategoriaPorId
                 return null;
             }
 
-           Model.Categoria Collection = _repositoryCategoria.ObterPor(x => x.Id == request.Id);
+            Model.Categoria Collection = _repositoryCategoria.ObterPor(x => x.Id == request.Id);
 
             if (Collection == null)
             {

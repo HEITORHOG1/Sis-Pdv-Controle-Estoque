@@ -1,4 +1,5 @@
 ﻿using MessageBus;
+using Model;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
 using System.Text;

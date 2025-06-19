@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Commands.Cliente.AdicionarCliente;
+using Microsoft.Extensions.Logging;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Cliente;
 using Sis_Pdv_Controle_Estoque_Form.Services.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Utils;

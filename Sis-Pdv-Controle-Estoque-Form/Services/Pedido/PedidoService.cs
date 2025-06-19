@@ -1,4 +1,6 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Pedido;
+﻿using Commands.Pedidos.AdicionarPedido;
+using Commands.Pedidos.AlterarPedido;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Pedido;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Services.Pedido

@@ -1,4 +1,5 @@
-﻿namespace Repositories
+﻿using Repositories.Base;
+namespace Repositories
 {
     public class RepositoryDepartamento : RepositoryBase<Departamento, Guid>, IRepositoryDepartamento
     {

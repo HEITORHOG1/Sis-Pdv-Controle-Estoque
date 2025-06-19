@@ -2,9 +2,11 @@
 using Commands.ProdutoPedido.AlterarProdutoPedido;
 using Commands.ProdutoPedido.ListarProdutoPedido;
 using Commands.ProdutoPedido.ListarProdutoPedidoPorId;
+using Commands.ProdutoPedido.ListarProdutoPedidoPorPedido;
 using Commands.ProdutoPedido.RemoverProdutoPedido;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {

@@ -1,6 +1,7 @@
 ﻿using Commands.ProdutoPedido.ListarProdutoPedidoPorId;
 using Dapper;
 using MySql.Data.MySqlClient;
+using Repositories.Base;
 
 namespace Repositories
 {

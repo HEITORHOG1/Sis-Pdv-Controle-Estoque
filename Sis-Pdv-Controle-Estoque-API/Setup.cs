@@ -1,14 +1,23 @@
 ﻿using Commands.Categoria.AdicionarCategoria;
 using Commands.Categoria.RemoverCategoria;
+using Commands.Cliente.AdicionarCliente;
+using Commands.Colaborador.AdicionarColaborador;
 using Commands.Departamento.AdicionarDepartamento;
 using Commands.Fornecedor.AdicionarFornecedor;
 using Commands.Fornecedor.AlterarFornecedor;
 using Commands.Fornecedor.ListarFornecedor;
 using Commands.Fornecedor.ListarFornecedorPorId;
+using Commands.Fornecedor.ListarFornecedorPorNomeDepartamento;
 using Commands.Produto.AdicionarProduto;
 using Commands.Produto.AlterarProduto;
+using Commands.Produto.ListarProdutoPorNomeProduto;
 using Commands.Produto.RemoverProduto;
+using Commands.Usuarios.AlterarUsuario;
+using Interfaces;
 using MediatR;
+using Repositories;
+using Repositories.Base;
+using Repositories.Transactions;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
 using System.Reflection;
 
