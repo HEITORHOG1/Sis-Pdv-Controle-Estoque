@@ -10,9 +10,9 @@ namespace Repositories.Map
             builder.ToTable("ProdutoPedido");
             ////Propriedades
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.codBarras).HasMaxLength(150).IsRequired();
-            builder.Property(x => x.quantidadeItemPedido).IsRequired();
-            builder.Property(x => x.totalProdutoPedido).IsRequired();
+            builder.Property(x => x.CodBarras).HasMaxLength(150).IsRequired();
+            builder.Property(x => x.QuantidadeItemPedido).IsRequired();
+            builder.Property(x => x.TotalProdutoPedido).IsRequired();
             builder.Property(x => x.PedidoId).IsRequired();
             builder.Property(x => x.ProdutoId).IsRequired();
 
