@@ -27,26 +27,28 @@ namespace Sis_Pdv_Controle_Estoque_API
     {
         public static void ConfigureMediatR(this IServiceCollection services)
         {
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddMediatR(typeof(AdicionarCategoriaRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(AdicionarDepartamentoRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(AdicionarColaboradorRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(AdicionarFornecedorRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(AdicionarProdutoRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(AdicionarClienteRequest).GetTypeInfo().Assembly);
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+                cfg.RegisterServicesFromAssembly(typeof(AdicionarCategoriaRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AdicionarDepartamentoRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AdicionarColaboradorRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AdicionarFornecedorRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AdicionarProdutoRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AdicionarClienteRequest).GetTypeInfo().Assembly);
 
-            services.AddMediatR(typeof(AlterarUsuarioRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(AlterarFornecedorRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(AlterarProdutoRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AlterarUsuarioRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AlterarFornecedorRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(AlterarProdutoRequest).GetTypeInfo().Assembly);
 
+                cfg.RegisterServicesFromAssembly(typeof(ListarFornecedorRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(ListarFornecedorPorIdRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(ListarFornecedorPorNomeFornecedorRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(ListarProdutoPorCodBarrasRequest).GetTypeInfo().Assembly);
 
-            services.AddMediatR(typeof(ListarFornecedorRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(ListarFornecedorPorIdRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(ListarFornecedorPorNomeFornecedorRequest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(ListarProdutoPorCodBarrasRequest).GetTypeInfo().Assembly);
-
-            services.AddMediatR(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
-            services.AddMediatR(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
+            });
         }
 
         public static void ConfigureRepositories(this IServiceCollection services)
