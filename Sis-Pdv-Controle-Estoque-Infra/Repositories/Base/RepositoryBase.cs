@@ -65,6 +65,12 @@ namespace Repositories.Base
             //return _context.Set<TEntidade>().Add(entidade);
         }
 
+        public async Task<TEntidade> AdicionarAsync(TEntidade entidade)
+        {
+            var entity = await _context.AddAsync(entidade);
+            return entity.Entity;
+        }
+
         public TEntidade Editar(TEntidade entidade)
         {
             _context.Entry(entidade).State = EntityState.Modified;
