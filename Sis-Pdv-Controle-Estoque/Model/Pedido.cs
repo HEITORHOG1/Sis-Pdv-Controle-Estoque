@@ -12,16 +12,16 @@
             this.ColaboradorId = ColaboradorId;
             this.ClienteId = ClienteId;
             Status = status;
-            this.dataDoPedido = dataDoPedido;
-            this.formaPagamento = formaPagamento;
-            this.totalPedido = totalPedido;
+            DataDoPedido = dataDoPedido;
+            FormaPagamento = formaPagamento;
+            TotalPedido = totalPedido;
         }
         public virtual Colaborador? Colaborador { get; set; }
         public virtual Cliente? Cliente { get; set; }
         public int Status { get; set; }
-        public DateTime? dataDoPedido { get; set; }
-        public string formaPagamento { get; set; }
-        public decimal totalPedido { get; set; }
+        public DateTime? DataDoPedido { get; set; }
+        public string FormaPagamento { get; set; }
+        public decimal TotalPedido { get; set; }
         public Guid? ColaboradorId { get; set; }
         public Guid? ClienteId { get; set; }
 
@@ -30,9 +30,9 @@
             this.ColaboradorId = ColaboradorId;
             this.ClienteId = ClienteId;
             Status = status;
-            this.dataDoPedido = dataDoPedido;
-            this.formaPagamento = formaPagamento;
-            this.totalPedido = totalPedido;
+            DataDoPedido = dataDoPedido;
+            FormaPagamento = formaPagamento;
+            TotalPedido = totalPedido;
         }
     }
 }

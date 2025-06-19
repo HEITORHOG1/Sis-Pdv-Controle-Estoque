@@ -12,7 +12,7 @@ namespace Repositories.Map
             ////Propriedades
             builder.HasKey(x => x.Id);
             builder.Property(x => x.CpfCnpj).HasMaxLength(50).IsRequired();
-            builder.Property(x => x.tipoCliente).IsRequired();
+            builder.Property(x => x.TipoCliente).IsRequired();
         }
     }
 }

@@ -10,12 +10,12 @@ namespace Model
         {
             Login = login;
             Senha = senha;
-            this.statusAtivo = statusAtivo;
+            StatusAtivo = statusAtivo;
             Id = id;
         }
 
         public string Login { get; set; }
         public string Senha { get; set; }
-        public bool statusAtivo { get; set; }
+        public bool StatusAtivo { get; set; }
     }
 }

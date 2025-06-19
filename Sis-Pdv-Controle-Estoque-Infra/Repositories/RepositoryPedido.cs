@@ -31,9 +31,9 @@ namespace Repositories
                             .Select(row => new ListarVendaPedidoPorDataResponse
                             {
                                 Id = (Guid?)row.id,
-                                dataDoPedido = (DateTime?)row.dataDoPedido,
-                                formaPagamento = (string)row.formaPagamento,
-                                totalPedido = (decimal)row.totalPedido
+                                DataDoPedido = (DateTime?)row.dataDoPedido,
+                                FormaPagamento = (string)row.formaPagamento,
+                                TotalPedido = (decimal)row.totalPedido
                             }
                             ).ToList();
             }

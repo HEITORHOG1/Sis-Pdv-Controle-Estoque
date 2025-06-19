@@ -14,9 +14,9 @@ namespace Model
         {
             PedidoId = pedidoId;
             ProdutoId = produtoId;
-            this.codBarras = codBarras;
-            this.quantidadeItemPedido = quantidadeItemPedido;
-            this.totalProdutoPedido = totalProdutoPedido;
+            CodBarras = codBarras;
+            QuantidadeItemPedido = quantidadeItemPedido;
+            TotalProdutoPedido = totalProdutoPedido;
         }
 
 
@@ -25,18 +25,18 @@ namespace Model
         public virtual Produto? Produto { get; set; }
         public Guid PedidoId { get; set; }
         public Guid ProdutoId { get; set; }
-        public string? codBarras { get; set; }
-        public int? quantidadeItemPedido { get; set; }
-        public decimal? totalProdutoPedido { get; set; }
+        public string? CodBarras { get; set; }
+        public int? QuantidadeItemPedido { get; set; }
+        public decimal? TotalProdutoPedido { get; set; }
 
 
         internal void AlterarProdutoPedido(Guid pedidoId, Guid produtoId, string codBarras, int quantidadeItemPedido, decimal totalProdutoPedido)
         {
             new Pedido { Id = pedidoId };
             new Produto { Id = produtoId };
-            this.codBarras = codBarras;
-            this.quantidadeItemPedido = quantidadeItemPedido;
-            this.totalProdutoPedido = totalProdutoPedido;
+            CodBarras = codBarras;
+            QuantidadeItemPedido = quantidadeItemPedido;
+            TotalProdutoPedido = totalProdutoPedido;
         }
     }
 }

@@ -23,34 +23,34 @@ namespace Model
             Guid CategoriaId,
             int statusAtivo)
         {
-            this.codBarras = codBarras;
-            this.nomeProduto = nomeProduto;
-            this.descricaoProduto = descricaoProduto;
-            this.precoCusto = precoCusto;
-            this.precoVenda = precoVenda;
-            this.margemLucro = margemLucro;
-            this.dataFabricao = dataFabricao;
-            this.dataVencimento = dataVencimento;
-            this.quatidadeEstoqueProduto = quatidadeEstoqueProduto;
+            CodBarras = codBarras;
+            NomeProduto = nomeProduto;
+            DescricaoProduto = descricaoProduto;
+            PrecoCusto = precoCusto;
+            PrecoVenda = precoVenda;
+            MargemLucro = margemLucro;
+            DataFabricao = dataFabricao;
+            DataVencimento = dataVencimento;
+            QuatidadeEstoqueProduto = quatidadeEstoqueProduto;
             this.FornecedorId = FornecedorId;
             this.CategoriaId = CategoriaId;
-            this.statusAtivo = statusAtivo;
+            StatusAtivo = statusAtivo;
         }
 
-        public string codBarras { get; set; }
-        public string nomeProduto { get; set; }
-        public string descricaoProduto { get; set; }
-        public decimal precoCusto { get; set; }
-        public decimal precoVenda { get; set; }
-        public decimal margemLucro { get; set; }
-        public DateTime dataFabricao { get; set; }
-        public DateTime dataVencimento { get; set; }
-        public int quatidadeEstoqueProduto { get; set; }
+        public string CodBarras { get; set; }
+        public string NomeProduto { get; set; }
+        public string DescricaoProduto { get; set; }
+        public decimal PrecoCusto { get; set; }
+        public decimal PrecoVenda { get; set; }
+        public decimal MargemLucro { get; set; }
+        public DateTime DataFabricao { get; set; }
+        public DateTime DataVencimento { get; set; }
+        public int QuatidadeEstoqueProduto { get; set; }
         public virtual Fornecedor Fornecedor { get; set; }
         public Guid FornecedorId { get; set; }
         public virtual Categoria Categoria { get; set; }
         public Guid CategoriaId { get; set; }
-        public int statusAtivo { get; set; }
+        public int StatusAtivo { get; set; }
 
         internal void AlterarProduto(Guid id, string codBarras, string nomeProduto, string descricaoProduto,
             decimal precoCusto, decimal precoVenda, decimal margemLucro, DateTime dataFabricao,
@@ -58,23 +58,23 @@ namespace Model
             Guid FornecedorId, Guid CategoriaId, int statusAtivo)
         {
             Id = id;
-            this.codBarras = codBarras;
-            this.nomeProduto = nomeProduto;
-            this.descricaoProduto = descricaoProduto;
-            this.precoCusto = precoCusto;
-            this.precoVenda = precoVenda;
-            this.margemLucro = margemLucro;
-            this.dataFabricao = dataFabricao;
-            this.dataVencimento = dataVencimento;
-            this.quatidadeEstoqueProduto = quatidadeEstoqueProduto;
+            CodBarras = codBarras;
+            NomeProduto = nomeProduto;
+            DescricaoProduto = descricaoProduto;
+            PrecoCusto = precoCusto;
+            PrecoVenda = precoVenda;
+            MargemLucro = margemLucro;
+            DataFabricao = dataFabricao;
+            DataVencimento = dataVencimento;
+            QuatidadeEstoqueProduto = quatidadeEstoqueProduto;
             this.FornecedorId = FornecedorId;
             this.CategoriaId = CategoriaId;
-            this.statusAtivo = statusAtivo;
+            StatusAtivo = statusAtivo;
         }
         internal void AtualizarEstoque(Guid id, int quatidadeEstoqueProduto)
         {
             Id = id;
-            this.quatidadeEstoqueProduto = quatidadeEstoqueProduto;
+            QuatidadeEstoqueProduto = quatidadeEstoqueProduto;
         }
     }
 }

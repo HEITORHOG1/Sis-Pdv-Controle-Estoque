@@ -9,12 +9,12 @@ namespace Repositories.Map
         {
             builder.ToTable("Colaborador");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.nomeColaborador).HasMaxLength(150).IsRequired();
-            builder.Property(x => x.emailCorporativo).HasMaxLength(50).IsRequired();
-            builder.Property(x => x.emailPessoalColaborador).HasMaxLength(50).IsRequired();
-            builder.Property(x => x.telefoneColaborador).HasMaxLength(30).IsRequired();
-            builder.Property(x => x.cargoColaborador).HasMaxLength(150).IsRequired();
-            builder.Property(x => x.cpfColaborador).HasMaxLength(11).IsRequired();
+            builder.Property(x => x.NomeColaborador).HasMaxLength(150).IsRequired();
+            builder.Property(x => x.EmailCorporativo).HasMaxLength(50).IsRequired();
+            builder.Property(x => x.EmailPessoalColaborador).HasMaxLength(50).IsRequired();
+            builder.Property(x => x.TelefoneColaborador).HasMaxLength(30).IsRequired();
+            builder.Property(x => x.CargoColaborador).HasMaxLength(150).IsRequired();
+            builder.Property(x => x.CpfColaborador).HasMaxLength(11).IsRequired();
 
             builder.HasOne(x => x.Usuario).WithMany().HasForeignKey("UsuarioId");
         }
