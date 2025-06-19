@@ -1,4 +1,5 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
+﻿using Commands.Colaborador.AdicionarColaborador;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
@@ -19,7 +20,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
                 emailPessoalColaborador = dto.emailPessoalColaborador,
                 telefoneColaborador = dto.telefoneColaborador,
                 DepartamentoId = Guid.Parse(dto.departamentoId),
-                Usuario = new Sis_Pdv_Controle_Estoque.Model.Usuario
+                Usuario = new Model.Usuario
                 {
                     Senha = dto.senha,
                     Login = dto.login,
@@ -74,7 +75,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
                 emailPessoalColaborador = dto.emailPessoalColaborador,
                 telefoneColaborador = dto.telefoneColaborador,
                 DepartamentoId = Guid.Parse(dto.departamentoId),
-                Usuario = new Sis_Pdv_Controle_Estoque.Model.Usuario
+                Usuario = new Model.Usuario
                 {
                     Id = Guid.Parse(dto.idlogin),
                     Senha = dto.senha,

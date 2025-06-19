@@ -6,6 +6,7 @@ using Commands.Departamento.ListarDepartamentoPorNomeDepartamento;
 using Commands.Departamento.RemoverDepartamento;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {

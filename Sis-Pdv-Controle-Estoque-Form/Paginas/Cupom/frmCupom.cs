@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Model;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
 using System.Data;
 using System.Text;

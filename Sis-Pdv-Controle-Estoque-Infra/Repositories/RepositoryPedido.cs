@@ -1,5 +1,7 @@
-﻿using Dapper;
+﻿using Commands.Pedidos.ListarVendaPedidoPorData;
+using Dapper;
 using MySql.Data.MySqlClient;
+using Repositories.Base;
 
 namespace Repositories
 {

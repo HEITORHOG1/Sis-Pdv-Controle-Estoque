@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Model;
 
 namespace Commands.Colaborador.AlterarColaborador
 {

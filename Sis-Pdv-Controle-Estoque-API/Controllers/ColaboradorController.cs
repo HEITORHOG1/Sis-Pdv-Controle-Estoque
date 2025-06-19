@@ -1,5 +1,13 @@
-﻿using MediatR;
+﻿using Commands.Colaborador.AdicionarColaborador;
+using Commands.Colaborador.AlterarColaborador;
+using Commands.Colaborador.ListarColaborador;
+using Commands.Colaborador.ListarColaboradorPorId;
+using Commands.Colaborador.ListarColaboradorPorNomeColaborador;
+using Commands.Colaborador.RemoverColaborador;
+using Commands.Colaborador.ValidarColaboradorLogin;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {

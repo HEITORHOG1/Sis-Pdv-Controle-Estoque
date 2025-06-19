@@ -2,9 +2,11 @@
 using Commands.Fornecedor.AlterarFornecedor;
 using Commands.Fornecedor.ListarFornecedor;
 using Commands.Fornecedor.ListarFornecedorPorId;
+using Commands.Fornecedor.ListarFornecedorPorNomeDepartamento;
 using Commands.Fornecedor.RemoverFornecedor;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
