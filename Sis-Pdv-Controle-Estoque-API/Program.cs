@@ -12,7 +12,7 @@ var loggerConfiguration = new LoggerConfiguration()
 
 Log.Logger = loggerConfiguration.CreateLogger();
 
-builder.Services.ConfigureRepositories();
+builder.Services.ConfigureRepositories(builder.Configuration);
 builder.Services.ConfigureMediatR();
 builder.Services.AddControllers();
 
