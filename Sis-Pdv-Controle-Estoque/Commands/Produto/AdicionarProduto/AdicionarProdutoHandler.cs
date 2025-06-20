@@ -33,7 +33,7 @@ namespace Commands.Produto.AdicionarProduto
                 return new Response(this);
             }
             //Verificar se o usuário já existe
-            if (_repositoryProduto.Existe(x => x.codBarras == request.codBarras))
+            if (_repositoryProduto.Existe(x => x.CodBarras == request.codBarras))
             {
                 AddNotification("codBarras", "codBarras ja Cadastrado");
                 return new Response(this);

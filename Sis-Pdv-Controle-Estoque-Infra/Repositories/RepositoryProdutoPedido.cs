@@ -32,10 +32,10 @@ namespace Repositories
                 return connection.Query(sql)
                             .Select(row => new ListarProdutosPorPedidoIdResponse
                             {
-                                QuantidadeItemPedido = (int)row.quantidadeItemPedido,
-                                NomeProduto = (string)row.nomeProduto,
-                                PrecoVenda = (decimal)row.precoVenda,
-                                TotalProdutoPedido = (decimal)row.totalProdutoPedido
+                                quantidadeItemPedido = (int)row.quantidadeItemPedido,
+                                nomeProduto = (string)row.nomeProduto,
+                                precoVenda = (decimal)row.precoVenda,
+                                totalProdutoPedido = (decimal)row.totalProdutoPedido
                             }
                             ).ToList();
             }

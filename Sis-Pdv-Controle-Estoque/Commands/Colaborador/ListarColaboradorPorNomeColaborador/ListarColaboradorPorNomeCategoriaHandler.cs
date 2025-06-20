@@ -24,7 +24,7 @@ namespace Commands.Colaborador.ListarColaboradorPorNomeColaborador
                 return new ListarColaboradorPorNomeColaboradorResponse(this);
             }
 
-            var Collection = _repositoryColaborador.Listar().Where(x => x.nomeColaborador == request.NomeColaborador);
+            var Collection = _repositoryColaborador.Listar().Where(x => x.NomeColaborador == request.NomeColaborador);
             if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "Colaborador NÃO ENCONTRADA");

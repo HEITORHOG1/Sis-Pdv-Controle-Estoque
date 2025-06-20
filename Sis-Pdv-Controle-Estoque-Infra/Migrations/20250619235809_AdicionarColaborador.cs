@@ -1,11 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
+namespace SisPdvControleEstoqueInfra.Migrations
 {
-    public partial class Primeiro : Migration
+    /// <inheritdoc />
+    public partial class AdicionarColaborador : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
@@ -30,11 +33,9 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    NomeCliente = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CpfCnpj = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    tipoCliente = table.Column<string>(type: "longtext", nullable: false)
+                    TipoCliente = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
@@ -62,22 +63,22 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    inscricaoEstadual = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    InscricaoEstadual = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    nomeFantasia = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    NomeFantasia = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ufPessoa = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    Uf = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    numeroPessoa = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    Numero = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    complementoPessoa = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    Complemento = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    bairroPessoa = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    Bairro = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    cidadePessoa = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    Cidade = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    cepFornecedor = table.Column<int>(type: "int", maxLength: 150, nullable: false),
-                    statusAtivo = table.Column<int>(type: "int", maxLength: 150, nullable: false),
+                    CepFornecedor = table.Column<int>(type: "int", maxLength: 150, nullable: false),
+                    StatusAtivo = table.Column<int>(type: "int", maxLength: 150, nullable: false),
                     Cnpj = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Rua = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
@@ -98,7 +99,7 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Senha = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    statusAtivo = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    StatusAtivo = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -111,21 +112,21 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    codBarras = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    CodBarras = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    nomeProduto = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    NomeProduto = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    descricaoProduto = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    DescricaoProduto = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    precoCusto = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    precoVenda = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    margemLucro = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    dataFabricao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    dataVencimento = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    quatidadeEstoqueProduto = table.Column<int>(type: "int", nullable: false),
+                    PrecoCusto = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    PrecoVenda = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    MargemLucro = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    DataFabricao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    DataVencimento = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    QuatidadeEstoqueProduto = table.Column<int>(type: "int", nullable: false),
                     FornecedorId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CategoriaId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    statusAtivo = table.Column<int>(type: "int", nullable: false)
+                    StatusAtivo = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -150,18 +151,18 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    nomeColaborador = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    NomeColaborador = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DepartamentoId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    cpfColaborador = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false)
+                    DepartamentoId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    CpfColaborador = table.Column<string>(type: "varchar(11)", maxLength: 11, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    cargoColaborador = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    CargoColaborador = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    telefoneColaborador = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
+                    TelefoneColaborador = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    emailPessoalColaborador = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    EmailPessoalColaborador = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    emailCorporativo = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                    EmailCorporativo = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     UsuarioId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
                 },
@@ -172,8 +173,7 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         name: "FK_Colaborador_Departamento_DepartamentoId",
                         column: x => x.DepartamentoId,
                         principalTable: "Departamento",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Colaborador_Usuario_UsuarioId",
                         column: x => x.UsuarioId,
@@ -188,13 +188,13 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ColaboradorId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    ClienteId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     Status = table.Column<int>(type: "int", maxLength: 50, nullable: false),
-                    dataDoPedido = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    formaPagamento = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    DataDoPedido = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    FormaPagamento = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    totalPedido = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                    TotalPedido = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    ColaboradorId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ClienteId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
@@ -203,12 +203,41 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         name: "FK_Pedido_Cliente_ClienteId",
                         column: x => x.ClienteId,
                         principalTable: "Cliente",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Pedido_Colaborador_ColaboradorId",
                         column: x => x.ColaboradorId,
                         principalTable: "Colaborador",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Cupom",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PedidoId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    DataEmissao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    NumeroSerie = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ChaveAcesso = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ValorTotal = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    DocumentoCliente = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cupom", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Cupom_Pedido_PedidoId",
+                        column: x => x.PedidoId,
+                        principalTable: "Pedido",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -219,10 +248,10 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     PedidoId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     ProdutoId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    codBarras = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
+                    CodBarras = table.Column<string>(type: "varchar(150)", maxLength: 150, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    quantidadeItemPedido = table.Column<int>(type: "int", nullable: false),
-                    totalProdutoPedido = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
+                    QuantidadeItemPedido = table.Column<int>(type: "int", nullable: false),
+                    TotalProdutoPedido = table.Column<decimal>(type: "decimal(65,30)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -251,6 +280,12 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                 name: "IX_Colaborador_UsuarioId",
                 table: "Colaborador",
                 column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Cupom_PedidoId",
+                table: "Cupom",
+                column: "PedidoId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pedido_ClienteId",
@@ -283,8 +318,12 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                 column: "ProdutoId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Cupom");
+
             migrationBuilder.DropTable(
                 name: "ProdutoPedido");
 

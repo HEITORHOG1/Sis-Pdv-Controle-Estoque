@@ -38,7 +38,7 @@ namespace Commands.Usuarios.AlterarUsuario
                 Id = Guid.Parse(request.IdLogin),
                 Login = request.Login,
                 Senha = request.Senha,
-                statusAtivo = request.statusAtivo
+                StatusAtivo = request.statusAtivo
             };
 
             var retornoExist = _repositoryUsuario.Listar().Where(x => x.Id == Guid.Parse(request.IdLogin));

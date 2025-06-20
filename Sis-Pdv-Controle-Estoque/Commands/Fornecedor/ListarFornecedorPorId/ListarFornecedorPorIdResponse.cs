@@ -19,15 +19,15 @@
         {
             return new ListarFornecedorPorIdResponse()
             {
-                inscricaoEstadual = request.inscricaoEstadual,
-                nomeFantasia = request.nomeFantasia,
+                inscricaoEstadual = request.InscricaoEstadual,
+                nomeFantasia = request.NomeFantasia,
                 Uf = request.Uf,
                 Numero = request.Numero,
                 Complemento = request.Complemento,
                 Bairro = request.Bairro,
                 Cidade = request.Cidade,
-                cepFornecedor = request.cepFornecedor,
-                statusAtivo = request.statusAtivo,
+                cepFornecedor = request.CepFornecedor,
+                statusAtivo = request.StatusAtivo,
                 Cnpj = request.Cnpj,
                 Rua = request.Rua,
                 Id = request.Id

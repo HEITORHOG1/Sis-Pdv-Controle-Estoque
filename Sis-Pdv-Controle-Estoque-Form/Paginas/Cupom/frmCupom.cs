@@ -118,7 +118,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
 
                 foreach (ProdutoPedidoBase obj in produtos)
                 {
-                    x.WriteLine(obj.codItem + ";" + obj.codigoBarras + ";" + obj.NomeProduto + ";" + obj.quantidade + ";" + obj.valorUnitario + ";" + obj.total + ";" + obj.StatusAtivo + ";");
+                    x.WriteLine(obj.CodItem + ";" + obj.CodigoBarras + ";" + obj.NomeProduto + ";" + obj.Quantidade + ";" + obj.ValorUnitario + ";" + obj.Total + ";" + obj.StatusAtivo + ";");
                 }
                 x.WriteLine("" + ";" + "" + ";" + "Total R$" + ";" + "" + ";" + "" + ";" + totalVendido + ";" + "" + ";");
                 x.WriteLine("" + ";" + "" + ";" + formaPagamento + ";" + "" + ";" + "" + ";" + valorRecebido + ";" + "" + ";");
@@ -138,12 +138,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
                                let ProdutoDados = linha.Split(';')
                                select new ProdutoPedidoBase()
                                {
-                                   codItem = ProdutoDados[0],
-                                   codigoBarras = ProdutoDados[1],
+                                   CodItem = ProdutoDados[0],
+                                   CodigoBarras = ProdutoDados[1],
                                    NomeProduto = ProdutoDados[2],
-                                   quantidade = ProdutoDados[3],
-                                   valorUnitario = ProdutoDados[4],
-                                   total = ProdutoDados[5],
+                                   Quantidade = ProdutoDados[3],
+                                   ValorUnitario = ProdutoDados[4],
+                                   Total = ProdutoDados[5],
                                    StatusAtivo = ProdutoDados[6],
                                };
 
@@ -151,12 +151,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
                 foreach (var item in consulta)
                 {
                     sb.AppendFormat("{0,-3}{1,-15}{2,-23}{3,-4}{4,-7}{5,-28}{6,-30}{7}",
-                       item.codItem,
-                       item.codigoBarras,
+                       item.CodItem,
+                       item.CodigoBarras,
                        item.NomeProduto,
-                       item.quantidade,
-                       item.valorUnitario,
-                       item.total,
+                       item.Quantidade,
+                       item.ValorUnitario,
+                       item.Total,
                        item.StatusAtivo,
 
                        Environment.NewLine);

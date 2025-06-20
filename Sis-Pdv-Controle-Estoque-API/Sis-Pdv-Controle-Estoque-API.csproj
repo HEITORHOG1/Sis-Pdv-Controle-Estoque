@@ -7,9 +7,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Sis_Pdv_Controle_Estoque_API</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />

@@ -42,22 +42,25 @@ namespace Commands.Produto.AtualizarEstoque
                 AddNotification("Produto", "");
                 return new Response(this);
             }
-            if (retornoExist.quatidadeEstoqueProduto <= 0)
+            if (retornoExist.QuatidadeEstoqueProduto <= 0)
             {
                 AddNotification("Produto", "Produto Sem Estoque");
                 return new Response(this);
             }
-            if (request.quatidadeEstoqueProduto > retornoExist.quatidadeEstoqueProduto)
+            if (request.quatidadeEstoqueProduto > retornoExist.QuatidadeEstoqueProduto)
             {
-                AddNotification("Produto", "Quantidade em estoque " + retornoExist.quatidadeEstoqueProduto);
+                AddNotification("Produto", "Quantidade em estoque " + retornoExist.QuatidadeEstoqueProduto);
                 return new Response(this);
             }
 
-            retornoExist.quatidadeEstoqueProduto = retornoExist.quatidadeEstoqueProduto - request.quatidadeEstoqueProduto;
+            retornoExist.QuatidadeEstoqueProduto = retornoExist.QuatidadeEstoqueProduto - request.quatidadeEstoqueProduto;
             Produto = _repositoryProduto.Editar(retornoExist);
 
             //Criar meu objeto de resposta
             var response = new Response(this, Produto);
+            
+
+            Console.WriteLine($"Produto atualizado. Novo estoque: {Produto.QuatidadeEstoqueProduto}");
 
             return await Task.FromResult(response);
         }
