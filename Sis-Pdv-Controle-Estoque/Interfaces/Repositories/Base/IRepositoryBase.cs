@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace Interfaces.Repositories.Base
 {
@@ -23,6 +24,8 @@ namespace Interfaces.Repositories.Base
         TEntidade ObterPorId(TId id, params Expression<Func<TEntidade, object>>[] includeProperties);
 
         TEntidade Adicionar(TEntidade entidade);
+
+        Task<TEntidade> AdicionarAsync(TEntidade entidade);
 
         TEntidade Editar(TEntidade entidade);
 

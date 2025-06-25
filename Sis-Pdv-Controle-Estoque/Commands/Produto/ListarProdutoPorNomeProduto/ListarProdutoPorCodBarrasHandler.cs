@@ -23,7 +23,7 @@ namespace Commands.Produto.ListarProdutoPorNomeProduto
                 return new Commands.Response(this);
             }
 
-            var Collection = _repositoryProduto.Listar().Where(x => x.codBarras == request.codBarras);
+            var Collection = _repositoryProduto.Listar().Where(x => x.CodBarras == request.codBarras);
             if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "PRODUTO NÃO ENCONTRADA");

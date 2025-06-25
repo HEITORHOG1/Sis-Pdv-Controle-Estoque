@@ -21,6 +21,7 @@ namespace Repositories.Base
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<ProdutoPedido> ProdutoPedidos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Cupom> Cupoms { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,9 +49,7 @@ namespace Repositories.Base
             modelBuilder.ApplyConfiguration(new MapProduto());
             modelBuilder.ApplyConfiguration(new MapProdutoPedido());
             modelBuilder.ApplyConfiguration(new MapUsuario());
-
-
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new MapCupom());
         }
     }
 }

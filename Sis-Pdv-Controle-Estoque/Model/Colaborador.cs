@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Model
 {
-    [Table("Colaborador")]
     public class Colaborador : EntityBase
     {
 
@@ -16,36 +13,36 @@ namespace Model
             string cargoColaborador, string telefoneColaborador,
             string emailPessoalColaborador, string emailCorporativo, Usuario usuario)
         {
-            this.nomeColaborador = nomeColaborador;
+            NomeColaborador = nomeColaborador;
             this.DepartamentoId = DepartamentoId;
-            this.cpfColaborador = cpfColaborador;
-            this.cargoColaborador = cargoColaborador;
-            this.telefoneColaborador = telefoneColaborador;
-            this.emailPessoalColaborador = emailPessoalColaborador;
-            this.emailCorporativo = emailCorporativo;
+            CpfColaborador = cpfColaborador;
+            CargoColaborador = cargoColaborador;
+            TelefoneColaborador = telefoneColaborador;
+            EmailPessoalColaborador = emailPessoalColaborador;
+            EmailCorporativo = emailCorporativo;
             Usuario = usuario;
             Id = id;
         }
 
-        public string nomeColaborador { get; set; }
+        public string NomeColaborador { get; set; }
         public virtual Guid? DepartamentoId { get; set; }
-        public string cpfColaborador { get; set; }
-        public string cargoColaborador { get; set; }
-        public string telefoneColaborador { get; set; }
-        public string emailPessoalColaborador { get; set; }
-        public string emailCorporativo { get; set; }
+        public string CpfColaborador { get; set; }
+        public string CargoColaborador { get; set; }
+        public string TelefoneColaborador { get; set; }
+        public string EmailPessoalColaborador { get; set; }
+        public string EmailCorporativo { get; set; }
         public virtual Usuario Usuario { get; set; }
         public virtual Departamento Departamento { get; set; }
         public void AlterarColaborador(Guid id, string nomeColaborador, Guid Departamento, string cpfColaborador, string cargoColaborador,
             string telefoneColaborador, string emailPessoalColaborador, string emailCorporativo, Usuario Usuario)
         {
-            this.nomeColaborador = nomeColaborador;
+            NomeColaborador = nomeColaborador;
             DepartamentoId = Departamento;
-            this.cpfColaborador = cpfColaborador;
-            this.cargoColaborador = cargoColaborador;
-            this.telefoneColaborador = telefoneColaborador;
-            this.emailPessoalColaborador = emailPessoalColaborador;
-            this.emailCorporativo = emailCorporativo;
+            CpfColaborador = cpfColaborador;
+            CargoColaborador = cargoColaborador;
+            TelefoneColaborador = telefoneColaborador;
+            EmailPessoalColaborador = emailPessoalColaborador;
+            EmailCorporativo = emailCorporativo;
             this.Usuario = Usuario;
             Id = id;
         }

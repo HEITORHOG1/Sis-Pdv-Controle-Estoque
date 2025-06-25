@@ -10,7 +10,7 @@
             return new ListarColaboradorPorIdResponse()
             {
                 Id = cat.Id,
-                NomeColaborador = cat.nomeColaborador
+                NomeColaborador = cat.NomeColaborador
             };
         }
     }

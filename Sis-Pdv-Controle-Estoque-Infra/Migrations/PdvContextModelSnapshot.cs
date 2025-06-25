@@ -2,12 +2,13 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repositories.Base;
 
 #nullable disable
 
-namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
+namespace SisPdvControleEstoqueInfra.Migrations
 {
     [DbContext(typeof(PdvContext))]
     partial class PdvContextModelSnapshot : ModelSnapshot
@@ -16,10 +17,12 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.9")
+                .HasAnnotation("ProductVersion", "8.0.17")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Categoria", b =>
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("Model.Categoria", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,7 +38,7 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.ToTable("Categoria", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Cliente", b =>
+            modelBuilder.Entity("Model.Cliente", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,7 +49,7 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("tipoCliente")
+                    b.Property<string>("TipoCliente")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -55,47 +58,47 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.ToTable("Cliente", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Colaborador", b =>
+            modelBuilder.Entity("Model.Colaborador", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("DepartamentoId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("UsuarioId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("cargoColaborador")
+                    b.Property<string>("CargoColaborador")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<string>("cpfColaborador")
+                    b.Property<string>("CpfColaborador")
                         .IsRequired()
                         .HasMaxLength(11)
                         .HasColumnType("varchar(11)");
 
-                    b.Property<string>("emailCorporativo")
+                    b.Property<Guid?>("DepartamentoId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("EmailCorporativo")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("emailPessoalColaborador")
+                    b.Property<string>("EmailPessoalColaborador")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("nomeColaborador")
+                    b.Property<string>("NomeColaborador")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<string>("telefoneColaborador")
+                    b.Property<string>("TelefoneColaborador")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("varchar(30)");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("char(36)");
 
                     b.HasKey("Id");
 
@@ -106,7 +109,45 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.ToTable("Colaborador", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Departamento", b =>
+            modelBuilder.Entity("Model.Cupom", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ChaveAcesso")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("DataEmissao")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DocumentoCliente")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("NumeroSerie")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<Guid>("PedidoId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PedidoId")
+                        .IsUnique();
+
+                    b.ToTable("Cupom", (string)null);
+                });
+
+            modelBuilder.Entity("Model.Departamento", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -122,7 +163,7 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.ToTable("Departamento", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Fornecedor", b =>
+            modelBuilder.Entity("Model.Fornecedor", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -132,6 +173,10 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
+
+                    b.Property<int>("CepFornecedor")
+                        .HasMaxLength(150)
+                        .HasColumnType("int");
 
                     b.Property<string>("Cidade")
                         .IsRequired()
@@ -148,6 +193,16 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
+                    b.Property<string>("InscricaoEstadual")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("NomeFantasia")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
                     b.Property<string>("Numero")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -158,35 +213,21 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
+                    b.Property<int>("StatusAtivo")
+                        .HasMaxLength(150)
+                        .HasColumnType("int");
+
                     b.Property<string>("Uf")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
-
-                    b.Property<int>("cepFornecedor")
-                        .HasMaxLength(150)
-                        .HasColumnType("int");
-
-                    b.Property<string>("inscricaoEstadual")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.Property<string>("nomeFantasia")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.Property<int>("statusAtivo")
-                        .HasMaxLength(150)
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("Fornecedor", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Pedido", b =>
+            modelBuilder.Entity("Model.Pedido", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -200,19 +241,20 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         .IsRequired()
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("Status")
-                        .HasMaxLength(50)
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("dataDoPedido")
+                    b.Property<DateTime?>("DataDoPedido")
+                        .IsRequired()
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("formaPagamento")
+                    b.Property<string>("FormaPagamento")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<decimal>("totalPedido")
+                    b.Property<int>("Status")
+                        .HasMaxLength(50)
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPedido")
                         .HasColumnType("decimal(65,30)");
 
                     b.HasKey("Id");
@@ -224,7 +266,7 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.ToTable("Pedido", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Produto", b =>
+            modelBuilder.Entity("Model.Produto", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -233,43 +275,43 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.Property<Guid>("CategoriaId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("CodBarras")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<DateTime>("DataFabricao")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DataVencimento")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DescricaoProduto")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
                     b.Property<Guid>("FornecedorId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("codBarras")
+                    b.Property<decimal>("MargemLucro")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<string>("NomeProduto")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<DateTime>("dataFabricao")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("dataVencimento")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("descricaoProduto")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.Property<decimal>("margemLucro")
+                    b.Property<decimal>("PrecoCusto")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<string>("nomeProduto")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.Property<decimal>("precoCusto")
+                    b.Property<decimal>("PrecoVenda")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<decimal>("precoVenda")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<int>("quatidadeEstoqueProduto")
+                    b.Property<int>("QuatidadeEstoqueProduto")
                         .HasColumnType("int");
 
-                    b.Property<int>("statusAtivo")
+                    b.Property<int>("StatusAtivo")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -281,11 +323,16 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.ToTable("Produto", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.ProdutoPedido", b =>
+            modelBuilder.Entity("Model.ProdutoPedido", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("CodBarras")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
 
                     b.Property<Guid>("PedidoId")
                         .HasColumnType("char(36)");
@@ -293,25 +340,24 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.Property<Guid>("ProdutoId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("codBarras")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.Property<int?>("quantidadeItemPedido")
+                    b.Property<int?>("QuantidadeItemPedido")
                         .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("totalProdutoPedido")
+                    b.Property<decimal?>("TotalProdutoPedido")
                         .IsRequired()
                         .HasColumnType("decimal(65,30)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PedidoId");
+
+                    b.HasIndex("ProdutoId");
+
                     b.ToTable("ProdutoPedido", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Usuario", b =>
+            modelBuilder.Entity("Model.Usuario", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -327,7 +373,7 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
 
-                    b.Property<bool>("statusAtivo")
+                    b.Property<bool>("StatusAtivo")
                         .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
@@ -335,13 +381,13 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.ToTable("Usuario", (string)null);
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Colaborador", b =>
+            modelBuilder.Entity("Model.Colaborador", b =>
                 {
-                    b.HasOne("Sis_Pdv_Controle_Estoque.Model.Departamento", "Departamento")
+                    b.HasOne("Model.Departamento", "Departamento")
                         .WithMany()
                         .HasForeignKey("DepartamentoId");
 
-                    b.HasOne("Sis_Pdv_Controle_Estoque.Model.Usuario", "Usuario")
+                    b.HasOne("Model.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -352,15 +398,26 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Pedido", b =>
+            modelBuilder.Entity("Model.Cupom", b =>
                 {
-                    b.HasOne("Sis_Pdv_Controle_Estoque.Model.Cliente", "Cliente")
+                    b.HasOne("Model.Pedido", "Pedido")
+                        .WithOne()
+                        .HasForeignKey("Model.Cupom", "PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pedido");
+                });
+
+            modelBuilder.Entity("Model.Pedido", b =>
+                {
+                    b.HasOne("Model.Cliente", "Cliente")
                         .WithMany()
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sis_Pdv_Controle_Estoque.Model.Colaborador", "Colaborador")
+                    b.HasOne("Model.Colaborador", "Colaborador")
                         .WithMany()
                         .HasForeignKey("ColaboradorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -371,15 +428,15 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.Navigation("Colaborador");
                 });
 
-            modelBuilder.Entity("Sis_Pdv_Controle_Estoque.Model.Produto", b =>
+            modelBuilder.Entity("Model.Produto", b =>
                 {
-                    b.HasOne("Sis_Pdv_Controle_Estoque.Model.Categoria", "Categoria")
+                    b.HasOne("Model.Categoria", "Categoria")
                         .WithMany()
                         .HasForeignKey("CategoriaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Sis_Pdv_Controle_Estoque.Model.Fornecedor", "Fornecedor")
+                    b.HasOne("Model.Fornecedor", "Fornecedor")
                         .WithMany()
                         .HasForeignKey("FornecedorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -388,6 +445,25 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Migrations
                     b.Navigation("Categoria");
 
                     b.Navigation("Fornecedor");
+                });
+
+            modelBuilder.Entity("Model.ProdutoPedido", b =>
+                {
+                    b.HasOne("Model.Pedido", "Pedido")
+                        .WithMany()
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Model.Produto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pedido");
+
+                    b.Navigation("Produto");
                 });
 #pragma warning restore 612, 618
         }

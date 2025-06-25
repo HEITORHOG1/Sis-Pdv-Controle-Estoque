@@ -19,7 +19,7 @@
             NomeCategoria = nomeCategoria;
         }
         public string NomeCategoria { get; set; }
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
 
         public void AlterarCategoria(Guid id, string nomeCategoria)
         {

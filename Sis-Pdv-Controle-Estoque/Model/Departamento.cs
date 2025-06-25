@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Model
 {
-    [Table("Departamento")]
     public class Departamento : EntityBase
     {
         public Departamento()

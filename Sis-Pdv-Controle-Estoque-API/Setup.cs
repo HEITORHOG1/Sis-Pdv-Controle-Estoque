@@ -19,6 +19,7 @@ using Repositories;
 using Repositories.Base;
 using Repositories.Transactions;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
+using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
 namespace Sis_Pdv_Controle_Estoque_API
@@ -51,7 +52,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             });
         }
 
-        public static void ConfigureRepositories(this IServiceCollection services)
+        public static void ConfigureRepositories(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<PdvContext, PdvContext>();
 
@@ -75,6 +76,7 @@ namespace Sis_Pdv_Controle_Estoque_API
 
             services.AddTransient<IRepositoryProdutoPedido, RepositoryProdutoPedido>();
 
+            services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.AddTransient<IRabbitMQMessageSender, RabbitMQMessageSender>();
         }
     }

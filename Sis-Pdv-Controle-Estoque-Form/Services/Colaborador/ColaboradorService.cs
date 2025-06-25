@@ -24,7 +24,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
                 {
                     Senha = dto.senha,
                     Login = dto.login,
-                    statusAtivo = dto.statusAtivo
+                    StatusAtivo = dto.statusAtivo
                 },
             };
 
@@ -80,7 +80,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
                     Id = Guid.Parse(dto.idlogin),
                     Senha = dto.senha,
                     Login = dto.login,
-                    statusAtivo = dto.statusAtivo
+                    StatusAtivo = dto.statusAtivo
                 },
             };
 

@@ -1,8 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Model
 {
-    [Table("Cliente")]
     public class Cliente : EntityBase
     {
         public Cliente()
@@ -13,9 +10,9 @@ namespace Model
         public Cliente(string cpfCnpj, string tipoCliente)
         {
             CpfCnpj = cpfCnpj;
-            this.tipoCliente = tipoCliente;
+            TipoCliente = tipoCliente;
         }
         public string CpfCnpj { get; set; }
-        public string tipoCliente { get; set; }
+        public string TipoCliente { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Repositories.Base;
+using System.Threading.Tasks;
 
 namespace Repositories.Transactions
 {
@@ -14,6 +15,11 @@ namespace Repositories.Transactions
         public void SaveChanges()
         {
             _context.SaveChanges();
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

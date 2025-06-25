@@ -24,7 +24,7 @@ namespace Commands.ProdutoPedido.ListarProdutoPedidoPorPedido
             }
 
             var Collection = _repositoryProdutoPedido.Listar()
-                                .Where(x => x.codBarras == request.CodBarras);
+                                .Where(x => x.CodBarras == request.CodBarras);
             if (!Collection.Any())
             {
                 AddNotification("ATENÇÃO", "ProdutoPedido NÃO ENCONTRADA");

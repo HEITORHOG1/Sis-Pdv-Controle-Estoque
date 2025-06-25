@@ -25,25 +25,23 @@ namespace Commands.Produto.ListarProduto
             }
 
             var _produto = _repositoryProduto.Listar().Include(x => x.Fornecedor).Include(x => x.Categoria).ToList();
-            List<ListarProdutoRequest> _lista = new List<ListarProdutoRequest>();
-
-            foreach (var item in _produto)
+            List<ListarProdutoRequest> _lista = new List<ListarProdutoRequest>();            foreach (var item in _produto)
             {
                 ListarProdutoRequest produto = new ListarProdutoRequest
                 {
                     Id = item.Id,
-                    codBarras = item.codBarras,
-                    nomeProduto = item.nomeProduto,
-                    NomeFornecedor = item.Fornecedor.nomeFantasia,
+                    codBarras = item.CodBarras,
+                    nomeProduto = item.NomeProduto,
+                    NomeFornecedor = item.Fornecedor.NomeFantasia,
                     NomeCategoria = item.Categoria.NomeCategoria,
-                    descricaoProduto = item.descricaoProduto,
-                    quatidadeEstoqueProduto = item.quatidadeEstoqueProduto,
-                    precoVenda = item.precoVenda,
-                    precoCusto = item.precoCusto,
-                    margemLucro = item.margemLucro,
-                    dataFabricao = item.dataFabricao,
-                    dataVencimento = item.dataVencimento,
-                    statusAtivo = item.statusAtivo
+                    descricaoProduto = item.DescricaoProduto,
+                    quatidadeEstoqueProduto = item.QuatidadeEstoqueProduto,
+                    precoVenda = item.PrecoVenda,
+                    precoCusto = item.PrecoCusto,
+                    margemLucro = item.MargemLucro,
+                    dataFabricao = item.DataFabricao,
+                    dataVencimento = item.DataVencimento,
+                    statusAtivo = item.StatusAtivo
                 };
                 _lista.Add(produto);
             }

@@ -49,6 +49,21 @@ Este é um projeto open-source destinado àqueles interessados em aprender sobre
 ## Práticas e Princípios
 Princípios SOLID de programação e práticas de Clean Code para garantir um código limpo, manutenível e testável. Nosso código é bem documentado, com foco em manter as funções e classes pequenas e focadas, facilitando a legibilidade e a manutenção do código.
 
+## Diagramas de Arquitetura
+
+Na pasta `Sis-Pdv-Controle-Estoque/Diagrams` há dois diagramas de classe gerados pelo Visual Studio:
+
+- **PDV.cd** – apresenta a visão geral das entidades relacionadas ao ponto de venda.
+- **SisPdv.cd** – mostra o relacionamento entre as demais camadas do sistema.
+
+Abra esses arquivos diretamente no Visual Studio para visualizar como as classes se conectam.
+
+### Camadas do Projeto
+
+1. **Domínio** (`Sis-Pdv-Controle-Estoque`): modelos de domínio, comandos e interfaces.
+2. **Infraestrutura** (`Sis-Pdv-Controle-Estoque-Infra`): repositórios e acesso ao banco de dados.
+3. **API** (`Sis-Pdv-Controle-Estoque-API`): serviços HTTP e integração com RabbitMQ.
+4. **Interface Gráfica** (`Sis-Pdv-Controle-Estoque-Form`): aplicação desktop (WinForms) utilizada no PDV.
 
 ## Configuração do Banco de Dados
 
@@ -58,12 +73,14 @@ Princípios SOLID de programação e práticas de Clean Code para garantir um c�
 Exemplo da string de conexão:
 ```json
 "ControleFluxoCaixaConnectionString": "Server=localhost;Database=PDV_02;Uid=root;Pwd=q1w2e3r4;"
+```
 
-Executando a Aplicação
-Restaure as dependências: dotnet restore
-Execute as migrações do banco de dados: dotnet ef migrations add InitialMigration
-Aplique as migrações no banco de dados: dotnet ef database update
-Execute o projeto: dotnet run
+## Executando a Aplicação
+
+1. Restaure as dependências: `dotnet restore`
+2. Execute as migrações do banco de dados: `dotnet ef migrations add InitialMigration`
+3. Aplique as migrações no banco de dados: `dotnet ef database update`
+4. Execute o projeto: `dotnet run`
 
 
 

@@ -11,7 +11,7 @@ namespace Repositories.Map
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Login).HasMaxLength(150).IsRequired();
             builder.Property(x => x.Senha).HasMaxLength(150).IsRequired();
-            builder.Property(x => x.statusAtivo).IsRequired();
+            builder.Property(x => x.StatusAtivo).IsRequired();
         }
     }
 }

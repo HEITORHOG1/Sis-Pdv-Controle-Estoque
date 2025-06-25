@@ -52,7 +52,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
             {
                 rbInativo.Checked = true;
                 rbAtivo.Checked = false;
-                _ativo = true;
+                _ativo = false;
             }
 
 
@@ -153,7 +153,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
             }
             else
             {
-                _ativo = true;
+                _ativo = false;
             }
         }
         private async Task Excluir(ColaboradorDto dto)
