@@ -54,20 +54,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         [Route("api/Categoria/ListarCategoria")]
         public async Task<IActionResult> ListarCategoria()
         {
-
-            try
-            {
-                _logger.LogInformation("ListarCategoria");
-                var request = new ListarCategoriaRequest();
-                var result = await _mediator.Send(request, CancellationToken.None);
-                _logger.LogInformation("ListarCategoria - Response: {@response}", result);
-                return Ok(result);
-            }
-            catch (System.Exception ex)
-            {
-                _logger.LogError("ListarCategoria - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
-            }
+            _logger.LogInformation("ListarCategoria operation started. CorrelationId: {CorrelationId}", CorrelationId);
+            
+            var request = new ListarCategoriaRequest();
+            var result = await _mediator.Send(request, CancellationToken.None);
+            
+            _logger.LogInformation("ListarCategoria operation completed successfully. CorrelationId: {CorrelationId}, Count: {Count}", 
+                CorrelationId, result?.Data?.ToString()?.Length ?? 0);
+            
+            return Success(result, "Categories retrieved successfully");
         }
 
         /// <summary>
