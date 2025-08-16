@@ -28,6 +28,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using System.Text;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Sis_Pdv_Controle_Estoque_API
 {
@@ -57,6 +59,9 @@ namespace Sis_Pdv_Controle_Estoque_API
                 cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
             });
+
+            // Add validation pipeline behavior
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Sis_Pdv_Controle_Estoque_API.Behaviors.ValidationBehavior<,>));
         }
 
         public static void ConfigureRepositories(this IServiceCollection services, IConfiguration configuration)
@@ -164,6 +169,19 @@ namespace Sis_Pdv_Controle_Estoque_API
             });
 
             services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        }
+
+        public static void ConfigureValidation(this IServiceCollection services)
+        {
+            // Register all validators from the domain assembly
+            services.AddValidatorsFromAssembly(typeof(AdicionarClienteRequest).Assembly);
+            
+            // Configure FluentValidation to work with ASP.NET Core
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                // Disable automatic model state validation since we're handling it in the pipeline
+                options.SuppressModelStateInvalidFilter = true;
+            });
         }
     }
 }

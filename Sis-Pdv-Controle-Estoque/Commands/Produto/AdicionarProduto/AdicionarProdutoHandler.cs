@@ -16,26 +16,12 @@ namespace Commands.Produto.AdicionarProduto
 
         public async Task<Response> Handle(AdicionarProdutoRequest request, CancellationToken cancellationToken)
         {
-            // Instancia o validador
-            var validator = new AdicionarProdutoRequestValidator();
+            // Validation is now handled by the ValidationBehavior pipeline
 
-            // Valida a requisição
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-            // Se não passou na validação, adiciona as falhas como notificações
-            if (!validationResult.IsValid)
-            {
-                foreach (var error in validationResult.Errors)
-                {
-                    AddNotification(error.PropertyName, error.ErrorMessage);
-                }
-
-                return new Response(this);
-            }
-            //Verificar se o usuário já existe
+            //Verificar se o produto já existe
             if (_repositoryProduto.Existe(x => x.CodBarras == request.codBarras))
             {
-                AddNotification("codBarras", "codBarras ja Cadastrado");
+                AddNotification("codBarras", "Produto já cadastrado com este código de barras");
                 return new Response(this);
             }
 

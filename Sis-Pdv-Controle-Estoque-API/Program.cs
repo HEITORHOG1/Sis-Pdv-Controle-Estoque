@@ -46,11 +46,9 @@ builder.Host.UseSerilog();
 // Add services to the container
 builder.Services.ConfigureRepositories(builder.Configuration);
 builder.Services.ConfigureMediatR();
+builder.Services.ConfigureValidation();
 builder.Services.ConfigureAuthentication(builder.Configuration);
 builder.Services.ConfigureAuthorization();
-
-// Register application services
-builder.Services.AddScoped<IApplicationLogger, ApplicationLogger>();
 
 // Configure controllers with enhanced JSON options
 builder.Services.AddControllers()
