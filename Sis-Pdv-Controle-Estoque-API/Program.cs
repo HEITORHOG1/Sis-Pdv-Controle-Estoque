@@ -10,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add configuration management with environment variable substitution
 builder.Services.AddConfigurationManagement(builder.Configuration);
 
+// Use a single, centralized URL from configuration (fallback to http://localhost:7001)
+var configuredUrls = builder.Configuration["Hosting:Urls"] ?? "http://localhost:7001";
+builder.WebHost.UseUrls(configuredUrls);
+
 // Configure enhanced Serilog with enrichers and structured logging
 var loggerConfiguration = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -91,9 +95,6 @@ app.UseMiddleware<Sis_Pdv_Controle_Estoque_API.Middleware.MetricsMiddleware>();
 // Apply security middleware (includes HTTPS, CORS, rate limiting, security headers)
 app.UseSecurityMiddleware(app.Environment);
 
-// Configure Swagger documentation
-app.UseSwaggerDocumentation(app.Environment);
-
 app.UseStaticFiles();
 
 // Custom authentication middleware (after built-in authentication)
@@ -103,6 +104,9 @@ app.UseMiddleware<AuthenticationMiddleware>();
 app.UseHealthCheckEndpoints();
 
 app.MapControllers();
+
+// Swagger UI and JSON using centralized route prefix from configuration
+app.UseSwaggerDocumentation(app.Environment);
 
 // Log application startup
 Log.Information("PDV Control System API starting up...");

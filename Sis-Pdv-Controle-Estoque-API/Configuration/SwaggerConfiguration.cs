@@ -157,16 +157,19 @@ Example: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
     /// <param name="provider">API version description provider</param>
     public static void UseSwaggerDocumentation(this IApplicationBuilder app, IWebHostEnvironment environment, IApiVersionDescriptionProvider? provider = null)
     {
+        var configuration = app.ApplicationServices.GetRequiredService<IConfiguration>();
+        var routePrefix = configuration["Swagger:RoutePrefix"] ?? "api-docs";
+        
         app.UseSwagger(options =>
         {
-            options.RouteTemplate = "api-docs/{documentName}/swagger.json";
+            options.RouteTemplate = $"{routePrefix}/{{documentName}}/swagger.json";
         });
 
         app.UseSwaggerUI(options =>
         {
             // Configure Swagger UI
-            options.SwaggerEndpoint("/api-docs/v1/swagger.json", "PDV Control System API v1.0");
-            options.RoutePrefix = "api-docs";
+            options.SwaggerEndpoint($"/{routePrefix}/v1/swagger.json", "PDV Control System API v1.0");
+            options.RoutePrefix = routePrefix;
             
             // UI Configuration
             options.DocumentTitle = "PDV Control System API Documentation";

@@ -115,6 +115,21 @@ e temo suqe tem uma opção via a pi que posso enviar a comunicação par o sefa
 - Create payment audit trail and reconciliation functionality
 - _Requirements: 7.2, 7.3_
 
+- [ ] 16. Fix Swagger Documentation Access Issue
+  - **IDENTIFIED ISSUES**: 
+    - Security middlewares blocking Swagger access
+    - Complex custom Swagger configuration causing conflicts
+    - Authentication middleware interfering with documentation endpoints
+  - **SOLUTION NEEDED**:
+    - Simplify Swagger configuration to use default settings
+    - Reorder middlewares to allow Swagger access before authentication
+    - Add AllowAnonymous attribute to Swagger endpoints
+    - Configure CORS to allow Swagger UI resources
+  - **EXPECTED URLS**: 
+    - Swagger UI: `https://localhost:7001/swagger` or `http://localhost:5001/swagger`
+    - Swagger JSON: `https://localhost:7001/swagger/v1/swagger.json`
+  - _Requirements: 13.1, 13.2_
+
 - [x] 15. Final integration and system optimization
   - Perform comprehensive code review and refactoring for Clean Code compliance
   - Optimize database queries and add missing indexes for performance
