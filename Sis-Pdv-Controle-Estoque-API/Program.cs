@@ -46,6 +46,8 @@ builder.Host.UseSerilog();
 // Add services to the container
 builder.Services.ConfigureRepositories(builder.Configuration);
 builder.Services.ConfigureMediatR();
+builder.Services.ConfigureAuthentication(builder.Configuration);
+builder.Services.ConfigureAuthorization();
 
 // Register application services
 builder.Services.AddScoped<IApplicationLogger, ApplicationLogger>();
@@ -67,6 +69,31 @@ builder.Services.AddSwaggerGen(c =>
         Title = "PDV Control System API",
         Version = "v1",
         Description = "API for Point of Sale and Inventory Control System"
+    });
+    
+    // Add JWT authentication to Swagger
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
     });
     
     // Include XML comments if available
@@ -123,6 +150,9 @@ app.UseSwaggerUI(c =>
 
 app.UseStaticFiles();
 
+// Authentication and Authorization middleware (order is important)
+app.UseAuthentication();
+app.UseMiddleware<AuthenticationMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

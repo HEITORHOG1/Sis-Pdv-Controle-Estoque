@@ -22,6 +22,13 @@ namespace Repositories.Base
         public DbSet<ProdutoPedido> ProdutoPedidos { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Cupom> Cupoms { get; set; }
+        
+        // Authentication entities
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -50,6 +57,13 @@ namespace Repositories.Base
             modelBuilder.ApplyConfiguration(new MapProdutoPedido());
             modelBuilder.ApplyConfiguration(new MapUsuario());
             modelBuilder.ApplyConfiguration(new MapCupom());
+            
+            // Authentication configurations
+            modelBuilder.ApplyConfiguration(new MapRole());
+            modelBuilder.ApplyConfiguration(new MapPermission());
+            modelBuilder.ApplyConfiguration(new MapUserRole());
+            modelBuilder.ApplyConfiguration(new MapRolePermission());
+            modelBuilder.ApplyConfiguration(new MapAuditLog());
         }
     }
 }
