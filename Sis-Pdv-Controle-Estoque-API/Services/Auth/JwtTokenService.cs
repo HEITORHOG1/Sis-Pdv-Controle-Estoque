@@ -3,6 +3,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Model;
+using Interfaces;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
 {
@@ -10,11 +12,13 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<JwtTokenService> _logger;
+        private readonly IRepositoryUsuario _repositoryUsuario;
 
-        public JwtTokenService(IConfiguration configuration, ILogger<JwtTokenService> logger)
+        public JwtTokenService(IConfiguration configuration, ILogger<JwtTokenService> logger, IRepositoryUsuario repositoryUsuario)
         {
             _configuration = configuration;
             _logger = logger;
+            _repositoryUsuario = repositoryUsuario;
         }
 
         public string GenerateAccessToken(IEnumerable<Claim> claims)
@@ -122,6 +126,52 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
             {
                 _logger.LogError(ex, "Error getting token expiration");
                 return DateTime.MinValue;
+            }
+        }
+
+        public async Task<string> GenerateAccessTokenAsync(Usuario usuario)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                new Claim(ClaimTypes.Name, usuario.Login),
+                new Claim(ClaimTypes.Email, usuario.Email ?? string.Empty),
+                new Claim("nome", usuario.Nome ?? string.Empty)
+            };
+
+            // Add user roles and permissions
+            var userRoles = await _repositoryUsuario.GetUserRolesAsync(usuario.Id);
+            foreach (var role in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role.Name));
+            }
+
+            var userPermissions = await _repositoryUsuario.GetUserPermissionsAsync(usuario.Id);
+            foreach (var permission in userPermissions)
+            {
+                claims.Add(new Claim("permission", permission.Name));
+            }
+
+            return GenerateAccessToken(claims);
+        }
+
+        public async Task<Usuario?> GetUserFromTokenAsync(string token)
+        {
+            try
+            {
+                var principal = GetPrincipalFromExpiredToken(token);
+                if (principal == null) return null;
+
+                var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId))
+                    return null;
+
+                return await _repositoryUsuario.ObterPorIdAsync(userId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting user from token");
+                return null;
             }
         }
     }

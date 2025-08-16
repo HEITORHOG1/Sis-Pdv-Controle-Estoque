@@ -27,5 +27,13 @@ namespace Repositories
             return await _context.UserRoles
                 .AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId && !ur.IsDeleted);
         }
+
+        public async Task<IEnumerable<UserRole>> GetByRoleIdAsync(Guid roleId)
+        {
+            return await _context.UserRoles
+                .Where(ur => ur.RoleId == roleId && !ur.IsDeleted)
+                .Include(ur => ur.User)
+                .ToListAsync();
+        }
     }
 }

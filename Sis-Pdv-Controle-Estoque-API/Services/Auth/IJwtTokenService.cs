@@ -1,13 +1,12 @@
 using System.Security.Claims;
+using Interfaces.Services;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
 {
-    public interface IJwtTokenService
+    public interface IJwtTokenService : Interfaces.Services.IJwtTokenService
     {
         string GenerateAccessToken(IEnumerable<Claim> claims);
-        string GenerateRefreshToken();
         ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
-        bool ValidateToken(string token);
         DateTime GetTokenExpiration(string token);
     }
 }

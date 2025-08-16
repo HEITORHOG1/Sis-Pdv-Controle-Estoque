@@ -6,5 +6,6 @@ namespace Interfaces
     {
         Task<IEnumerable<UserRole>> GetUserRolesAsync(Guid userId);
         Task<bool> UserHasRoleAsync(Guid userId, Guid roleId);
+        Task<IEnumerable<UserRole>> GetByRoleIdAsync(Guid roleId);
     }
 }

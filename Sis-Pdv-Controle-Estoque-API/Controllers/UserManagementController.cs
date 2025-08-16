@@ -5,8 +5,14 @@ using Commands.Usuarios.ListarUsuarios;
 using Commands.Usuarios.ListarSessoes;
 using Commands.Usuarios.RevogarSessao;
 using Commands.Usuarios.AtribuirRoles;
+using Commands.Usuarios.AlterarStatusUsuario;
+using Commands.Usuarios.ResetarSenha;
+using Commands.Usuarios.Login;
 using Commands.Roles.CriarRole;
 using Commands.Roles.ListarRoles;
+using Commands.Roles.AtualizarRole;
+using Commands.Roles.RemoverRole;
+using Commands.Permissions.ListarPermissions;
 using Sis_Pdv_Controle_Estoque_API.Controllers.Base;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -48,7 +54,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] Sis_Pdv_Controle_Estoque_API.Models.Auth.LoginRequest request)
         {
             var response = await _authenticationService.AuthenticateAsync(request);
             
@@ -176,6 +182,80 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         [Authorize(Policy = "RequireRoleManagementPermission")]
         public async Task<IActionResult> ListRoles([FromQuery] ListarRolesRequest request)
         {
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        /// <summary>
+        /// Atualiza uma role existente
+        /// </summary>
+        [HttpPut("roles/{roleId:guid}")]
+        [Authorize(Policy = "RequireRoleManagementPermission")]
+        public async Task<IActionResult> UpdateRole(Guid roleId, [FromBody] AtualizarRoleRequest request)
+        {
+            request.Id = roleId;
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        /// <summary>
+        /// Remove uma role do sistema
+        /// </summary>
+        [HttpDelete("roles/{roleId:guid}")]
+        [Authorize(Policy = "RequireRoleManagementPermission")]
+        public async Task<IActionResult> DeleteRole(Guid roleId)
+        {
+            var request = new RemoverRoleRequest { Id = roleId };
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        /// <summary>
+        /// Lista permissões do sistema
+        /// </summary>
+        [HttpGet("permissions")]
+        [Authorize(Policy = "RequireRoleManagementPermission")]
+        public async Task<IActionResult> ListPermissions([FromQuery] ListarPermissionsRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        /// <summary>
+        /// Altera o status de um usuário (ativo/inativo)
+        /// </summary>
+        [HttpPatch("users/{userId:guid}/status")]
+        [Authorize(Policy = "RequireUserManagementPermission")]
+        public async Task<IActionResult> ChangeUserStatus(Guid userId, [FromBody] AlterarStatusUsuarioRequest request)
+        {
+            request.UsuarioId = userId;
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        /// <summary>
+        /// Reseta a senha de um usuário
+        /// </summary>
+        [HttpPost("users/{userId:guid}/reset-password")]
+        [Authorize(Policy = "RequireUserManagementPermission")]
+        public async Task<IActionResult> ResetUserPassword(Guid userId, [FromBody] ResetarSenhaRequest request)
+        {
+            request.UsuarioId = userId;
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        /// <summary>
+        /// Login alternativo via MediatR (para consistência com CQRS)
+        /// </summary>
+        [HttpPost("login-cqrs")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginCqrs([FromBody] Commands.Usuarios.Login.LoginRequest request)
+        {
+            // Adicionar informações de contexto da requisição
+            request.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            request.UserAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+
             var response = await _mediator.Send(request);
             return await ResponseAsync(response);
         }
