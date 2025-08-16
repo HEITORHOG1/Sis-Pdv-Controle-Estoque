@@ -13,7 +13,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     [ApiController]
     [Route("api/v1/[controller]")]
     [Authorize]
-    public class PaymentController : ControllerBase
+    public class PaymentController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IPaymentService _paymentService;
@@ -24,7 +24,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             IMediator mediator,
             IPaymentService paymentService,
             IPaymentReconciliationService reconciliationService,
-            ILogger<PaymentController> logger)
+            ILogger<PaymentController> logger,
+            Repositories.Transactions.IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _mediator = mediator;
             _paymentService = paymentService;
@@ -393,8 +394,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         {
             try
             {
-                // TODO: Get current user ID from claims
-                var userId = Guid.Empty;
+                var userId = GetCurrentUserId();
 
                 var success = await _reconciliationService.ResolveDiscrepancyAsync(discrepancyId, request.Resolution, userId, cancellationToken);
 

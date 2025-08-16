@@ -20,6 +20,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
         private readonly ILogger<EnhancedFiscalService> _logger;
         private readonly SefazConfiguration _sefazConfig;
         private readonly IConnection _rabbitConnection;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public EnhancedFiscalService(
             IRepositoryFiscalReceipt fiscalReceiptRepository,
@@ -27,7 +28,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
             IRepositoryPaymentAudit auditRepository,
             ILogger<EnhancedFiscalService> logger,
             IOptions<SefazConfiguration> sefazConfig,
-            IConnection rabbitConnection)
+            IConnection rabbitConnection,
+            IHttpContextAccessor httpContextAccessor)
         {
             _fiscalReceiptRepository = fiscalReceiptRepository;
             _paymentRepository = paymentRepository;
@@ -35,6 +37,13 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
             _logger = logger;
             _sefazConfig = sefazConfig.Value;
             _rabbitConnection = rabbitConnection;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        private Guid GetCurrentUserId()
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
         }
 
         public async Task<FiscalReceiptResult> GenerateFiscalReceiptAsync(Guid paymentId, CancellationToken cancellationToken = default)
@@ -81,9 +90,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
                 await _fiscalReceiptRepository.AdicionarAsync(fiscalReceipt);
 
                 // Create audit log
+                var currentUserId = GetCurrentUserId();
                 await _auditRepository.AdicionarAsync(new PaymentAudit(
                     paymentId, PaymentAuditAction.FiscalReceiptGenerated, 
-                    "Fiscal receipt generated", Guid.Empty)); // TODO: Get current user ID
+                    "Fiscal receipt generated", currentUserId));
 
                 // Check if should send to SEFAZ or go to contingency
                 if (await ShouldSendToSefazAsync())

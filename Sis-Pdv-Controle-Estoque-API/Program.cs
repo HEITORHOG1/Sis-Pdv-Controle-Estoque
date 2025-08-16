@@ -70,19 +70,8 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger(builder.Environment);
 
-// Configure CORS for development
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddCors(options =>
-    {
-        options.AddDefaultPolicy(policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
-    });
-}
+// Configure comprehensive security
+builder.Services.ConfigureSecurity(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
@@ -90,11 +79,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseCors();
-}
-else
-{
-    app.UseHsts();
 }
 
 // Add global exception handling middleware (must be early in pipeline)
@@ -106,17 +90,16 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 // Add metrics collection middleware
 app.UseMiddleware<Sis_Pdv_Controle_Estoque_API.Middleware.MetricsMiddleware>();
 
-app.UseHttpsRedirection();
+// Apply security middleware (includes HTTPS, CORS, rate limiting, security headers)
+app.UseSecurityMiddleware(app.Environment);
 
 // Configure Swagger documentation
 app.UseSwaggerDocumentation(app.Environment);
 
 app.UseStaticFiles();
 
-// Authentication and Authorization middleware (order is important)
-app.UseAuthentication();
+// Custom authentication middleware (after built-in authentication)
 app.UseMiddleware<AuthenticationMiddleware>();
-app.UseAuthorization();
 
 // Configure health check endpoints
 app.UseHealthCheckEndpoints();

@@ -23,6 +23,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
         protected string CorrelationId => HttpContext.TraceIdentifier;
 
         /// <summary>
+        /// Gets the current user ID from claims
+        /// </summary>
+        protected Guid GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
+        }
+
+        /// <summary>
         /// Legacy method for backward compatibility with existing Response class
         /// </summary>
         public async Task<IActionResult> ResponseAsync(Response response)

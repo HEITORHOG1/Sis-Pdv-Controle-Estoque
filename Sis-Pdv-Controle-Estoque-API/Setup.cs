@@ -129,6 +129,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             
             // Register application services
             services.AddScoped<IApplicationLogger, ApplicationLogger>();
+            services.AddHttpContextAccessor();
             
             // Authentication services
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IJwtTokenService, Sis_Pdv_Controle_Estoque_API.Services.Auth.JwtTokenService>();
