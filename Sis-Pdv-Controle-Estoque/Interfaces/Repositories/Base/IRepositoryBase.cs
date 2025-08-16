@@ -56,5 +56,12 @@ namespace Interfaces.Repositories.Base
         Task<int> ContarAsync(Expression<Func<TEntidade, bool>>? where = null);
 
         Task<IEnumerable<TEntidade>> ListarPaginadoAsync(int pageNumber, int pageSize, Expression<Func<TEntidade, bool>>? where = null, params Expression<Func<TEntidade, object>>[] includeProperties);
+        
+        // Enhanced methods for inventory management
+        Task<TEntidade?> GetByIdAsync(TId id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TEntidade>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<TEntidade>> GetByIdsAsync(IEnumerable<TId> ids, CancellationToken cancellationToken = default);
+        Task<TEntidade> AddAsync(TEntidade entity, CancellationToken cancellationToken = default);
+        Task<TEntidade> UpdateAsync(TEntidade entity, CancellationToken cancellationToken = default);
     }
 }

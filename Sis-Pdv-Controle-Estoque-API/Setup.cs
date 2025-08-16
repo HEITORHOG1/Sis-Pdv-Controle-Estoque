@@ -18,6 +18,8 @@ using MediatR;
 using Repositories;
 using Repositories.Base;
 using Repositories.Transactions;
+using Services.Stock;
+using Interfaces.Services;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
 using Sis_Pdv_Controle_Estoque_API.Services;
 using Sis_Pdv_Controle_Estoque_API.Services.Auth;
@@ -109,6 +111,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddTransient<IRepositoryRolePermission, RepositoryRolePermission>();
             services.AddTransient<IRepositoryAuditLog, RepositoryAuditLog>();
             services.AddTransient<IRepositoryUserSession, RepositoryUserSession>();
+            services.AddTransient<Interfaces.Repositories.IRepositoryStockMovement, RepositoryStockMovement>();
 
             services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.AddTransient<IRabbitMQMessageSender, RabbitMQMessageSender>();
@@ -117,7 +120,10 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddScoped<IApplicationLogger, ApplicationLogger>();
             
             // Authentication services
-            services.AddScoped<IJwtTokenService, JwtTokenService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IJwtTokenService, Sis_Pdv_Controle_Estoque_API.Services.Auth.JwtTokenService>();
+            
+            // Inventory services
+            services.AddScoped<IStockValidationService, StockValidationService>();
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IPasswordService, PasswordService>();
             services.AddScoped<Interfaces.Services.IPasswordService, PasswordService>();
             services.AddScoped<IPermissionService, PermissionService>();
@@ -128,6 +134,10 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.SectionName));
             services.AddMemoryCache();
             services.AddScoped<ICacheService, MemoryCacheService>();
+            
+            // Report services
+            services.AddScoped<Interfaces.Services.IReportDataService, Sis_Pdv_Controle_Estoque_API.Services.Reports.ReportDataService>();
+            services.AddScoped<Interfaces.Services.IReportService, Sis_Pdv_Controle_Estoque_API.Services.Reports.ReportService>();
         }
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
@@ -191,6 +201,13 @@ namespace Sis_Pdv_Controle_Estoque_API
                     
                 options.AddPolicy("RequireRoleManagementPermission", policy =>
                     policy.RequireClaim("permission", "role.manage"));
+                    
+                // Inventory management policies
+                options.AddPolicy("InventoryManagement", policy =>
+                    policy.RequireClaim("permission", "inventory.manage"));
+                    
+                options.AddPolicy("InventoryView", policy =>
+                    policy.RequireClaim("permission", "inventory.view"));
 
                 // Add permission-based policies dynamically
                 // This will be handled by the PermissionAuthorizationHandler

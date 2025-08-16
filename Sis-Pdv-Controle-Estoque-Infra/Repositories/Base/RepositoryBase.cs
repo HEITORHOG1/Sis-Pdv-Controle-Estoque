@@ -182,6 +182,37 @@ namespace Repositories.Base
                 .ToListAsync();
         }
 
+        // Enhanced methods for inventory management
+        public async Task<TEntidade?> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<TEntidade>().FindAsync(new object[] { id }, cancellationToken);
+        }
+
+        public async Task<IEnumerable<TEntidade>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<TEntidade>().ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<TEntidade>> GetByIdsAsync(IEnumerable<TId> ids, CancellationToken cancellationToken = default)
+        {
+            var guidIds = ids.Select(id => Guid.Parse(id.ToString())).ToList();
+            return await _context.Set<TEntidade>().Where(e => guidIds.Contains(e.Id)).ToListAsync(cancellationToken);
+        }
+
+        public async Task<TEntidade> AddAsync(TEntidade entity, CancellationToken cancellationToken = default)
+        {
+            var result = await _context.Set<TEntidade>().AddAsync(entity, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            return result.Entity;
+        }
+
+        public async Task<TEntidade> UpdateAsync(TEntidade entity, CancellationToken cancellationToken = default)
+        {
+            _context.Set<TEntidade>().Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+            return entity;
+        }
+
         /// <summary>
         /// Realiza include populando o objeto passado por parametro
         /// </summary>
