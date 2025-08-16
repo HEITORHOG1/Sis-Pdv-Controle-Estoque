@@ -1,8 +1,9 @@
+using Interfaces.Services;
+
 namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
 {
-    public interface IPasswordService
+    public interface IPasswordService : Interfaces.Services.IPasswordService
     {
-        string HashPassword(string password);
-        bool VerifyPassword(string password, string hashedPassword);
+        // Additional API-specific methods can be added here if needed
     }
 }

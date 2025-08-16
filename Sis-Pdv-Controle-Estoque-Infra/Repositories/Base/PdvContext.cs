@@ -33,6 +33,7 @@ namespace Repositories.Base
         public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<UserSession> UserSessions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -69,6 +70,7 @@ namespace Repositories.Base
             modelBuilder.ApplyConfiguration(new MapUserRole());
             modelBuilder.ApplyConfiguration(new MapRolePermission());
             modelBuilder.ApplyConfiguration(new MapAuditLog());
+            modelBuilder.ApplyConfiguration(new MapUserSession());
         }
     }
 }

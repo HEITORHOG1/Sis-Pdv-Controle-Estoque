@@ -9,7 +9,7 @@ namespace Repositories.Base
       where TId : struct
     {
 
-        private readonly DbContext _context;
+        protected readonly DbContext _context;
 
         public RepositoryBase(DbContext context)
         {
@@ -127,6 +127,15 @@ namespace Repositories.Base
         {
             _context.Set<TEntidade>().RemoveRange(entidades);
             await Task.CompletedTask;
+        }
+
+        public async Task RemoverAsync(TId id)
+        {
+            var entity = await ObterPorIdAsync(id);
+            if (entity != null)
+            {
+                _context.Set<TEntidade>().Remove(entity);
+            }
         }
 
         public void AdicionarLista(IEnumerable<TEntidade> entidades)

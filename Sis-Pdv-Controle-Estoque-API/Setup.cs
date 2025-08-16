@@ -61,6 +61,10 @@ namespace Sis_Pdv_Controle_Estoque_API
                 // Register new paginated handlers
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Produto.ListarProdutosPaginado.ListarProdutosPaginadoRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Cliente.ListarClientesPaginado.ListarClientesPaginadoRequest).GetTypeInfo().Assembly);
+                
+                // Register user management handlers
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Usuarios.RegistrarUsuario.RegistrarUsuarioRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Roles.CriarRole.CriarRoleRequest).GetTypeInfo().Assembly);
 
                 cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
@@ -104,6 +108,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddTransient<IRepositoryUserRole, RepositoryUserRole>();
             services.AddTransient<IRepositoryRolePermission, RepositoryRolePermission>();
             services.AddTransient<IRepositoryAuditLog, RepositoryAuditLog>();
+            services.AddTransient<IRepositoryUserSession, RepositoryUserSession>();
 
             services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.AddTransient<IRabbitMQMessageSender, RabbitMQMessageSender>();
@@ -113,7 +118,8 @@ namespace Sis_Pdv_Controle_Estoque_API
             
             // Authentication services
             services.AddScoped<IJwtTokenService, JwtTokenService>();
-            services.AddScoped<IPasswordService, PasswordService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IPasswordService, PasswordService>();
+            services.AddScoped<Interfaces.Services.IPasswordService, PasswordService>();
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<AuthSeederService>();
@@ -178,6 +184,13 @@ namespace Sis_Pdv_Controle_Estoque_API
                 options.DefaultPolicy = new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build();
+
+                // Add specific permission policies
+                options.AddPolicy("RequireUserManagementPermission", policy =>
+                    policy.RequireClaim("permission", "user.manage"));
+                    
+                options.AddPolicy("RequireRoleManagementPermission", policy =>
+                    policy.RequireClaim("permission", "role.manage"));
 
                 // Add permission-based policies dynamically
                 // This will be handled by the PermissionAuthorizationHandler

@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 
+using Interfaces.Services;
+
 namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
 {
     public class PasswordService : IPasswordService

@@ -47,6 +47,8 @@ namespace Interfaces.Repositories.Base
 
         Task RemoverAsync(IEnumerable<TEntidade> entidades);
 
+        Task RemoverAsync(TId id);
+
         void AdicionarLista(IEnumerable<TEntidade> entidades);
 
         Task AdicionarListaAsync(IEnumerable<TEntidade> entidades);
