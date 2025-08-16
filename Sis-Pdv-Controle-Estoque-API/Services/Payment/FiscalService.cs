@@ -220,16 +220,16 @@ Chave de Acesso: {fiscalReceipt.AccessKey}
             return xml;
         }
 
-        private async Task SendToSefazAsync(FiscalReceipt fiscalReceipt)
+    private async Task SendToSefazAsync(FiscalReceipt fiscalReceipt)
         {
             try
             {
-                using var channel = _rabbitConnection.CreateModel();
+        await using var channel = await _rabbitConnection.CreateChannelAsync();
                 
                 // Declare exchange and queue for SEFAZ integration
-                channel.ExchangeDeclare("sefaz.exchange", ExchangeType.Direct, durable: true);
-                channel.QueueDeclare("sefaz.fiscal.receipt", durable: true, exclusive: false, autoDelete: false);
-                channel.QueueBind("sefaz.fiscal.receipt", "sefaz.exchange", "fiscal.receipt");
+                await channel.ExchangeDeclareAsync("sefaz.exchange", ExchangeType.Direct, durable: true);
+                await channel.QueueDeclareAsync("sefaz.fiscal.receipt", durable: true, exclusive: false, autoDelete: false);
+                await channel.QueueBindAsync("sefaz.fiscal.receipt", "sefaz.exchange", "fiscal.receipt");
 
                 var message = new
                 {
@@ -241,10 +241,9 @@ Chave de Acesso: {fiscalReceipt.AccessKey}
 
                 var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
                 
-                channel.BasicPublish(
+                await channel.BasicPublishAsync(
                     exchange: "sefaz.exchange",
                     routingKey: "fiscal.receipt",
-                    basicProperties: null,
                     body: body);
 
                 fiscalReceipt.Status = FiscalReceiptStatus.Sent;
@@ -266,7 +265,7 @@ Chave de Acesso: {fiscalReceipt.AccessKey}
         {
             try
             {
-                using var channel = _rabbitConnection.CreateModel();
+                await using var channel = await _rabbitConnection.CreateChannelAsync();
                 
                 var message = new
                 {
@@ -279,10 +278,9 @@ Chave de Acesso: {fiscalReceipt.AccessKey}
 
                 var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
                 
-                channel.BasicPublish(
+                await channel.BasicPublishAsync(
                     exchange: "sefaz.exchange",
                     routingKey: "fiscal.receipt.cancellation",
-                    basicProperties: null,
                     body: body);
 
                 _logger.LogInformation("Fiscal receipt cancellation {ReceiptNumber} sent to SEFAZ via RabbitMQ", 

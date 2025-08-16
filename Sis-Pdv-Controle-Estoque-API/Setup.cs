@@ -68,6 +68,11 @@ namespace Sis_Pdv_Controle_Estoque_API
                 // Register user management handlers
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Usuarios.RegistrarUsuario.RegistrarUsuarioRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Roles.CriarRole.CriarRoleRequest).GetTypeInfo().Assembly);
+                
+                // Register payment handlers
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.ProcessPayment.ProcessPaymentRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.RefundPayment.RefundPaymentRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.CancelPayment.CancelPaymentRequest).GetTypeInfo().Assembly);
 
                 cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
@@ -104,6 +109,11 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddTransient<IRepositoryPedido, RepositoryPedido>();
 
             services.AddTransient<IRepositoryProdutoPedido, RepositoryProdutoPedido>();
+
+            // Payment repositories
+            services.AddTransient<Interfaces.Repositories.IRepositoryPayment, Sis_Pdv_Controle_Estoque_Infra.Repositories.RepositoryPayment>();
+            services.AddTransient<Interfaces.Repositories.IRepositoryPaymentAudit, Sis_Pdv_Controle_Estoque_Infra.Repositories.RepositoryPaymentAudit>();
+            services.AddTransient<Interfaces.Repositories.IRepositoryFiscalReceipt, Sis_Pdv_Controle_Estoque_Infra.Repositories.RepositoryFiscalReceipt>();
 
             // Authentication repositories
             services.AddTransient<IRepositoryRole, RepositoryRole>();
@@ -157,6 +167,14 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.IMetricsCollectionService, Sis_Pdv_Controle_Estoque_API.Services.Health.MetricsCollectionService>();
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.BusinessHealthCheck>();
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.SystemMetricsHealthCheck>();
+            
+            // Payment services
+            services.Configure<PaymentConfiguration>(configuration.GetSection(PaymentConfiguration.SectionName));
+            services.Configure<SefazConfiguration>(configuration.GetSection(SefazConfiguration.SectionName));
+            services.AddScoped<IPaymentService, Sis_Pdv_Controle_Estoque_API.Services.Payment.PaymentService>();
+            services.AddScoped<IFiscalService, Sis_Pdv_Controle_Estoque_API.Services.Payment.EnhancedFiscalService>();
+            services.AddScoped<IPaymentProcessorService, Sis_Pdv_Controle_Estoque_API.Services.Payment.EnhancedPaymentProcessorService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Payment.IPaymentReconciliationService, Sis_Pdv_Controle_Estoque_API.Services.Payment.PaymentReconciliationService>();
         }
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)

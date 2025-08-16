@@ -15,6 +15,21 @@ namespace Model
         public PaymentItemStatus Status { get; set; }
         public DateTime? ProcessedAt { get; set; }
         public string? ErrorMessage { get; set; }
+        
+        // Enhanced payment fields
+        public int Installments { get; set; } = 1;
+        public string? PixKey { get; set; }
+        public string? PixQrCode { get; set; }
+        public string? BankCode { get; set; }
+        public string? AgencyNumber { get; set; }
+        public string? AccountNumber { get; set; }
+        public string? CheckNumber { get; set; }
+        public string? VoucherCode { get; set; }
+        public decimal? InterestRate { get; set; }
+        public decimal? Fee { get; set; }
+        public string? ProcessorName { get; set; }
+        public string? ProcessorResponse { get; set; }
+        public DateTime? ExpiresAt { get; set; }
 
         public void ProcessItem(string processorTransactionId, string authorizationCode)
         {

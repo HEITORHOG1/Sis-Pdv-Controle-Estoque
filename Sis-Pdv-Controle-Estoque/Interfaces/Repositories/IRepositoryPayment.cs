@@ -3,7 +3,7 @@ using Model;
 
 namespace Interfaces.Repositories
 {
-    public interface IRepositoryPayment : IRepositoryBase<Payment>
+    public interface IRepositoryPayment : IRepositoryBase<Payment, Guid>
     {
         Task<IEnumerable<Payment>> GetByOrderIdAsync(Guid orderId, CancellationToken cancellationToken = default);
         Task<Payment?> GetWithItemsAsync(Guid paymentId, CancellationToken cancellationToken = default);
@@ -11,5 +11,8 @@ namespace Interfaces.Repositories
         Task<IEnumerable<Payment>> GetByStatusAsync(PaymentStatus status, CancellationToken cancellationToken = default);
         Task<IEnumerable<Payment>> GetByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
         Task<decimal> GetTotalAmountByDateAsync(DateTime date, CancellationToken cancellationToken = default);
+        Task<IEnumerable<Payment>> GetPaymentsByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+        Task<Payment?> BuscarPorIdAsync(Guid id);
+        Task<Payment> AlterarAsync(Payment entity);
     }
 }

@@ -76,8 +76,8 @@ public class BackupController : Microsoft.AspNetCore.Mvc.ControllerBase
                 Description = request.Description,
                 VerifyAfterBackup = request.VerifyAfterBackup,
                 RetentionDays = request.RetentionDays,
-                IncludePaths = request.IncludePaths ?? new List<string>(),
-                ExcludePaths = request.ExcludePaths ?? new List<string>()
+                IncludePaths = (request.IncludePaths ?? Enumerable.Empty<string>()).ToList(),
+                ExcludePaths = (request.ExcludePaths ?? Enumerable.Empty<string>()).ToList()
             };
 
             var result = await _backupService.CreateFileBackupAsync(options, cancellationToken);
@@ -117,8 +117,8 @@ public class BackupController : Microsoft.AspNetCore.Mvc.ControllerBase
                 Description = request.Description,
                 VerifyAfterBackup = request.VerifyAfterBackup,
                 RetentionDays = request.RetentionDays,
-                IncludePaths = request.IncludePaths ?? new List<string>(),
-                ExcludePaths = request.ExcludePaths ?? new List<string>()
+                IncludePaths = (request.IncludePaths ?? Enumerable.Empty<string>()).ToList(),
+                ExcludePaths = (request.ExcludePaths ?? Enumerable.Empty<string>()).ToList()
             };
 
             var result = await _backupService.CreateFullBackupAsync(options, cancellationToken);

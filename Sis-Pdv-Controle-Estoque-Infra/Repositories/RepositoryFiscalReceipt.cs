@@ -1,11 +1,11 @@
 using Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Model;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Base;
+using Repositories.Base;
 
 namespace Sis_Pdv_Controle_Estoque_Infra.Repositories
 {
-    public class RepositoryFiscalReceipt : RepositoryBase<FiscalReceipt>, IRepositoryFiscalReceipt
+    public class RepositoryFiscalReceipt : RepositoryBase<FiscalReceipt, Guid>, IRepositoryFiscalReceipt
     {
         public RepositoryFiscalReceipt(PdvContext context) : base(context)
         {
@@ -71,6 +71,28 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Repositories
             }
 
             return $"{prefix}001";
+        }
+
+        // Implement missing methods from IRepositoryBase
+        public async Task<FiscalReceipt?> BuscarPorIdAsync(Guid id)
+        {
+            return await _context.Set<FiscalReceipt>()
+                .Include(fr => fr.Payment)
+                .FirstOrDefaultAsync(fr => fr.Id == id && !fr.IsDeleted);
+        }
+
+        public async Task<FiscalReceipt> AdicionarAsync(FiscalReceipt entity)
+        {
+            await _context.Set<FiscalReceipt>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<FiscalReceipt> AlterarAsync(FiscalReceipt entity)
+        {
+            _context.Set<FiscalReceipt>().Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Repositories.Map;
 using Repositories.Interceptors;
+using Sis_Pdv_Controle_Estoque_Infra.Mappings;
 
 namespace Repositories.Base
 {

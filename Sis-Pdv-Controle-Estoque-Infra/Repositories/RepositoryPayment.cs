@@ -2,11 +2,11 @@ using Interfaces.Repositories;
 using Interfaces.Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 using Model;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Base;
+using Repositories.Base;
 
 namespace Sis_Pdv_Controle_Estoque_Infra.Repositories
 {
-    public class RepositoryPayment : RepositoryBase<Payment>, IRepositoryPayment
+    public class RepositoryPayment : RepositoryBase<Payment, Guid>, IRepositoryPayment
     {
         public RepositoryPayment(PdvContext context) : base(context)
         {
@@ -65,6 +65,24 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Repositories
                 .Where(p => p.PaymentDate >= startDate && p.PaymentDate < endDate 
                            && p.Status == PaymentStatus.Processed && !p.IsDeleted)
                 .SumAsync(p => p.TotalAmount, cancellationToken);
+        }
+
+        // Implement missing methods from IRepositoryBase
+        public async Task<Payment?> BuscarPorIdAsync(Guid id)
+        {
+            return await GetWithItemsAsync(id);
+        }
+
+        public async Task<Payment> AlterarAsync(Payment entity)
+        {
+            _context.Set<Payment>().Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<IEnumerable<Payment>> GetPaymentsByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+        {
+            return await GetByDateRangeAsync(startDate, endDate, cancellationToken);
         }
     }
 }

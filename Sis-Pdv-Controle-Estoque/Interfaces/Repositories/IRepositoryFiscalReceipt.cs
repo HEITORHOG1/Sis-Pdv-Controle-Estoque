@@ -3,7 +3,7 @@ using Model;
 
 namespace Interfaces.Repositories
 {
-    public interface IRepositoryFiscalReceipt : IRepositoryBase<FiscalReceipt>
+    public interface IRepositoryFiscalReceipt : IRepositoryBase<FiscalReceipt, Guid>
     {
         Task<FiscalReceipt?> GetByPaymentIdAsync(Guid paymentId, CancellationToken cancellationToken = default);
         Task<FiscalReceipt?> GetByReceiptNumberAsync(string receiptNumber, CancellationToken cancellationToken = default);
@@ -11,5 +11,8 @@ namespace Interfaces.Repositories
         Task<IEnumerable<FiscalReceipt>> GetByStatusAsync(FiscalReceiptStatus status, CancellationToken cancellationToken = default);
         Task<IEnumerable<FiscalReceipt>> GetPendingReceiptsAsync(CancellationToken cancellationToken = default);
         Task<string> GenerateNextReceiptNumberAsync(CancellationToken cancellationToken = default);
+        Task<FiscalReceipt?> BuscarPorIdAsync(Guid id);
+        new Task<FiscalReceipt> AdicionarAsync(FiscalReceipt entity);
+        Task<FiscalReceipt> AlterarAsync(FiscalReceipt entity);
     }
 }

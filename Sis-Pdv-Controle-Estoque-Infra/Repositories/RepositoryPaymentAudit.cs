@@ -1,11 +1,11 @@
 using Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Model;
-using Sis_Pdv_Controle_Estoque_Infra.Repositories.Base;
+using Repositories.Base;
 
 namespace Sis_Pdv_Controle_Estoque_Infra.Repositories
 {
-    public class RepositoryPaymentAudit : RepositoryBase<PaymentAudit>, IRepositoryPaymentAudit
+    public class RepositoryPaymentAudit : RepositoryBase<PaymentAudit, Guid>, IRepositoryPaymentAudit
     {
         public RepositoryPaymentAudit(PdvContext context) : base(context)
         {
@@ -49,6 +49,14 @@ namespace Sis_Pdv_Controle_Estoque_Infra.Repositories
                 .Where(pa => pa.ActionDate >= startDate && pa.ActionDate <= endDate && !pa.IsDeleted)
                 .OrderByDescending(pa => pa.ActionDate)
                 .ToListAsync(cancellationToken);
+        }
+
+        // Implement missing methods from IRepositoryBase
+        public async Task<PaymentAudit> AdicionarAsync(PaymentAudit entity)
+        {
+            await _context.Set<PaymentAudit>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
         }
     }
 }
