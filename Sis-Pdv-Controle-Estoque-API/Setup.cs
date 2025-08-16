@@ -135,9 +135,21 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddMemoryCache();
             services.AddScoped<ICacheService, MemoryCacheService>();
             
+            // Backup configuration
+            services.Configure<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupConfiguration>(configuration.GetSection("Backup"));
+            services.Configure<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupScheduleConfiguration>(configuration.GetSection("BackupSchedule"));
+            
             // Report services
             services.AddScoped<Interfaces.Services.IReportDataService, Sis_Pdv_Controle_Estoque_API.Services.Reports.ReportDataService>();
             services.AddScoped<Interfaces.Services.IReportService, Sis_Pdv_Controle_Estoque_API.Services.Reports.ReportService>();
+            
+            // Backup services
+            services.AddScoped<Sis_Pdv_Controle_Estoque.Interfaces.Services.IDatabaseBackupService, Sis_Pdv_Controle_Estoque_API.Services.Backup.DatabaseBackupService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque.Interfaces.Services.IFileBackupService, Sis_Pdv_Controle_Estoque_API.Services.Backup.FileBackupService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque.Interfaces.Services.IBackupService, Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupService>();
+            
+            // Background services
+            services.AddHostedService<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackgroundBackupService>();
         }
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
@@ -208,6 +220,13 @@ namespace Sis_Pdv_Controle_Estoque_API
                     
                 options.AddPolicy("InventoryView", policy =>
                     policy.RequireClaim("permission", "inventory.view"));
+
+                // Backup and restore policies
+                options.AddPolicy("RequireBackupPermission", policy =>
+                    policy.RequireClaim("permission", "backup.create"));
+                    
+                options.AddPolicy("RequireRestorePermission", policy =>
+                    policy.RequireClaim("permission", "backup.restore"));
 
                 // Add permission-based policies dynamically
                 // This will be handled by the PermissionAuthorizationHandler
