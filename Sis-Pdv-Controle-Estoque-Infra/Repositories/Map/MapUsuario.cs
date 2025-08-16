@@ -12,8 +12,8 @@ namespace Repositories.Map
             
             builder.Property(x => x.Login).HasMaxLength(150).IsRequired();
             builder.Property(x => x.Senha).HasMaxLength(255).IsRequired();
-            builder.Property(x => x.Email).HasMaxLength(255).IsRequired();
-            builder.Property(x => x.Nome).HasMaxLength(255).IsRequired();
+            builder.Property(x => x.Email).HasMaxLength(255);
+            builder.Property(x => x.Nome).HasMaxLength(255);
             builder.Property(x => x.StatusAtivo).IsRequired();
             builder.Property(x => x.LastLoginAt);
             builder.Property(x => x.RefreshToken).HasMaxLength(500);
@@ -30,7 +30,6 @@ namespace Repositories.Map
 
             // Indexes
             builder.HasIndex(x => x.Login).IsUnique();
-            builder.HasIndex(x => x.Email).IsUnique();
             builder.HasIndex(x => x.RefreshToken);
 
             // Relationships

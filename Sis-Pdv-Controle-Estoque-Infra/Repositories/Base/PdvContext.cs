@@ -2,15 +2,19 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Repositories.Map;
+using Repositories.Interceptors;
 
 namespace Repositories.Base
 {
     public class PdvContext : DbContext
     {
         private readonly IConfiguration _configuration;
-        public PdvContext(IConfiguration configuration)
+        private readonly AuditInterceptor _auditInterceptor;
+
+        public PdvContext(IConfiguration configuration, AuditInterceptor auditInterceptor)
         {
             _configuration = configuration;
+            _auditInterceptor = auditInterceptor;
         }
         public DbSet<Categoria> Categorias { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
@@ -39,7 +43,8 @@ namespace Repositories.Base
             {
                 optionsBuilder.UseMySql(connectionString, serverVersion)
                     .EnableSensitiveDataLogging()
-                    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+                    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+                    .AddInterceptors(_auditInterceptor);
             }
         }
 

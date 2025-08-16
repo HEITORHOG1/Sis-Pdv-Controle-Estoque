@@ -35,7 +35,12 @@
   - Create custom validators for business-specific rules (CPF/CNPJ, barcode format, etc.)
   - _Requirements: 2.1, 2.2, 2.3, 3.4_
 
-- [ ] 4. Improve entity models and database structure
+- [x] 4. Improve entity models and database structure
+
+
+
+
+
   - Enhance EntityBase with audit fields (CreatedAt, UpdatedAt, CreatedBy, UpdatedBy, soft delete)
   - Add missing entities for user management (User, Role, Permission, UserRole, RolePermission)
   - Create AuditLog entity for tracking all system changes

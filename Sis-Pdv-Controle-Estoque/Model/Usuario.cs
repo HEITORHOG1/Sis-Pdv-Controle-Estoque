@@ -1,3 +1,5 @@
+using Model.Base;
+
 namespace Model
 {
     public class Usuario : EntityBase
@@ -18,8 +20,8 @@ namespace Model
 
         public string Login { get; set; } = string.Empty;
         public string Senha { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Nome { get; set; } = string.Empty;
+        public string? Email { get; set; }
+        public string? Nome { get; set; }
         public bool StatusAtivo { get; set; } = true;
         public DateTime? LastLoginAt { get; set; }
         public string? RefreshToken { get; set; }

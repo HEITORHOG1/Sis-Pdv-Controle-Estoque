@@ -30,6 +30,7 @@ using System.Reflection;
 using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.Interceptors;
 
 namespace Sis_Pdv_Controle_Estoque_API
 {
@@ -66,6 +67,9 @@ namespace Sis_Pdv_Controle_Estoque_API
 
         public static void ConfigureRepositories(this IServiceCollection services, IConfiguration configuration)
         {
+            // Register audit interceptor
+            services.AddScoped<AuditInterceptor>();
+            
             services.AddScoped<PdvContext, PdvContext>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();

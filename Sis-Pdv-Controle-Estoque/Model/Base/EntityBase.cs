@@ -1,4 +1,6 @@
-﻿namespace Model.Base
+﻿using System;
+
+namespace Model.Base
 {
     public abstract class EntityBase : IAuditableEntity
     {
