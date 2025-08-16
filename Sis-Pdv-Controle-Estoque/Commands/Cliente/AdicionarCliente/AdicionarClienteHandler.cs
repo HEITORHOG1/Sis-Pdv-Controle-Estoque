@@ -19,7 +19,7 @@ namespace Commands.Cliente.AdicionarCliente
             // Validation is now handled by the ValidationBehavior pipeline
 
             //Verificar se o cliente já existe
-            if (_repositoryCliente.Existe(x => x.CpfCnpj == request.CpfCnpj))
+            if (await _repositoryCliente.ExisteAsync(x => x.CpfCnpj == request.CpfCnpj))
             {
                 AddNotification("CpfCnpj", "Cliente já cadastrado com este CPF/CNPJ");
                 return new Response(this);
@@ -32,12 +32,12 @@ namespace Commands.Cliente.AdicionarCliente
                 return new Response(this);
             }
             
-            cliente = _repositoryCliente.Adicionar(cliente);
+            cliente = await _repositoryCliente.AdicionarAsync(cliente);
 
             //Criar meu objeto de resposta
             var response = new Response(this, cliente);
 
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }

@@ -31,6 +31,11 @@ namespace Repositories.Base
             return Listar(includeProperties).FirstOrDefault(where);
         }
 
+        public async Task<TEntidade?> ObterPorAsync(Expression<Func<TEntidade, bool>> where, params Expression<Func<TEntidade, object>>[] includeProperties)
+        {
+            return await Listar(includeProperties).FirstOrDefaultAsync(where);
+        }
+
         public TEntidade ObterPorId(TId id, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
             if (includeProperties.Any())
@@ -39,6 +44,16 @@ namespace Repositories.Base
             }
 
             return _context.Set<TEntidade>().Find(id);
+        }
+
+        public async Task<TEntidade?> ObterPorIdAsync(TId id, params Expression<Func<TEntidade, object>>[] includeProperties)
+        {
+            if (includeProperties.Any())
+            {
+                return await Listar(includeProperties).FirstOrDefaultAsync(x => x.Id.ToString() == id.ToString());
+            }
+
+            return await _context.Set<TEntidade>().FindAsync(id);
         }
 
         public IQueryable<TEntidade> Listar(params Expression<Func<TEntidade, object>>[] includeProperties)
@@ -53,16 +68,25 @@ namespace Repositories.Base
             return query;
         }
 
+        public async Task<IEnumerable<TEntidade>> ListarAsync(params Expression<Func<TEntidade, object>>[] includeProperties)
+        {
+            return await Listar(includeProperties).ToListAsync();
+        }
+
         public IQueryable<TEntidade> ListarOrdenadosPor<TKey>(Expression<Func<TEntidade, TKey>> ordem, bool ascendente = true, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
             return ascendente ? Listar(includeProperties).OrderBy(ordem) : Listar(includeProperties).OrderByDescending(ordem);
+        }
+
+        public async Task<IEnumerable<TEntidade>> ListarOrdenadosPorAsync<TKey>(Expression<Func<TEntidade, TKey>> ordem, bool ascendente = true, params Expression<Func<TEntidade, object>>[] includeProperties)
+        {
+            return await (ascendente ? Listar(includeProperties).OrderBy(ordem) : Listar(includeProperties).OrderByDescending(ordem)).ToListAsync();
         }
 
         public TEntidade Adicionar(TEntidade entidade)
         {
             var entity = _context.Add(entidade);
             return entity.Entity;
-            //return _context.Set<TEntidade>().Add(entidade);
         }
 
         public async Task<TEntidade> AdicionarAsync(TEntidade entidade)
@@ -74,8 +98,13 @@ namespace Repositories.Base
         public TEntidade Editar(TEntidade entidade)
         {
             _context.Entry(entidade).State = EntityState.Modified;
-
             return entidade;
+        }
+
+        public async Task<TEntidade> EditarAsync(TEntidade entidade)
+        {
+            _context.Entry(entidade).State = EntityState.Modified;
+            return await Task.FromResult(entidade);
         }
 
         public void Remover(TEntidade entidade)
@@ -88,25 +117,60 @@ namespace Repositories.Base
             _context.Set<TEntidade>().RemoveRange(entidades);
         }
 
-        /// <summary>
-        /// Adicionar um coleção de entidades ao contexto do entity framework
-        /// </summary>
-        /// <param name="entidades">Lista de entidades que deverão ser persistidas</param>
-        /// <returns></returns>
+        public async Task RemoverAsync(TEntidade entidade)
+        {
+            _context.Set<TEntidade>().Remove(entidade);
+            await Task.CompletedTask;
+        }
+
+        public async Task RemoverAsync(IEnumerable<TEntidade> entidades)
+        {
+            _context.Set<TEntidade>().RemoveRange(entidades);
+            await Task.CompletedTask;
+        }
+
         public void AdicionarLista(IEnumerable<TEntidade> entidades)
         {
             _context.AddRange(entidades);
-            //return _context.Set<TEntidade>().AddRange(entidades);
         }
 
-        /// <summary>
-        /// Verifica se existe algum objeto com a condição informada
-        /// </summary>
-        /// <param name="where"></param>
-        /// <returns></returns>
+        public async Task AdicionarListaAsync(IEnumerable<TEntidade> entidades)
+        {
+            await _context.AddRangeAsync(entidades);
+        }
+
         public bool Existe(Func<TEntidade, bool> where)
         {
             return _context.Set<TEntidade>().Any(where);
+        }
+
+        public async Task<bool> ExisteAsync(Expression<Func<TEntidade, bool>> where)
+        {
+            return await _context.Set<TEntidade>().AnyAsync(where);
+        }
+
+        public async Task<int> ContarAsync(Expression<Func<TEntidade, bool>>? where = null)
+        {
+            if (where != null)
+            {
+                return await _context.Set<TEntidade>().CountAsync(where);
+            }
+            return await _context.Set<TEntidade>().CountAsync();
+        }
+
+        public async Task<IEnumerable<TEntidade>> ListarPaginadoAsync(int pageNumber, int pageSize, Expression<Func<TEntidade, bool>>? where = null, params Expression<Func<TEntidade, object>>[] includeProperties)
+        {
+            var query = Listar(includeProperties);
+            
+            if (where != null)
+            {
+                query = query.Where(where);
+            }
+
+            return await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         /// <summary>
@@ -124,7 +188,5 @@ namespace Repositories.Base
 
             return query;
         }
-
-
     }
 }

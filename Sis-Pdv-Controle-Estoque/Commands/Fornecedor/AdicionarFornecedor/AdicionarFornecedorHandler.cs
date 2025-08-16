@@ -19,7 +19,7 @@ namespace Commands.Fornecedor.AdicionarFornecedor
             // Validation is now handled by the ValidationBehavior pipeline
 
             //Verificar se o fornecedor já existe
-            if (_repositoryFornecedor.Existe(x => x.Cnpj == request.Cnpj))
+            if (await _repositoryFornecedor.ExisteAsync(x => x.Cnpj == request.Cnpj))
             {
                 AddNotification("Cnpj", "Fornecedor já cadastrado com este CNPJ");
                 return new Response(this);
@@ -43,12 +43,12 @@ namespace Commands.Fornecedor.AdicionarFornecedor
                 return new Response(this);
             }
 
-            Fornecedor = _repositoryFornecedor.Adicionar(Fornecedor);
+            Fornecedor = await _repositoryFornecedor.AdicionarAsync(Fornecedor);
 
             //Criar meu objeto de resposta
             var response = new Response(this, Fornecedor);
 
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }

@@ -21,6 +21,7 @@ using Repositories.Transactions;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
 using Sis_Pdv_Controle_Estoque_API.Services;
 using Sis_Pdv_Controle_Estoque_API.Services.Auth;
+using Sis_Pdv_Controle_Estoque_API.Services.Cache;
 using Sis_Pdv_Controle_Estoque_API.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -56,13 +57,18 @@ namespace Sis_Pdv_Controle_Estoque_API
                 cfg.RegisterServicesFromAssembly(typeof(ListarFornecedorPorIdRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(ListarFornecedorPorNomeFornecedorRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(ListarProdutoPorCodBarrasRequest).GetTypeInfo().Assembly);
+                
+                // Register new paginated handlers
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Produto.ListarProdutosPaginado.ListarProdutosPaginadoRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Cliente.ListarClientesPaginado.ListarClientesPaginadoRequest).GetTypeInfo().Assembly);
 
                 cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
             });
 
-            // Add validation pipeline behavior
+            // Add pipeline behaviors
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Sis_Pdv_Controle_Estoque_API.Behaviors.ValidationBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Sis_Pdv_Controle_Estoque_API.Behaviors.CachingBehavior<,>));
         }
 
         public static void ConfigureRepositories(this IServiceCollection services, IConfiguration configuration)
@@ -111,6 +117,11 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<AuthSeederService>();
+            
+            // Cache services
+            services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.SectionName));
+            services.AddMemoryCache();
+            services.AddScoped<ICacheService, MemoryCacheService>();
         }
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
