@@ -168,6 +168,21 @@
   - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
 - [ ] 14. Add payment processing and fiscal integration
+
+
+
+procure sempre tutotiral quando for fazer o sefaz a integraçã para ficar compelta e correta exemplo , mas pode procurar na internet ou github tambem vamos fazer bem feito clenacode e robusto 
+
+https://enotas.com.br/blog/emitir-nfe-c-sharp/
+
+
+
+e temo suqe tem uma opção via a pi que posso enviar a comunicação par o sefaz ou deixa ir para contigencia , esat opção tem que ser contrada via api no banco de dados acredito que seria bom poder enviar ou não , o que vc acha , verfica emissão de notas fcas e tudo mais certinho e correto 
+
+
+
+
+
   - Create payment service interface with support for multiple payment methods
   - Implement fiscal receipt generation with SEFAZ integration via RabbitMQ
   - Add payment validation and processing with proper error handling

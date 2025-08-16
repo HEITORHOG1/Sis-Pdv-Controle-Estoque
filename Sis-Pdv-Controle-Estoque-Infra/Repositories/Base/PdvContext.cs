@@ -35,6 +35,12 @@ namespace Repositories.Base
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<UserSession> UserSessions { get; set; }
         public DbSet<StockMovement> StockMovements { get; set; }
+        
+        // Payment entities
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentItem> PaymentItems { get; set; }
+        public DbSet<FiscalReceipt> FiscalReceipts { get; set; }
+        public DbSet<PaymentAudit> PaymentAudits { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -73,6 +79,12 @@ namespace Repositories.Base
             modelBuilder.ApplyConfiguration(new MapAuditLog());
             modelBuilder.ApplyConfiguration(new MapUserSession());
             modelBuilder.ApplyConfiguration(new MapStockMovement());
+            
+            // Payment configurations
+            modelBuilder.ApplyConfiguration(new MapPayment());
+            modelBuilder.ApplyConfiguration(new MapPaymentItem());
+            modelBuilder.ApplyConfiguration(new MapFiscalReceipt());
+            modelBuilder.ApplyConfiguration(new MapPaymentAudit());
         }
     }
 }
