@@ -1,6 +1,7 @@
 using Serilog;
 using Serilog.Events;
 using Sis_Pdv_Controle_Estoque_API;
+using Sis_Pdv_Controle_Estoque_API.Configuration;
 using Sis_Pdv_Controle_Estoque_API.Middleware;
 using Sis_Pdv_Controle_Estoque_API.Services;
 
@@ -49,6 +50,10 @@ builder.Services.ConfigureMediatR();
 builder.Services.ConfigureValidation();
 builder.Services.ConfigureAuthentication(builder.Configuration);
 builder.Services.ConfigureAuthorization();
+builder.Services.ConfigureHealthChecks(builder.Configuration);
+
+// Configure API versioning
+builder.Services.ConfigureApiVersioning();
 
 // Configure controllers with enhanced JSON options
 builder.Services.AddControllers()
@@ -60,48 +65,7 @@ builder.Services.AddControllers()
 
 // Configure API documentation
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "PDV Control System API",
-        Version = "v1",
-        Description = "API for Point of Sale and Inventory Control System"
-    });
-    
-    // Add JWT authentication to Swagger
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-    
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-    {
-        {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-    
-    // Include XML comments if available
-    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    if (File.Exists(xmlPath))
-    {
-        c.IncludeXmlComments(xmlPath);
-    }
-});
+builder.Services.ConfigureSwagger(builder.Environment);
 
 // Configure CORS for development
 if (builder.Environment.IsDevelopment())
@@ -136,15 +100,13 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 // Add request logging middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
 
+// Add metrics collection middleware
+app.UseMiddleware<Sis_Pdv_Controle_Estoque_API.Middleware.MetricsMiddleware>();
+
 app.UseHttpsRedirection();
 
-// Configure Swagger
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "PDV Control System API v1");
-    c.RoutePrefix = string.Empty; // Serve Swagger UI at root
-});
+// Configure Swagger documentation
+app.UseSwaggerDocumentation(app.Environment);
 
 app.UseStaticFiles();
 
@@ -152,6 +114,9 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseMiddleware<AuthenticationMiddleware>();
 app.UseAuthorization();
+
+// Configure health check endpoints
+app.UseHealthCheckEndpoints();
 
 app.MapControllers();
 

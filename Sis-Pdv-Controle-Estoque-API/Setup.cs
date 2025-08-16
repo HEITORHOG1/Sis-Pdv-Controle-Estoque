@@ -34,6 +34,7 @@ using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Interceptors;
+using Sis_Pdv_Controle_Estoque_API.Configuration;
 
 namespace Sis_Pdv_Controle_Estoque_API
 {
@@ -150,6 +151,11 @@ namespace Sis_Pdv_Controle_Estoque_API
             
             // Background services
             services.AddHostedService<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackgroundBackupService>();
+            
+            // Health check services
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.IMetricsCollectionService, Sis_Pdv_Controle_Estoque_API.Services.Health.MetricsCollectionService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.BusinessHealthCheck>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.SystemMetricsHealthCheck>();
         }
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
@@ -246,6 +252,11 @@ namespace Sis_Pdv_Controle_Estoque_API
                 // Disable automatic model state validation since we're handling it in the pipeline
                 options.SuppressModelStateInvalidFilter = true;
             });
+        }
+
+        public static void ConfigureHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHealthCheckServices(configuration);
         }
     }
 }

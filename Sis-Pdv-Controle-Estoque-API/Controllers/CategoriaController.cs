@@ -7,10 +7,48 @@ using Commands.Categoria.RemoverCategoria;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Transactions;
+using Microsoft.AspNetCore.Authorization;
+using Asp.Versioning;
+using System.ComponentModel.DataAnnotations;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
-
+    /// <summary>
+    /// Category management endpoints for the PDV Control System
+    /// </summary>
+    /// <remarks>
+    /// This controller provides comprehensive category management functionality including:
+    /// 
+    /// **Category Operations:**
+    /// - Category creation, update, and deletion
+    /// - Category listing and search functionality
+    /// - Hierarchical category management
+    /// - Category-product relationship management
+    /// 
+    /// **Features:**
+    /// - Unique category name validation
+    /// - Category hierarchy support (parent-child relationships)
+    /// - Product count tracking per category
+    /// - Category status management (active/inactive)
+    /// - Bulk category operations
+    /// 
+    /// **Business Rules:**
+    /// - Category names must be unique within the same parent level
+    /// - Categories with associated products cannot be deleted
+    /// - Category hierarchy depth is limited to prevent circular references
+    /// - Inactive categories are hidden from product assignment
+    /// 
+    /// **Security:**
+    /// - Requires authentication for all operations
+    /// - Category management permissions required for modifications
+    /// - Audit logging for all category changes
+    /// </remarks>
+    [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/categoria")]
+    [Produces("application/json")]
+    [Tags("Categories")]
+    [Authorize]
     public class CategoriaController : Base.ControllerBase
     {
         private readonly IMediator _mediator;
@@ -23,11 +61,71 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
 
         #region Categoria
         /// <summary>
-        /// Adiciona uma nova categoria ao sistema.
+        /// Create a new product category
         /// </summary>
-        /// <param name="request">O objeto contendo as informações da nova categoria.</param>
-        /// <returns>Retorna a resposta da solicitação de adição.</returns>
+        /// <param name="request">Category creation details including name, description, and parent category</param>
+        /// <returns>Created category information with assigned ID</returns>
+        /// <remarks>
+        /// **Usage:**
+        /// 
+        /// This endpoint creates a new product category in the system.
+        /// Categories help organize products and enable better inventory management.
+        /// 
+        /// **Request Body:**
+        /// ```json
+        /// {
+        ///   "nome": "Eletrônicos",
+        ///   "descricao": "Produtos eletrônicos e tecnologia",
+        ///   "parentCategoryId": null,
+        ///   "isActive": true,
+        ///   "sortOrder": 1
+        /// }
+        /// ```
+        /// 
+        /// **Example Response:**
+        /// ```json
+        /// {
+        ///   "success": true,
+        ///   "message": "Categoria criada com sucesso",
+        ///   "data": {
+        ///     "id": "123e4567-e89b-12d3-a456-426614174000",
+        ///     "nome": "Eletrônicos",
+        ///     "descricao": "Produtos eletrônicos e tecnologia",
+        ///     "parentCategoryId": null,
+        ///     "isActive": true,
+        ///     "sortOrder": 1,
+        ///     "productCount": 0,
+        ///     "createdAt": "2024-01-15T10:30:00Z",
+        ///     "createdBy": "admin@pdvsystem.com"
+        ///   }
+        /// }
+        /// ```
+        /// 
+        /// **Business Rules:**
+        /// - Category name must be unique within the same parent level
+        /// - Description is optional but recommended
+        /// - Parent category must exist if specified
+        /// - Sort order determines display sequence
+        /// - Maximum hierarchy depth is 5 levels
+        /// 
+        /// **Validation Rules:**
+        /// - Name: Required, 2-100 characters
+        /// - Description: Optional, max 500 characters
+        /// - Parent category must be active if specified
+        /// </remarks>
+        /// <response code="201">Category created successfully</response>
+        /// <response code="400">Invalid request data or validation errors</response>
+        /// <response code="401">Unauthorized - invalid or missing token</response>
+        /// <response code="403">Forbidden - insufficient permissions</response>
+        /// <response code="409">Conflict - category name already exists</response>
+        /// <response code="500">Internal server error</response>
         [HttpPost]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         [Route("api/Categoria/AdicionarCategoria")]
         public async Task<IActionResult> AdicionarCategoria([FromBody] AdicionarCategoriaRequest request)
         {

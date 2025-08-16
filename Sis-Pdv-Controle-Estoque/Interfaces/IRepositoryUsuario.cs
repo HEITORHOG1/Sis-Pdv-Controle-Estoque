@@ -8,5 +8,6 @@
         Task<IEnumerable<Role>> GetUserRolesAsync(Guid userId);
         Task<IEnumerable<Permission>> GetUserPermissionsAsync(Guid userId);
         Task<bool> HasPermissionAsync(Guid userId, string permission);
+        Task<int> CountActiveUsersAsync();
     }
 }

@@ -68,5 +68,11 @@ namespace Repositories
                 .Where(rp => !rp.IsDeleted)
                 .AnyAsync(rp => rp.Permission.Name == permission);
         }
+
+        public async Task<int> CountActiveUsersAsync()
+        {
+            return await _context.Usuarios
+                .CountAsync(u => u.StatusAtivo && !u.IsDeleted);
+        }
     }
 }

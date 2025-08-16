@@ -21,11 +21,44 @@ using Sis_Pdv_Controle_Estoque_API.Models.Auth;
 using Sis_Pdv_Controle_Estoque_API.Services.Auth;
 using Repositories.Transactions;
 using System.Security.Claims;
+using Asp.Versioning;
+using System.ComponentModel.DataAnnotations;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
+    /// <summary>
+    /// User and role management endpoints for the PDV Control System
+    /// </summary>
+    /// <remarks>
+    /// This controller provides comprehensive user management functionality including:
+    /// 
+    /// **User Operations:**
+    /// - User registration and profile management
+    /// - Password management and reset functionality
+    /// - User status management (active/inactive)
+    /// - Session management and monitoring
+    /// 
+    /// **Role and Permission Management:**
+    /// - Role creation and management
+    /// - Permission assignment and revocation
+    /// - Role-based access control (RBAC)
+    /// 
+    /// **Security Features:**
+    /// - Secure password hashing with bcrypt
+    /// - Session tracking and management
+    /// - Audit logging for all user operations
+    /// - Permission-based access control
+    /// 
+    /// **Required Permissions:**
+    /// - Most endpoints require `user.manage` permission
+    /// - Role management requires `role.manage` permission
+    /// - Users can manage their own profile without special permissions
+    /// </remarks>
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/users")]
+    [Produces("application/json")]
+    [Tags("User Management")]
     public class UserManagementController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ControllerBase
     {
         private readonly IMediator _mediator;
@@ -39,11 +72,57 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Registra um novo usuário no sistema
+        /// Register a new user in the system
         /// </summary>
+        /// <param name="request">User registration data including login, email, password, and profile information</param>
+        /// <returns>Created user information with assigned ID and default role</returns>
+        /// <remarks>
+        /// **Usage:**
+        /// 
+        /// Creates a new user account with the provided information. The user will be created with:
+        /// - Secure password hashing using bcrypt
+        /// - Default role assignment (usually "User" role)
+        /// - Email validation and uniqueness check
+        /// - Audit trail entry for user creation
+        /// 
+        /// **Example Request:**
+        /// ```json
+        /// {
+        ///   "login": "newuser",
+        ///   "email": "newuser@company.com",
+        ///   "password": "SecurePassword123!",
+        ///   "nome": "New User",
+        ///   "telefone": "(11) 99999-9999",
+        ///   "isActive": true
+        /// }
+        /// ```
+        /// 
+        /// **Password Requirements:**
+        /// - Minimum 8 characters
+        /// - At least one uppercase letter
+        /// - At least one lowercase letter
+        /// - At least one number
+        /// - At least one special character
+        /// 
+        /// **Validation Rules:**
+        /// - Login must be unique and 3-50 characters
+        /// - Email must be valid format and unique
+        /// - Phone number must follow Brazilian format
+        /// - Name is required and 2-100 characters
+        /// </remarks>
+        /// <response code="201">User created successfully</response>
+        /// <response code="400">Invalid request data or validation errors</response>
+        /// <response code="401">Unauthorized - invalid or missing token</response>
+        /// <response code="403">Forbidden - insufficient permissions</response>
+        /// <response code="409">Conflict - login or email already exists</response>
         [HttpPost("register")]
         [Authorize(Policy = "RequireUserManagementPermission")]
-        public async Task<IActionResult> RegisterUser([FromBody] RegistrarUsuarioRequest request)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> RegisterUser([FromBody, Required] RegistrarUsuarioRequest request)
         {
             var response = await _mediator.Send(request);
             return await ResponseAsync(response);
