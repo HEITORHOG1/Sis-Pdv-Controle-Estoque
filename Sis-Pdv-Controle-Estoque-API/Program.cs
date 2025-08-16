@@ -7,6 +7,9 @@ using Sis_Pdv_Controle_Estoque_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add configuration management with environment variable substitution
+builder.Services.AddConfigurationManagement(builder.Configuration);
+
 // Configure enhanced Serilog with enrichers and structured logging
 var loggerConfiguration = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -126,6 +129,10 @@ Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
 
 try
 {
+    // Validate configuration before starting the application
+    await app.Services.ValidateConfigurationAsync();
+    Log.Information("Configuration validation completed successfully");
+    
     app.Run();
 }
 catch (Exception ex)
@@ -136,3 +143,6 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+// Make Program class accessible for testing
+public partial class Program { }

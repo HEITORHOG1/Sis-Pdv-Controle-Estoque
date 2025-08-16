@@ -122,6 +122,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             
             // Authentication services
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IJwtTokenService, Sis_Pdv_Controle_Estoque_API.Services.Auth.JwtTokenService>();
+            services.AddScoped<Interfaces.Services.IJwtTokenService>(provider => provider.GetRequiredService<Sis_Pdv_Controle_Estoque_API.Services.Auth.IJwtTokenService>());
             
             // Inventory services
             services.AddScoped<IStockValidationService, StockValidationService>();
@@ -132,7 +133,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddScoped<AuthSeederService>();
             
             // Cache services
-            services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.SectionName));
+            services.Configure<Sis_Pdv_Controle_Estoque_API.Configuration.CacheOptions>(configuration.GetSection(Sis_Pdv_Controle_Estoque_API.Configuration.CacheOptions.SectionName));
             services.AddMemoryCache();
             services.AddScoped<ICacheService, MemoryCacheService>();
             

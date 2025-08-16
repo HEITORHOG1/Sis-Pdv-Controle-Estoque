@@ -1,0 +1,36 @@
+# Development Dockerfile with hot reload support
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
+WORKDIR /src
+
+# Install dotnet tools
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy project files for restore
+COPY ["Sis-Pdv-Controle-Estoque-API/Sis-Pdv-Controle-Estoque-API.csproj", "Sis-Pdv-Controle-Estoque-API/"]
+COPY ["Sis-Pdv-Controle-Estoque/Sis-Pdv-Controle-Estoque-Domain.csproj", "Sis-Pdv-Controle-Estoque/"]
+COPY ["Sis-Pdv-Controle-Estoque-Infra/Sis-Pdv-Controle-Estoque-Infra.csproj", "Sis-Pdv-Controle-Estoque-Infra/"]
+COPY ["ClassLibrary1/MessageBus.csproj", "ClassLibrary1/"]
+
+# Restore dependencies
+RUN dotnet restore "Sis-Pdv-Controle-Estoque-API/Sis-Pdv-Controle-Estoque-API.csproj"
+
+# Copy source code
+COPY . .
+
+# Create directories
+RUN mkdir -p /app/logs /app/backups
+
+# Expose ports
+EXPOSE 8080
+EXPOSE 8081
+
+# Set environment
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS=http://+:8080
+
+# Working directory
+WORKDIR /src/Sis-Pdv-Controle-Estoque-API
+
+# Entry point for development with hot reload
+ENTRYPOINT ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080"]
