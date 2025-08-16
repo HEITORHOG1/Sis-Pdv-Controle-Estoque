@@ -1,4 +1,6 @@
-﻿namespace Model
+﻿using Model.Base;
+
+namespace Model
 {
 
     public class Categoria : EntityBase
@@ -18,8 +20,7 @@
             Id = id;
             NomeCategoria = nomeCategoria;
         }
-        public string NomeCategoria { get; set; }
-        public Guid Id { get; set; }
+        public string NomeCategoria { get; set; } = string.Empty;
 
         public void AlterarCategoria(Guid id, string nomeCategoria)
         {
