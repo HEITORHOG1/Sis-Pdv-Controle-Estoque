@@ -9,6 +9,7 @@ using RabbitMQ.Client;
 using System.Text;
 using System.Xml.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
 {
@@ -19,7 +20,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
         private readonly IRepositoryPaymentAudit _auditRepository;
         private readonly ILogger<EnhancedFiscalService> _logger;
         private readonly SefazConfiguration _sefazConfig;
-        private readonly IConnection _rabbitConnection;
+    private readonly RabbitMQSettings _rabbitSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public EnhancedFiscalService(
@@ -28,7 +29,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
             IRepositoryPaymentAudit auditRepository,
             ILogger<EnhancedFiscalService> logger,
             IOptions<SefazConfiguration> sefazConfig,
-            IConnection rabbitConnection,
+            IOptions<RabbitMQSettings> rabbitOptions,
             IHttpContextAccessor httpContextAccessor)
         {
             _fiscalReceiptRepository = fiscalReceiptRepository;
@@ -36,7 +37,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
             _auditRepository = auditRepository;
             _logger = logger;
             _sefazConfig = sefazConfig.Value;
-            _rabbitConnection = rabbitConnection;
+            _rabbitSettings = rabbitOptions.Value;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -199,10 +200,12 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
             return await GenerateNFCeXmlAsync(payment, fiscalReceipt, cancellationToken);
         }
 
-        private async Task<string> GenerateNFCeXmlAsync(Model.Payment payment, FiscalReceipt fiscalReceipt, CancellationToken cancellationToken)
+    private async Task<string> GenerateNFCeXmlAsync(Model.Payment payment, FiscalReceipt fiscalReceipt, CancellationToken cancellationToken)
         {
             try
             {
+        // Maintain async signature
+        await Task.Yield();
                 // Generate access key
                 var accessKey = GenerateAccessKey(fiscalReceipt);
                 
@@ -360,6 +363,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
         {
             // Check if SEFAZ is available and not in contingency mode
             // In a real implementation, this would check SEFAZ availability
+            await Task.Yield();
             return !_sefazConfig.Contingencia.Habilitada;
         }
 
@@ -367,7 +371,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
         {
             try
             {
-        await using var channel = await _rabbitConnection.CreateChannelAsync();
+                var factory = new ConnectionFactory
+                {
+                    HostName = _rabbitSettings.HostName ?? "localhost",
+                    UserName = _rabbitSettings.UserName ?? "guest",
+                    Password = _rabbitSettings.Password ?? "guest"
+                };
+
+                await using var connection = await factory.CreateConnectionAsync();
+                await using var channel = await connection.CreateChannelAsync();
                 
                 // Declare exchange and queue for SEFAZ integration
                 await channel.ExchangeDeclareAsync("sefaz.exchange", ExchangeType.Direct, durable: true);
@@ -445,7 +457,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Payment
         {
             try
             {
-                await using var channel = await _rabbitConnection.CreateChannelAsync();
+                var factory = new ConnectionFactory
+                {
+                    HostName = _rabbitSettings.HostName ?? "localhost",
+                    UserName = _rabbitSettings.UserName ?? "guest",
+                    Password = _rabbitSettings.Password ?? "guest"
+                };
+
+                await using var connection = await factory.CreateConnectionAsync();
+                await using var channel = await connection.CreateChannelAsync();
                 
                 var message = new SefazCancellationMessage
                 {

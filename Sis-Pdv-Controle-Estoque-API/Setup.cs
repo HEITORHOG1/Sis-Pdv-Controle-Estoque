@@ -128,7 +128,8 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddTransient<IRabbitMQMessageSender, RabbitMQMessageSender>();
             
             // Register application services
-            services.AddScoped<IApplicationLogger, ApplicationLogger>();
+            // ApplicationLogger is stateless and used by middleware; register as Singleton to avoid scoped resolution from root provider
+            services.AddSingleton<IApplicationLogger, ApplicationLogger>();
             services.AddHttpContextAccessor();
             
             // Authentication services

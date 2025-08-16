@@ -51,8 +51,6 @@ builder.Host.UseSerilog();
 builder.Services.ConfigureRepositories(builder.Configuration);
 builder.Services.ConfigureMediatR();
 builder.Services.ConfigureValidation();
-builder.Services.ConfigureAuthentication(builder.Configuration);
-builder.Services.ConfigureAuthorization();
 builder.Services.ConfigureHealthChecks(builder.Configuration);
 
 // Configure API versioning

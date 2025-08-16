@@ -110,10 +110,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
                     .RequireAuthenticatedUser()
                     .Build();
 
-                // Fallback policy for endpoints without explicit authorization
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
+                // Note: No global fallback policy forcing authentication.
+                // Endpoints without [Authorize] will be accessible (e.g., Swagger, health checks).
 
                 // Admin-only policies
                 options.AddPolicy("AdminOnly", policy =>
