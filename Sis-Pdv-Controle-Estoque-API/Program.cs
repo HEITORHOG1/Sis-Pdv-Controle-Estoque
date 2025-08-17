@@ -5,6 +5,8 @@ using Sis_Pdv_Controle_Estoque_API;
 using Sis_Pdv_Controle_Estoque_API.Configuration;
 using Sis_Pdv_Controle_Estoque_API.Middleware;
 using Sis_Pdv_Controle_Estoque_API.Services;
+using Repositories.Base;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,7 +84,48 @@ builder.Services.ConfigureSwagger(builder.Environment);
 // Configure comprehensive security
 builder.Services.ConfigureSecurity(builder.Configuration, builder.Environment);
 
+// Register seeders
+builder.Services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.AuthSeederService>();
+builder.Services.AddScoped<DomainSeederService>();
+
 var app = builder.Build();
+
+// Apply migrations and seed data at startup
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<PdvContext>();
+        await db.Database.MigrateAsync();
+
+        // Run seeds only once: if database is empty (no core data), then seed
+        var hasCoreData = await db.Usuarios.AnyAsync()
+                          || await db.Roles.AnyAsync()
+                          || await db.Permissions.AnyAsync()
+                          || await db.Produtos.AnyAsync()
+                          || await db.Categorias.AnyAsync();
+
+        if (!hasCoreData)
+        {
+            var authSeeder = scope.ServiceProvider.GetRequiredService<Sis_Pdv_Controle_Estoque_API.Services.Auth.AuthSeederService>();
+            await authSeeder.SeedAsync();
+
+            var domainSeeder = scope.ServiceProvider.GetRequiredService<DomainSeederService>();
+            await domainSeeder.SeedAsync();
+
+            Log.Information("Database migrated and seeded successfully (first run)");
+        }
+        else
+        {
+            Log.Information("Database already contains data. Skipping seed.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Log.Error(ex, "Failed to migrate and seed the database");
+        throw;
+    }
+}
 
 // Configure the HTTP request pipeline with proper middleware order
 if (app.Environment.IsDevelopment())

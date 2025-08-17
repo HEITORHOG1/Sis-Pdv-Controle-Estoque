@@ -42,7 +42,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
                 await SeedPermissionsAsync();
                 await SeedRolesAsync();
                 await SeedRolePermissionsAsync();
-                await SeedDefaultUserAsync();
+                await SeedDefaultUsersAsync();
                 
                 await _context.SaveChangesAsync();
                 
@@ -114,7 +114,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
                 new Role { Name = "Administrator", Description = "Administrador do sistema com acesso total" },
                 new Role { Name = "Manager", Description = "Gerente com acesso a relatórios e configurações" },
                 new Role { Name = "Cashier", Description = "Operador de caixa com acesso a vendas" },
-                new Role { Name = "StockManager", Description = "Gerente de estoque com acesso ao inventário" }
+                new Role { Name = "StockManager", Description = "Gerente de estoque com acesso ao inventário" },
+                new Role { Name = "CashSupervisor", Description = "Fiscal de caixa com poderes de supervisão" }
             };
 
             foreach (var role in roles)
@@ -241,25 +242,55 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
                     }
                 }
             }
+
+            // CashSupervisor - cashier supervisor permissions
+            var cashSupervisorRole = await _roleRepository.GetByNameAsync("CashSupervisor");
+            if (cashSupervisorRole != null)
+            {
+                var supervisorPermissions = new[]
+                {
+                    "products.view", "customers.view", "customers.create",
+                    "sales.view", "sales.create", "sales.cancel", "inventory.view", "reports.view"
+                };
+
+                foreach (var permissionName in supervisorPermissions)
+                {
+                    var permission = await _permissionRepository.GetByNameAsync(permissionName);
+                    if (permission != null)
+                    {
+                        var existingRolePermission = _context.RolePermissions
+                            .FirstOrDefault(rp => rp.RoleId == cashSupervisorRole.Id && rp.PermissionId == permission.Id);
+                        
+                        if (existingRolePermission == null)
+                        {
+                            await _context.RolePermissions.AddAsync(new RolePermission
+                            {
+                                RoleId = cashSupervisorRole.Id,
+                                PermissionId = permission.Id
+                            });
+                        }
+                    }
+                }
+            }
         }
 
-        private async Task SeedDefaultUserAsync()
+        private async Task SeedDefaultUsersAsync()
         {
-            var existingUser = await _userRepository.GetByLoginAsync("admin");
-            if (existingUser == null)
+            // Admin user (as requested)
+            var existingAdmin = await _userRepository.GetByLoginAsync("HeitorAdmin");
+            if (existingAdmin == null)
             {
                 var adminUser = new Usuario
                 {
-                    Login = "admin",
-                    Email = "admin@pdv.com",
-                    Nome = "Administrador",
-                    Senha = _passwordService.HashPassword("admin123"),
+                    Login = "HeitorAdmin",
+                    Email = "heitoradmin@pdv.com",
+                    Nome = "Heitor Admin",
+                    Senha = _passwordService.HashPassword("HS1384@"),
                     StatusAtivo = true
                 };
 
                 await _userRepository.AdicionarAsync(adminUser);
 
-                // Assign Administrator role
                 var adminRole = await _roleRepository.GetByNameAsync("Administrator");
                 if (adminRole != null)
                 {
@@ -267,6 +298,56 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
                     {
                         UserId = adminUser.Id,
                         RoleId = adminRole.Id
+                    });
+                }
+            }
+
+            // Default cashier
+            var cashierUser = await _userRepository.GetByLoginAsync("caixa1");
+            if (cashierUser == null)
+            {
+                cashierUser = new Usuario
+                {
+                    Login = "caixa1",
+                    Email = "caixa1@pdv.com",
+                    Nome = "Caixa Principal",
+                    Senha = _passwordService.HashPassword("Caixa@123"),
+                    StatusAtivo = true
+                };
+                await _userRepository.AdicionarAsync(cashierUser);
+
+                var cashierRole = await _roleRepository.GetByNameAsync("Cashier");
+                if (cashierRole != null)
+                {
+                    await _userRoleRepository.AdicionarAsync(new UserRole
+                    {
+                        UserId = cashierUser.Id,
+                        RoleId = cashierRole.Id
+                    });
+                }
+            }
+
+            // Default cash supervisor (fiscal de caixa)
+            var supervisorUser = await _userRepository.GetByLoginAsync("fiscal1");
+            if (supervisorUser == null)
+            {
+                supervisorUser = new Usuario
+                {
+                    Login = "fiscal1",
+                    Email = "fiscal1@pdv.com",
+                    Nome = "Fiscal de Caixa",
+                    Senha = _passwordService.HashPassword("Fiscal@123"),
+                    StatusAtivo = true
+                };
+                await _userRepository.AdicionarAsync(supervisorUser);
+
+                var cashSupervisorRole = await _roleRepository.GetByNameAsync("CashSupervisor");
+                if (cashSupervisorRole != null)
+                {
+                    await _userRoleRepository.AdicionarAsync(new UserRole
+                    {
+                        UserId = supervisorUser.Id,
+                        RoleId = cashSupervisorRole.Id
                     });
                 }
             }
