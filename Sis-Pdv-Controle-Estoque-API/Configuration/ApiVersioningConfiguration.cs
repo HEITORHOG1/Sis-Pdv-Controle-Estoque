@@ -27,21 +27,19 @@ public static class ApiVersioningConfiguration
                 new MediaTypeApiVersionReader("ver")        // Accept: application/json;ver=1.0
             );
             
-            // This will be handled by the API controllers with [ApiVersion] attributes
-            
-            // Version format
+            // Select current implementation by default when unspecified
             options.ApiVersionSelector = new CurrentImplementationApiVersionSelector(options);
         })
         .AddMvc()
         .AddApiExplorer(options =>
         {
-            // Format version as 'v{major}.{minor}'
-            options.GroupNameFormat = "'v'VVV";
+            // Use simple group names 'v1', 'v2', ... to align with Swagger doc names
+            options.GroupNameFormat = "'v'V"; // e.g., v1
             
             // Automatically substitute version in controller names
             options.SubstituteApiVersionInUrl = true;
             
-            // Add version parameter to all endpoints
+            // Add version parameter to all endpoints when version-neutral
             options.AddApiVersionParametersWhenVersionNeutral = true;
         });
     }

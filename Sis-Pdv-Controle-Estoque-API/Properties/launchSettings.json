@@ -13,7 +13,7 @@
         "dotnetRunMessages": true,
   "launchBrowser": true,
   "launchUrl": "api-docs",
-  "applicationUrl": "http://localhost:7001",
+  "applicationUrl": "http://localhost:7003",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development"
         }

@@ -19,10 +19,12 @@ public static class HealthCheckConfiguration
                 failureStatus: HealthStatus.Unhealthy,
                 tags: new[] { "database", "sql", "ready" })
             
-            // MySQL specific health check
-            .AddMySql(connectionString!, "mysql", 
+            // MySQL specific health check with proper connection string
+            // Use default health query (SELECT 1) and named arguments to avoid overload confusion
+            .AddMySql(connectionString: connectionString!, 
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] { "database", "mysql", "ready" })
+                tags: new[] { "database", "mysql", "ready" },
+                timeout: TimeSpan.FromSeconds(10))
             
             // RabbitMQ health check (only if connection string is valid)
             .AddCheck("rabbitmq", () =>

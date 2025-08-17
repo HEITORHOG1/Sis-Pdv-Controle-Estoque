@@ -200,8 +200,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
             if (!environment.IsDevelopment())
             {
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
-            app.UseHttpsRedirection();
 
             // Rate limiting (before authentication)
             app.UseMiddleware<RateLimitingMiddleware>();

@@ -34,6 +34,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
         /// <summary>
         /// Legacy method for backward compatibility with existing Response class
         /// </summary>
+        [NonAction]
         public async Task<IActionResult> ResponseAsync(Response response)
         {
             if (!response.Notifications.Any())
@@ -103,6 +104,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
         /// <summary>
         /// Legacy method for backward compatibility
         /// </summary>
+        [NonAction]
         public async Task<IActionResult> ResponseExceptionAsync(Exception ex)
         {
             return BadRequest(ApiResponse.Error(

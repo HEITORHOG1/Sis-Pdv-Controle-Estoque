@@ -1,3 +1,4 @@
+using System.Linq;
 using Serilog;
 using Serilog.Events;
 using Sis_Pdv_Controle_Estoque_API;
@@ -10,8 +11,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add configuration management with environment variable substitution
 builder.Services.AddConfigurationManagement(builder.Configuration);
 
-// Use a single, centralized URL from configuration (fallback to http://localhost:7001)
-var configuredUrls = builder.Configuration["Hosting:Urls"] ?? "http://localhost:7001";
+// Descobrir URLs de hospedagem priorizando variáveis padrão (ASPNETCORE_URLS/urls) e usar fallback para 7003
+var configuredUrls =
+    builder.Configuration["urls"]
+    ?? builder.Configuration["ASPNETCORE_URLS"]
+    ?? Environment.GetEnvironmentVariable("ASPNETCORE_URLS")
+    ?? builder.Configuration["Hosting:Urls"]
+    ?? "http://localhost:7003";
+
 builder.WebHost.UseUrls(configuredUrls);
 
 // Configure enhanced Serilog with enrichers and structured logging
@@ -68,7 +75,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.WriteIndented = builder.Environment.IsDevelopment();
     });
 
-// Configure API documentation
+// Configure API documentation via centralized configuration
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwagger(builder.Environment);
 
@@ -103,14 +110,17 @@ app.UseMiddleware<AuthenticationMiddleware>();
 // Configure health check endpoints
 app.UseHealthCheckEndpoints();
 
-app.MapControllers();
-
-// Swagger UI and JSON using centralized route prefix from configuration
+// Enable Swagger & Swagger UI using centralized configuration
 app.UseSwaggerDocumentation(app.Environment);
+
+app.MapControllers();
 
 // Log application startup
 Log.Information("PDV Control System API starting up...");
 Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
+var baseUrl = configuredUrls?.Split(';').FirstOrDefault() ?? "http://localhost:7003";
+var swaggerUrl = baseUrl.TrimEnd('/') + "/api-docs";
+Log.Information("Swagger UI available at: {SwaggerUrl}", swaggerUrl);
 
 try
 {

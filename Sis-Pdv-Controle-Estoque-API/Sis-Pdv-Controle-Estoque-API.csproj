@@ -48,4 +48,8 @@
     <ProjectReference Include="..\Sis-Pdv-Controle-Estoque\Sis-Pdv-Controle-Estoque-Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\swagger-ui\" />
+  </ItemGroup>
+
 </Project>

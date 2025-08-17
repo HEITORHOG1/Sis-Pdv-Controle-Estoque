@@ -39,6 +39,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Middleware
                 // Log response
                 await LogResponseAsync(context, correlationId, stopwatch.ElapsedMilliseconds, responseBody);
 
+                // IMPORTANT: always rewind before copying back, otherwise non-JSON responses (like Swagger UI HTML)
+                // will be empty because the stream position is at the end
+                responseBody.Seek(0, SeekOrigin.Begin);
+
                 // Copy response back to original stream
                 await responseBody.CopyToAsync(originalBodyStream);
             }

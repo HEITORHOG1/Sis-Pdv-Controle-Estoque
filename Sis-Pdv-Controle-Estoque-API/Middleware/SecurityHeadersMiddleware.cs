@@ -17,8 +17,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Add security headers
-            AddSecurityHeaders(context.Response);
+            var path = context.Request.Path.Value?.ToLower() ?? string.Empty;
+            var isSwaggerOrHealth = path.StartsWith("/swagger") || path.StartsWith("/api-docs") || path.StartsWith("/health");
+
+            // Always relax headers for Swagger and Health endpoints to avoid CSP/COEP/COOP issues
+            if (!isSwaggerOrHealth)
+            {
+                AddSecurityHeaders(context.Response);
+            }
 
             await _next(context);
         }
@@ -34,17 +40,20 @@ namespace Sis_Pdv_Controle_Estoque_API.Middleware
             // Enable XSS protection
             response.Headers["X-XSS-Protection"] = "1; mode=block";
 
-            // Strict Transport Security (HSTS)
-            response.Headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
+            // Strict Transport Security (HSTS) - only meaningful over HTTPS
+            if (response.HttpContext.Request.IsHttps)
+            {
+                response.Headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains";
+            }
 
             // Content Security Policy
             response.Headers["Content-Security-Policy"] = 
-                "default-src 'self'; " +
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+                "default-src 'self' data: blob:; " +
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; " +
                 "style-src 'self' 'unsafe-inline'; " +
-                "img-src 'self' data: https:; " +
-                "font-src 'self'; " +
-                "connect-src 'self'; " +
+                "img-src 'self' data: https: blob:; " +
+                "font-src 'self' data:; " +
+                "connect-src 'self' http: https:; " +
                 "frame-ancestors 'none'";
 
             // Referrer Policy
@@ -63,14 +72,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Middleware
             response.Headers.Remove("X-AspNet-Version");
             response.Headers.Remove("X-AspNetMvc-Version");
 
-            // Cross-Origin Embedder Policy
-            response.Headers["Cross-Origin-Embedder-Policy"] = "require-corp";
-
-            // Cross-Origin Opener Policy
-            response.Headers["Cross-Origin-Opener-Policy"] = "same-origin";
-
-            // Cross-Origin Resource Policy
-            response.Headers["Cross-Origin-Resource-Policy"] = "same-origin";
+            // NOTE: Do NOT set COEP/COOP/CORP globally as they may break Swagger UI and other tooling
+            // If you need them, scope them only to specific endpoints that require cross-origin isolation
         }
     }
 }

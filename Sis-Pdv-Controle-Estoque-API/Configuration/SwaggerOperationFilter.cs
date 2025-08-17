@@ -40,6 +40,7 @@ public class SwaggerOperationFilter : IOperationFilter
         {
             if (!operation.Responses.ContainsKey("401"))
             {
+                var schema = context.SchemaGenerator.GenerateSchema(typeof(Sis_Pdv_Controle_Estoque_API.Models.ApiResponse), context.SchemaRepository);
                 operation.Responses.Add("401", new OpenApiResponse
                 {
                     Description = "Unauthorized - Invalid or missing authentication token",
@@ -47,14 +48,7 @@ public class SwaggerOperationFilter : IOperationFilter
                     {
                         ["application/json"] = new OpenApiMediaType
                         {
-                            Schema = new OpenApiSchema
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.Schema,
-                                    Id = "ApiResponse"
-                                }
-                            }
+                            Schema = schema
                         }
                     }
                 });
@@ -62,6 +56,7 @@ public class SwaggerOperationFilter : IOperationFilter
 
             if (!operation.Responses.ContainsKey("403"))
             {
+                var schema = context.SchemaGenerator.GenerateSchema(typeof(Sis_Pdv_Controle_Estoque_API.Models.ApiResponse), context.SchemaRepository);
                 operation.Responses.Add("403", new OpenApiResponse
                 {
                     Description = "Forbidden - Insufficient permissions to access this resource",
@@ -69,14 +64,7 @@ public class SwaggerOperationFilter : IOperationFilter
                     {
                         ["application/json"] = new OpenApiMediaType
                         {
-                            Schema = new OpenApiSchema
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.Schema,
-                                    Id = "ApiResponse"
-                                }
-                            }
+                            Schema = schema
                         }
                     }
                 });
@@ -88,6 +76,7 @@ public class SwaggerOperationFilter : IOperationFilter
         {
             if (!operation.Responses.ContainsKey("400"))
             {
+                var schema = context.SchemaGenerator.GenerateSchema(typeof(Sis_Pdv_Controle_Estoque_API.Models.ApiResponse), context.SchemaRepository);
                 operation.Responses.Add("400", new OpenApiResponse
                 {
                     Description = "Bad Request - Invalid input data or validation errors",
@@ -95,14 +84,7 @@ public class SwaggerOperationFilter : IOperationFilter
                     {
                         ["application/json"] = new OpenApiMediaType
                         {
-                            Schema = new OpenApiSchema
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.Schema,
-                                    Id = "ValidationErrorResponse"
-                                }
-                            }
+                            Schema = schema
                         }
                     }
                 });
@@ -112,6 +94,7 @@ public class SwaggerOperationFilter : IOperationFilter
         // Add 500 Internal Server Error
         if (!operation.Responses.ContainsKey("500"))
         {
+            var schema = context.SchemaGenerator.GenerateSchema(typeof(Sis_Pdv_Controle_Estoque_API.Models.ApiResponse), context.SchemaRepository);
             operation.Responses.Add("500", new OpenApiResponse
             {
                 Description = "Internal Server Error - An unexpected error occurred",
@@ -119,14 +102,7 @@ public class SwaggerOperationFilter : IOperationFilter
                 {
                     ["application/json"] = new OpenApiMediaType
                     {
-                        Schema = new OpenApiSchema
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.Schema,
-                                Id = "ApiResponse"
-                            }
-                        }
+                        Schema = schema
                     }
                 }
             });
