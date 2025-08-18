@@ -27,45 +27,40 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
 
         private async Task Alterar()
         {
-            categoriaService = new CategoriaService();
-
-            CategoriaDto dto = new CategoriaDto()
+            try
             {
-                id = Guid.Parse(LblId.Text),
-                NomeCategoria = txtNomeCategoria.Text
-            };
-            CategoriaResponse response = await categoriaService.AlterarCategoria(dto);
+                categoriaService = new CategoriaService();
 
-            if (response.success == true)
-            {
-                txtNomeCategoria.Text = "";
-                LblId.Text = "";
-                MessageBox.Show("Alterado com sucesso");
-
-                var qrForm = from frm in Application.OpenForms.Cast<Form>()
-                             where frm is CadCategoria
-                             select frm;
-
-                if (qrForm != null && qrForm.Count() > 0)
+                CategoriaDto dto = new CategoriaDto()
                 {
-                    await ((CadCategoria)qrForm.First()).Consultar();
+                    id = Guid.Parse(LblId.Text),
+                    NomeCategoria = txtNomeCategoria.Text
+                };
+                CategoriaResponse response = await categoriaService.AlterarCategoria(dto);
+
+                if (response.success == true)
+                {
+                    txtNomeCategoria.Text = "";
+                    LblId.Text = "";
+                    MessageBox.Show("Alterado com sucesso");
+                    this.Close();
                 }
-                this.Close();
+                else
+                {
+                    var resp = response.notifications?.FirstOrDefault()?.ToString() ?? "Falha ao alterar";
+                    MessageBox.Show(resp);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao alterar categoria: {ex.Message}");
             }
         }
 
-        private async void AltCategoria_FormClosing(object sender, FormClosingEventArgs e)
+        private void AltCategoria_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = true;
-            this.Hide();
-            var qrForm = from frm in Application.OpenForms.Cast<Form>()
-                         where frm is CadCategoria
-                         select frm;
-
-            if (qrForm != null && qrForm.Count() > 0)
-            {
-                await ((CadCategoria)qrForm.First()).Consultar();
-            }
+            // Remove o código que cancela o fechamento e força atualização
+            // O formulário pai atualizará via ShowDialog
         }
 
         private void AltCategoria_FormClosed(object sender, FormClosedEventArgs e)

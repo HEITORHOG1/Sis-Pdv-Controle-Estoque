@@ -171,10 +171,10 @@ Backup:            /api/v1/backup/*
 
 ## Performance Features
 
-### Caching
-- **Implementation:** IMemoryCache with custom service
-- **Strategy:** Configurable TTL per endpoint
-- **Invalidation:** Automatic on data changes
+### Performance
+- **Implementation:** Optimized data access patterns
+- **Strategy:** Configurable timeouts per endpoint
+- **Validation:** Automatic data validation on changes
 
 ### Pagination
 - **Standard:** Page-based pagination

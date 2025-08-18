@@ -28,154 +28,161 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnExcluir = new System.Windows.Forms.Button();
-            this.btnAlterar = new System.Windows.Forms.Button();
-            this.LblId = new System.Windows.Forms.Label();
-            this.btnConsultar = new System.Windows.Forms.Button();
-            this.btnCadastrar = new System.Windows.Forms.Button();
-            this.txtNomeCategoria = new System.Windows.Forms.TextBox();
-            this.lblNomeCategoria = new System.Windows.Forms.Label();
-            this.lstGridCategoria = new System.Windows.Forms.DataGridView();
-            this.panel1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.lstGridCategoria)).BeginInit();
-            this.SuspendLayout();
+            panel1 = new Panel();
+            groupBox1 = new GroupBox();
+            btnExcluir = new Button();
+            btnAlterar = new Button();
+            LblId = new Label();
+            btnConsultar = new Button();
+            btnCadastrar = new Button();
+            txtNomeCategoria = new TextBox();
+            lblNomeCategoria = new Label();
+            lstGridCategoria = new DataGridView();
+            btnAtualziar = new Button();
+            panel1.SuspendLayout();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)lstGridCategoria).BeginInit();
+            SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.groupBox1);
-            this.panel1.Location = new System.Drawing.Point(3, 12);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(779, 73);
-            this.panel1.TabIndex = 1;
+            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            panel1.Controls.Add(groupBox1);
+            panel1.Location = new Point(3, 12);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(779, 73);
+            panel1.TabIndex = 1;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.btnExcluir);
-            this.groupBox1.Controls.Add(this.btnAlterar);
-            this.groupBox1.Controls.Add(this.LblId);
-            this.groupBox1.Controls.Add(this.btnConsultar);
-            this.groupBox1.Controls.Add(this.btnCadastrar);
-            this.groupBox1.Controls.Add(this.txtNomeCategoria);
-            this.groupBox1.Controls.Add(this.lblNomeCategoria);
-            this.groupBox1.Location = new System.Drawing.Point(3, 3);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(770, 67);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Cadastrar Categoria";
+            groupBox1.Controls.Add(btnAtualziar);
+            groupBox1.Controls.Add(btnExcluir);
+            groupBox1.Controls.Add(btnAlterar);
+            groupBox1.Controls.Add(LblId);
+            groupBox1.Controls.Add(btnConsultar);
+            groupBox1.Controls.Add(btnCadastrar);
+            groupBox1.Controls.Add(txtNomeCategoria);
+            groupBox1.Controls.Add(lblNomeCategoria);
+            groupBox1.Location = new Point(3, 3);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(770, 67);
+            groupBox1.TabIndex = 1;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Cadastrar Categoria";
             // 
             // btnExcluir
             // 
-            this.btnExcluir.Location = new System.Drawing.Point(605, 12);
-            this.btnExcluir.Name = "btnExcluir";
-            this.btnExcluir.Size = new System.Drawing.Size(75, 49);
-            this.btnExcluir.TabIndex = 6;
-            this.btnExcluir.Text = "Excluir";
-            this.btnExcluir.UseVisualStyleBackColor = true;
-            this.btnExcluir.Click += new System.EventHandler(this.btnExcluir_Click);
+            btnExcluir.Location = new Point(605, 12);
+            btnExcluir.Name = "btnExcluir";
+            btnExcluir.Size = new Size(75, 49);
+            btnExcluir.TabIndex = 6;
+            btnExcluir.Text = "Excluir";
+            btnExcluir.UseVisualStyleBackColor = true;
+            btnExcluir.Click += btnExcluir_Click;
             // 
             // btnAlterar
             // 
-            this.btnAlterar.Location = new System.Drawing.Point(686, 12);
-            this.btnAlterar.Name = "btnAlterar";
-            this.btnAlterar.Size = new System.Drawing.Size(75, 49);
-            this.btnAlterar.TabIndex = 5;
-            this.btnAlterar.Text = "Alterar";
-            this.btnAlterar.UseVisualStyleBackColor = true;
-            this.btnAlterar.Click += new System.EventHandler(this.btnAlterar_Click);
+            btnAlterar.Location = new Point(686, 12);
+            btnAlterar.Name = "btnAlterar";
+            btnAlterar.Size = new Size(75, 49);
+            btnAlterar.TabIndex = 5;
+            btnAlterar.Text = "Alterar";
+            btnAlterar.UseVisualStyleBackColor = true;
+            btnAlterar.Click += btnAlterar_Click;
             // 
             // LblId
             // 
-            this.LblId.AutoSize = true;
-            this.LblId.Location = new System.Drawing.Point(70, 52);
-            this.LblId.Name = "LblId";
-            this.LblId.Size = new System.Drawing.Size(68, 15);
-            this.LblId.TabIndex = 4;
-            this.LblId.Text = "IdCategoria";
-            this.LblId.Visible = false;
+            LblId.AutoSize = true;
+            LblId.Location = new Point(70, 52);
+            LblId.Name = "LblId";
+            LblId.Size = new Size(68, 15);
+            LblId.TabIndex = 4;
+            LblId.Text = "IdCategoria";
+            LblId.Visible = false;
             // 
             // btnConsultar
             // 
-            this.btnConsultar.Location = new System.Drawing.Point(263, 12);
-            this.btnConsultar.Name = "btnConsultar";
-            this.btnConsultar.Size = new System.Drawing.Size(75, 49);
-            this.btnConsultar.TabIndex = 3;
-            this.btnConsultar.Text = "Consultar";
-            this.btnConsultar.UseVisualStyleBackColor = true;
-            this.btnConsultar.Click += new System.EventHandler(this.btnConsultar_Click);
+            btnConsultar.Location = new Point(263, 12);
+            btnConsultar.Name = "btnConsultar";
+            btnConsultar.Size = new Size(75, 49);
+            btnConsultar.TabIndex = 3;
+            btnConsultar.Text = "Consultar";
+            btnConsultar.UseVisualStyleBackColor = true;
+            btnConsultar.Click += btnConsultar_Click;
             // 
             // btnCadastrar
             // 
-            this.btnCadastrar.Location = new System.Drawing.Point(344, 12);
-            this.btnCadastrar.Name = "btnCadastrar";
-            this.btnCadastrar.Size = new System.Drawing.Size(75, 49);
-            this.btnCadastrar.TabIndex = 2;
-            this.btnCadastrar.Text = "Cadastrar";
-            this.btnCadastrar.UseVisualStyleBackColor = true;
-            this.btnCadastrar.Click += new System.EventHandler(this.btnCadastrar_Click_1);
+            btnCadastrar.Location = new Point(344, 12);
+            btnCadastrar.Name = "btnCadastrar";
+            btnCadastrar.Size = new Size(75, 49);
+            btnCadastrar.TabIndex = 2;
+            btnCadastrar.Text = "Cadastrar";
+            btnCadastrar.UseVisualStyleBackColor = true;
+            btnCadastrar.Click += btnCadastrar_Click_1;
             // 
             // txtNomeCategoria
             // 
-            this.txtNomeCategoria.Location = new System.Drawing.Point(70, 29);
-            this.txtNomeCategoria.Name = "txtNomeCategoria";
-            this.txtNomeCategoria.Size = new System.Drawing.Size(187, 23);
-            this.txtNomeCategoria.TabIndex = 1;
+            txtNomeCategoria.Location = new Point(70, 29);
+            txtNomeCategoria.Name = "txtNomeCategoria";
+            txtNomeCategoria.Size = new Size(187, 23);
+            txtNomeCategoria.TabIndex = 1;
             // 
             // lblNomeCategoria
             // 
-            this.lblNomeCategoria.AutoSize = true;
-            this.lblNomeCategoria.Location = new System.Drawing.Point(6, 32);
-            this.lblNomeCategoria.Name = "lblNomeCategoria";
-            this.lblNomeCategoria.Size = new System.Drawing.Size(58, 15);
-            this.lblNomeCategoria.TabIndex = 0;
-            this.lblNomeCategoria.Text = "Categoria";
+            lblNomeCategoria.AutoSize = true;
+            lblNomeCategoria.Location = new Point(6, 32);
+            lblNomeCategoria.Name = "lblNomeCategoria";
+            lblNomeCategoria.Size = new Size(58, 15);
+            lblNomeCategoria.TabIndex = 0;
+            lblNomeCategoria.Text = "Categoria";
             // 
             // lstGridCategoria
             // 
-            this.lstGridCategoria.AllowUserToAddRows = false;
-            this.lstGridCategoria.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lstGridCategoria.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.lstGridCategoria.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.lstGridCategoria.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.lstGridCategoria.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstGridCategoria.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            this.lstGridCategoria.ColumnHeadersHeight = 30;
-            this.lstGridCategoria.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.lstGridCategoria.Location = new System.Drawing.Point(6, 91);
-            this.lstGridCategoria.Name = "lstGridCategoria";
-            this.lstGridCategoria.RowTemplate.Height = 25;
-            this.lstGridCategoria.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.lstGridCategoria.Size = new System.Drawing.Size(776, 347);
-            this.lstGridCategoria.TabIndex = 0;
-            this.lstGridCategoria.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.lstGridCategoria_CellDoubleClick);
+            lstGridCategoria.AllowUserToAddRows = false;
+            lstGridCategoria.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            lstGridCategoria.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            lstGridCategoria.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            lstGridCategoria.BackgroundColor = Color.FromArgb(224, 224, 224);
+            lstGridCategoria.BorderStyle = BorderStyle.None;
+            lstGridCategoria.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+            lstGridCategoria.ColumnHeadersHeight = 30;
+            lstGridCategoria.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            lstGridCategoria.Location = new Point(6, 91);
+            lstGridCategoria.Name = "lstGridCategoria";
+            lstGridCategoria.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            lstGridCategoria.Size = new Size(776, 347);
+            lstGridCategoria.TabIndex = 0;
+            lstGridCategoria.CellDoubleClick += lstGridCategoria_CellDoubleClick;
+            // 
+            // btnAtualziar
+            // 
+            btnAtualziar.Location = new Point(425, 12);
+            btnAtualziar.Name = "btnAtualziar";
+            btnAtualziar.Size = new Size(75, 49);
+            btnAtualziar.TabIndex = 7;
+            btnAtualziar.Text = "Atualizar";
+            btnAtualziar.UseVisualStyleBackColor = true;
+            btnAtualziar.Click += btnAtualziar_Click;
             // 
             // CadCategoria
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(787, 450);
-            this.Controls.Add(this.lstGridCategoria);
-            this.Controls.Add(this.panel1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "CadCategoria";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Cadastro de Categoria";
-            this.Load += new System.EventHandler(this.CadCategoria_Load);
-            this.panel1.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.lstGridCategoria)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(787, 450);
+            Controls.Add(lstGridCategoria);
+            Controls.Add(panel1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "CadCategoria";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Cadastro de Categoria";
+            Load += CadCategoria_Load;
+            panel1.ResumeLayout(false);
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)lstGridCategoria).EndInit();
+            ResumeLayout(false);
 
         }
 
@@ -191,5 +198,6 @@
         private Button btnExcluir;
         private Button btnAlterar;
         private DataGridView lstGridCategoria;
+        private Button btnAtualziar;
     }
 }

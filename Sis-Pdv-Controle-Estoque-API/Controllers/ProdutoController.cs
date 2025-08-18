@@ -106,7 +106,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// ```
         /// 
         /// **Performance Notes:**
-        /// - Results are cached for 5 minutes for better performance
+        /// - Results are optimized for better performance
         /// - Large result sets are automatically paginated
         /// - Use specific filters to improve query performance
         /// </remarks>

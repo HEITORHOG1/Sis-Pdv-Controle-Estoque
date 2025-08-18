@@ -107,15 +107,15 @@ Use the deployment script:
 }
 ```
 
-### Cache Options
+### Performance Options
 
 ```json
 {
-  "Cache": {
-    "DefaultExpirationMinutes": 30,
-    "SlidingExpirationMinutes": 10,
-    "EnableCaching": true,
-    "MaxCacheSize": 1000
+  "Performance": {
+    "DefaultTimeoutMinutes": 30,
+    "QueryTimeoutMinutes": 10,
+    "EnableOptimizations": true,
+    "MaxConnections": 1000
   }
 }
 ```

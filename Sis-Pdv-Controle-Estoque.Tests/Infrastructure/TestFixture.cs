@@ -41,8 +41,7 @@ public class TestFixture : IDisposable
         // Logging
         services.AddLogging(builder => builder.AddConsole());
 
-        // Memory Cache
-        services.AddMemoryCache();
+        // Test services configuration
     }
 
     public void Dispose()

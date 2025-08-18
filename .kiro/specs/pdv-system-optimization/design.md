@@ -23,7 +23,7 @@ A abordagem será incremental, preservando a funcionalidade existente enquanto i
 - Ausência de tratamento global de exceções
 - Logging básico sem estruturação adequada
 - Falta de validação de entrada robusta
-- Ausência de cache e otimizações de performance
+- Falta de otimizações de performance
 - Testes limitados
 - Falta de configuração por ambiente
 - Interface desktop desatualizada (WinForms)
@@ -115,15 +115,7 @@ public interface IPermissionService
 - `ValidationBehavior<TRequest, TResponse>`: Pipeline behavior para MediatR
 - Custom validators para regras de negócio específicas
 
-### 4. Caching Strategy
-
-**Components:**
-- `ICacheService`: Interface abstrata para cache
-- `MemoryCacheService`: Implementação com IMemoryCache
-- `RedisCacheService`: Implementação com Redis (futuro)
-- `CachingBehavior<TRequest, TResponse>`: Pipeline behavior para cache automático
-
-### 5. Enhanced Logging
+### 4. Enhanced Logging
 
 **Components:**
 - Structured logging com Serilog
@@ -467,10 +459,10 @@ public void Configure(IApplicationBuilder app)
    - Async operations throughout
    - Proper disposal of resources
 
-3. **Caching Strategy:**
-   - Memory cache for frequently accessed data
-   - Distributed cache for scalability
-   - Cache invalidation strategies
+3. **Performance Strategy:**
+   - Optimized data access for frequently accessed data
+   - Efficient query patterns for scalability
+   - Data validation strategies
 
 ### API Optimizations
 
@@ -552,9 +544,9 @@ services.AddHealthChecks()
     "TokenExpirationMinutes": 60,
     "RefreshTokenExpirationDays": 7
   },
-  "Cache": {
-    "DefaultExpirationMinutes": 30,
-    "SlidingExpirationMinutes": 10
+  "Performance": {
+    "DefaultTimeoutMinutes": 30,
+    "QueryTimeoutMinutes": 10
   },
   "RabbitMQ": {
     "HostName": "localhost",

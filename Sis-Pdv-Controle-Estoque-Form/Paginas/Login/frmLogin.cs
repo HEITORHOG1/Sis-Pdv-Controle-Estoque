@@ -1,12 +1,12 @@
 ﻿using Sis_Pdv_Controle_Estoque_Form.Paginas.PDV;
-using Sis_Pdv_Controle_Estoque_Form.Services.Colaborador;
+using Sis_Pdv_Controle_Estoque_Form.Services.Auth;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Login
 {
     public partial class frmLogin : Form
     {
-        ColaboradorService _colaboradorService;
+        AuthApiService _authApiService;
         public frmLogin()
         {
             InitializeComponent();
@@ -77,34 +77,40 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Login
 
         private async void btnLogin_Click(object sender, EventArgs e)
         {
-            string cargo = "";
-            _colaboradorService = new ColaboradorService();
-            var response = await _colaboradorService.ValidarLogin(txtLogin.Text, txtSenha.Text);
-            if (response.success == false)
-                foreach (var error in response.notifications)
-                {
-                    MessageBox.Show(error.ToString());
-                }
-            else
+            try
             {
-                cargo = response.data.cargoColaborador;
+                _authApiService = new AuthApiService();
+                var auth = await _authApiService.LoginAsync(txtLogin.Text, txtSenha.Text);
 
-                if (cargo == "admin")
+                // Set bearer token for subsequent requests
+                Services.Http.HttpClientManager.SetBearerToken(auth.accessToken);
+
+                var roles = auth.user?.roles ?? new List<string>();
+                var nome = auth.user?.nome ?? auth.user?.login ?? "";
+
+                // Route by role
+                if (roles.Contains("Administrator") || roles.Contains("Manager"))
                 {
-                    frmMenu frmMenu = new frmMenu(cargo);
-
+                    frmMenu frmMenu = new frmMenu(nome);
                     frmMenu.Show();
                     frmMenu.FormClosed += LogOut;
                     this.Hide();
                 }
-                else
+                else if (roles.Contains("Cashier") || roles.Contains("CashSupervisor"))
                 {
-                    frmTelaPdv frmPdv = new frmTelaPdv(response.data.nomeColaborador);
-
+                    frmTelaPdv frmPdv = new frmTelaPdv(nome);
                     frmPdv.Show();
                     frmPdv.FormClosed += LogOut;
                     this.Hide();
                 }
+                else
+                {
+                    MessageBox.Show("Usuário sem perfil de acesso válido.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Falha ao autenticar: {ex.Message}");
             }
         }
 
@@ -117,7 +123,6 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Login
 
             this.Show();
             txtLogin.Focus();
-
         }
     }
 }

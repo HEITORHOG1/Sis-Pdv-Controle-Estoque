@@ -183,7 +183,7 @@ Updated `Setup.cs` to register health check services:
 ### Minimal Overhead
 - Lightweight health checks with configurable intervals
 - Efficient metrics collection using background processing
-- Cached results to reduce database load
+- Optimized results to reduce database load
 - Asynchronous operations throughout
 
 ### Scalability

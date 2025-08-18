@@ -248,9 +248,9 @@ DELIMITER ;
 # InnoDB Buffer Pool (set to 70-80% of available RAM)
 innodb_buffer_pool_size = 2G
 
-# Query Cache (for read-heavy workloads)
-query_cache_type = 1
-query_cache_size = 256M
+# Query Optimization (for read-heavy workloads)
+innodb_log_file_size = 256M
+innodb_log_buffer_size = 64M
 
 # Connection settings
 max_connections = 200

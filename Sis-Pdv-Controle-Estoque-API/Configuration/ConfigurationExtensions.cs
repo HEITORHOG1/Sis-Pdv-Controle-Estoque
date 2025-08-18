@@ -10,7 +10,7 @@ public static class ConfigurationExtensions
         services.Configure<DatabaseOptions>(configuration.GetSection(DatabaseOptions.SectionName));
         services.Configure<AuthenticationOptions>(configuration.GetSection(AuthenticationOptions.SectionName));
         services.Configure<RabbitMQOptions>(configuration.GetSection(RabbitMQOptions.SectionName));
-        services.Configure<CacheOptions>(configuration.GetSection(CacheOptions.SectionName));
+
         services.Configure<BackupOptions>(configuration.GetSection(BackupOptions.SectionName));
         services.Configure<HealthCheckOptions>(configuration.GetSection(HealthCheckOptions.SectionName));
 
@@ -18,7 +18,7 @@ public static class ConfigurationExtensions
         services.AddSingleton<IValidateOptions<DatabaseOptions>, ValidateOptionsService<DatabaseOptions>>();
         services.AddSingleton<IValidateOptions<AuthenticationOptions>, ValidateOptionsService<AuthenticationOptions>>();
         services.AddSingleton<IValidateOptions<RabbitMQOptions>, ValidateOptionsService<RabbitMQOptions>>();
-        services.AddSingleton<IValidateOptions<CacheOptions>, ValidateOptionsService<CacheOptions>>();
+
         services.AddSingleton<IValidateOptions<BackupOptions>, ValidateOptionsService<BackupOptions>>();
         services.AddSingleton<IValidateOptions<HealthCheckOptions>, ValidateOptionsService<HealthCheckOptions>>();
 

@@ -54,21 +54,7 @@ public class RabbitMQOptions
     public string VirtualHost { get; set; } = "/";
 }
 
-public class CacheOptions
-{
-    public const string SectionName = "Cache";
-    
-    [Range(1, 1440)]
-    public int DefaultExpirationMinutes { get; set; } = 30;
-    
-    [Range(1, 1440)]
-    public int SlidingExpirationMinutes { get; set; } = 10;
-    
-    public bool EnableCaching { get; set; } = true;
-    
-    [Range(100, 10000)]
-    public int MaxCacheSize { get; set; } = 1000;
-}
+
 
 public class BackupOptions
 {

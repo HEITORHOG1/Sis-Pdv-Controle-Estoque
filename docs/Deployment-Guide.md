@@ -90,7 +90,7 @@ FLUSH PRIVILEGES;
 
 -- Apply performance optimizations
 SET GLOBAL innodb_buffer_pool_size = 2147483648; -- 2GB
-SET GLOBAL query_cache_size = 268435456; -- 256MB
+SET GLOBAL innodb_log_file_size = 268435456; -- 256MB
 SET GLOBAL max_connections = 200;
 ```
 
@@ -373,7 +373,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
+        proxy_set_header Upgrade $http_upgrade;
     }
 }
 ```
@@ -524,7 +524,7 @@ sudo tail -f /var/log/nginx/error.log
    - Adjust buffer pool size
 
 2. **Application Tuning**
-   - Adjust cache settings
+   - Adjust performance settings
    - Configure connection pooling
    - Monitor memory usage
 

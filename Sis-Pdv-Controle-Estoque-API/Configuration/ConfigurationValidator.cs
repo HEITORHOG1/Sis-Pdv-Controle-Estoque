@@ -43,7 +43,7 @@ public class ConfigurationValidator : IConfigurationValidator
             ValidateSection<DatabaseOptions>(result, DatabaseOptions.SectionName);
             ValidateSection<AuthenticationOptions>(result, AuthenticationOptions.SectionName);
             ValidateSection<RabbitMQOptions>(result, RabbitMQOptions.SectionName);
-            ValidateSection<CacheOptions>(result, CacheOptions.SectionName);
+
             ValidateSection<BackupOptions>(result, BackupOptions.SectionName);
             ValidateSection<HealthCheckOptions>(result, HealthCheckOptions.SectionName);
 

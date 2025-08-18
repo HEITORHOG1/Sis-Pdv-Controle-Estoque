@@ -21,24 +21,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
 
         private async Task Excluir()
         {
-            categoriaService = new CategoriaService();
-            CategoriaResponse response = await categoriaService.RemoverCategoria(LblId.Text);
-
-            if (response.success == true)
+            try
             {
-                txtNomeCategoria.Text = "";
-                LblId.Text = "";
-                MessageBox.Show("Excluido com sucesso");
-                var qrForm = from frm in Application.OpenForms.Cast<Form>()
-                             where frm is CadCategoria
-                             select frm;
+                categoriaService = new CategoriaService();
+                CategoriaResponse response = await categoriaService.RemoverCategoria(LblId.Text);
 
-                if (qrForm != null && qrForm.Count() > 0)
+                if (response.success == true)
                 {
-                    ((CadCategoria)qrForm.First()).Consultar();
+                    txtNomeCategoria.Text = "";
+                    LblId.Text = "";
+                    MessageBox.Show("Excluído com sucesso");
+                    this.Close();
                 }
-
-                this.Close();
+                else
+                {
+                    var resp = response.notifications?.FirstOrDefault()?.ToString() ?? "Falha ao excluir";
+                    MessageBox.Show(resp);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao excluir categoria: {ex.Message}");
             }
         }
 
@@ -47,18 +50,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
 
         }
 
-        private async void ExcluirCategoria_FormClosing(object sender, FormClosingEventArgs e)
+        private void ExcluirCategoria_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = true;
-            this.Hide();
-            var qrForm = from frm in Application.OpenForms.Cast<Form>()
-                         where frm is CadCategoria
-                         select frm;
-
-            if (qrForm != null && qrForm.Count() > 0)
-            {
-                ((CadCategoria)qrForm.First()).Consultar();
-            }
         }
     }
 }

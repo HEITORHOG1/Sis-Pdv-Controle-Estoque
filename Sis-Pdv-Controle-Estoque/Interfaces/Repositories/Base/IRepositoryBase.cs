@@ -63,5 +63,14 @@ namespace Interfaces.Repositories.Base
         Task<IEnumerable<TEntidade>> GetByIdsAsync(IEnumerable<TId> ids, CancellationToken cancellationToken = default);
         Task<TEntidade> AddAsync(TEntidade entity, CancellationToken cancellationToken = default);
         Task<TEntidade> UpdateAsync(TEntidade entity, CancellationToken cancellationToken = default);
+
+        // Soft delete methods
+        IQueryable<TEntidade> ListarTodos(params Expression<Func<TEntidade, object>>[] includeProperties);
+        IQueryable<TEntidade> ListarDeletados(params Expression<Func<TEntidade, object>>[] includeProperties);
+        void RemoverFisicamente(TEntidade entidade);
+        void RemoverFisicamente(IEnumerable<TEntidade> entidades);
+        void Restaurar(TEntidade entidade);
+        Task<bool> RestaurarAsync(TId id);
+        void Restaurar(IEnumerable<TEntidade> entidades);
     }
 }

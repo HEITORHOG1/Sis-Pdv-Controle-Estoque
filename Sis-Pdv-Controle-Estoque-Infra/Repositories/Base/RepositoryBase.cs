@@ -56,13 +56,43 @@ namespace Repositories.Base
             return await _context.Set<TEntidade>().FindAsync(id);
         }
 
-        public IQueryable<TEntidade> Listar(params Expression<Func<TEntidade, object>>[] includeProperties)
+        public virtual IQueryable<TEntidade> Listar(params Expression<Func<TEntidade, object>>[] includeProperties)
+        {
+            IQueryable<TEntidade> query = _context.Set<TEntidade>().Where(x => !x.IsDeleted);
+
+            if (includeProperties.Any())
+            {
+                return Include(query, includeProperties);
+            }
+
+            return query;
+        }
+
+        /// <summary>
+        /// Lista todas as entidades incluindo as deletadas (soft delete)
+        /// </summary>
+        public IQueryable<TEntidade> ListarTodos(params Expression<Func<TEntidade, object>>[] includeProperties)
         {
             IQueryable<TEntidade> query = _context.Set<TEntidade>();
 
             if (includeProperties.Any())
             {
-                return Include(_context.Set<TEntidade>(), includeProperties);
+                return Include(query, includeProperties);
+            }
+
+            return query;
+        }
+
+        /// <summary>
+        /// Lista apenas as entidades deletadas (soft delete)
+        /// </summary>
+        public IQueryable<TEntidade> ListarDeletados(params Expression<Func<TEntidade, object>>[] includeProperties)
+        {
+            IQueryable<TEntidade> query = _context.Set<TEntidade>().Where(x => x.IsDeleted);
+
+            if (includeProperties.Any())
+            {
+                return Include(query, includeProperties);
             }
 
             return query;
@@ -109,23 +139,41 @@ namespace Repositories.Base
 
         public void Remover(TEntidade entidade)
         {
-            _context.Set<TEntidade>().Remove(entidade);
+            // Soft delete - marca como deletado ao invés de remover fisicamente
+            entidade.IsDeleted = true;
+            entidade.DeletedAt = DateTime.UtcNow;
+            _context.Entry(entidade).State = EntityState.Modified;
         }
 
         public void Remover(IEnumerable<TEntidade> entidades)
         {
-            _context.Set<TEntidade>().RemoveRange(entidades);
+            // Soft delete para múltiplas entidades
+            foreach (var entidade in entidades)
+            {
+                entidade.IsDeleted = true;
+                entidade.DeletedAt = DateTime.UtcNow;
+                _context.Entry(entidade).State = EntityState.Modified;
+            }
         }
 
         public async Task RemoverAsync(TEntidade entidade)
         {
-            _context.Set<TEntidade>().Remove(entidade);
+            // Soft delete assíncrono
+            entidade.IsDeleted = true;
+            entidade.DeletedAt = DateTime.UtcNow;
+            _context.Entry(entidade).State = EntityState.Modified;
             await Task.CompletedTask;
         }
 
         public async Task RemoverAsync(IEnumerable<TEntidade> entidades)
         {
-            _context.Set<TEntidade>().RemoveRange(entidades);
+            // Soft delete assíncrono para múltiplas entidades
+            foreach (var entidade in entidades)
+            {
+                entidade.IsDeleted = true;
+                entidade.DeletedAt = DateTime.UtcNow;
+                _context.Entry(entidade).State = EntityState.Modified;
+            }
             await Task.CompletedTask;
         }
 
@@ -134,7 +182,66 @@ namespace Repositories.Base
             var entity = await ObterPorIdAsync(id);
             if (entity != null)
             {
-                _context.Set<TEntidade>().Remove(entity);
+                entity.IsDeleted = true;
+                entity.DeletedAt = DateTime.UtcNow;
+                _context.Entry(entity).State = EntityState.Modified;
+            }
+        }
+
+        /// <summary>
+        /// Remove fisicamente a entidade do banco de dados (hard delete)
+        /// Use apenas quando necessário para limpeza de dados
+        /// </summary>
+        public void RemoverFisicamente(TEntidade entidade)
+        {
+            _context.Set<TEntidade>().Remove(entidade);
+        }
+
+        /// <summary>
+        /// Remove fisicamente múltiplas entidades do banco de dados (hard delete)
+        /// Use apenas quando necessário para limpeza de dados
+        /// </summary>
+        public void RemoverFisicamente(IEnumerable<TEntidade> entidades)
+        {
+            _context.Set<TEntidade>().RemoveRange(entidades);
+        }
+
+        /// <summary>
+        /// Restaura uma entidade que foi deletada (soft delete)
+        /// </summary>
+        public void Restaurar(TEntidade entidade)
+        {
+            entidade.IsDeleted = false;
+            entidade.DeletedAt = null;
+            entidade.DeletedBy = null;
+            _context.Entry(entidade).State = EntityState.Modified;
+        }
+
+        /// <summary>
+        /// Restaura uma entidade que foi deletada pelo ID (soft delete)
+        /// </summary>
+        public async Task<bool> RestaurarAsync(TId id)
+        {
+            var entity = await ListarTodos().FirstOrDefaultAsync(x => x.Id.ToString() == id.ToString() && x.IsDeleted);
+            if (entity != null)
+            {
+                Restaurar(entity);
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Restaura múltiplas entidades que foram deletadas (soft delete)
+        /// </summary>
+        public void Restaurar(IEnumerable<TEntidade> entidades)
+        {
+            foreach (var entidade in entidades)
+            {
+                entidade.IsDeleted = false;
+                entidade.DeletedAt = null;
+                entidade.DeletedBy = null;
+                _context.Entry(entidade).State = EntityState.Modified;
             }
         }
 
@@ -219,7 +326,7 @@ namespace Repositories.Base
         /// <param name="query">Informe o objeto do tipo IQuerable</param>
         /// <param name="includeProperties">Ínforme o array de expressões que deseja incluir</param>
         /// <returns></returns>
-        private IQueryable<TEntidade> Include(IQueryable<TEntidade> query, params Expression<Func<TEntidade, object>>[] includeProperties)
+        protected virtual IQueryable<TEntidade> Include(IQueryable<TEntidade> query, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
             foreach (var property in includeProperties)
             {

@@ -1,6 +1,7 @@
 using Repositories.Base;
 using Interfaces;
 using Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
 {
@@ -51,6 +52,56 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error seeding authentication data");
+                throw;
+            }
+        }
+
+        // Ensure admin exists and has Administrator role, safe to call every startup
+        public async Task EnsureAdminUserAndRolesAsync()
+        {
+            try
+            {
+                // Ensure Administrator role exists
+                var adminRole = await _roleRepository.GetByNameAsync("Administrator");
+                if (adminRole == null)
+                {
+                    adminRole = await _roleRepository.AdicionarAsync(new Role
+                    {
+                        Name = "Administrator",
+                        Description = "Administrador do sistema com acesso total"
+                    });
+                }
+
+                // Ensure HeitorAdmin user exists
+                var adminUser = await _userRepository.GetByLoginAsync("HeitorAdmin");
+                if (adminUser == null)
+                {
+                    adminUser = await _userRepository.AdicionarAsync(new Usuario
+                    {
+                        Login = "HeitorAdmin",
+                        Email = "heitoradmin@pdv.com",
+                        Nome = "Heitor Admin",
+                        Senha = _passwordService.HashPassword("HS1384@"),
+                        StatusAtivo = true
+                    });
+                }
+
+                // Ensure mapping exists
+                var hasMapping = await _context.UserRoles.IgnoreQueryFilters().AnyAsync(ur => ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
+                if (!hasMapping)
+                {
+                    await _userRoleRepository.AdicionarAsync(new UserRole
+                    {
+                        UserId = adminUser.Id,
+                        RoleId = adminRole.Id
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error ensuring admin user and roles");
                 throw;
             }
         }

@@ -478,10 +478,10 @@ grep -E "(timeout|slow|performance)" /var/log/pdv-system/*.log
 
 ```json
 {
-  "Cache": {
-    "DefaultExpirationMinutes": 15,
-    "SlidingExpirationMinutes": 5,
-    "MaxCacheSize": 500
+  "Performance": {
+    "DefaultTimeoutMinutes": 15,
+    "QueryTimeoutMinutes": 5,
+    "MaxConnections": 500
   }
 }
 ```

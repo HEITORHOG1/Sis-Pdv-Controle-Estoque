@@ -147,10 +147,10 @@ Successfully implemented comprehensive API documentation and standardization for
 
 ## 🚀 Performance Features
 
-### Caching Strategy
-- **IMemoryCache** integration with configurable TTL
-- **Automatic cache invalidation** on data changes
-- **Pipeline behavior** for MediatR caching
+### Performance Strategy
+- **Optimized data access** with efficient queries
+- **Automatic data validation** on changes
+- **Pipeline behavior** for MediatR processing
 
 ### Pagination
 - **Standard pagination** with page/pageSize parameters

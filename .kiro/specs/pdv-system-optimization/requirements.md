@@ -66,7 +66,7 @@ O sistema atual utiliza DDD, CQRS com MediatR, Entity Framework Core com MySQL, 
 2. WHEN consultas são realizadas THEN SHALL ser otimizadas para performance
 3. WHEN dados são carregados THEN SHALL usar paginação quando apropriado
 4. WHEN operações demoradas são executadas THEN SHALL ser processadas de forma assíncrona
-5. WHEN cache pode ser usado THEN SHALL implementar estratégias de cache adequadas
+5. WHEN performance pode ser otimizada THEN SHALL implementar estratégias de otimização adequadas
 
 ### Requirement 6
 

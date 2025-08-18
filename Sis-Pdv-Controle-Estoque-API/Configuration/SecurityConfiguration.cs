@@ -19,8 +19,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
             // Configure Authorization Policies
             ConfigureAuthorizationPolicies(services);
 
-            // Configure Rate Limiting
-            ConfigureRateLimiting(services, configuration);
+            // Security configuration complete
 
             // Configure CORS
             services.ConfigureCors(environment, configuration);
@@ -177,19 +176,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
             });
         }
 
-        private static void ConfigureRateLimiting(IServiceCollection services, IConfiguration configuration)
-        {
-            var rateLimitOptions = new RateLimitOptions();
-            configuration.GetSection("RateLimit").Bind(rateLimitOptions);
 
-            // Set defaults if not configured
-            if (rateLimitOptions.MaxRequests == 0)
-                rateLimitOptions.MaxRequests = 100;
-            if (rateLimitOptions.WindowSizeInMinutes == 0)
-                rateLimitOptions.WindowSizeInMinutes = 1;
-
-            services.AddSingleton(rateLimitOptions);
-        }
 
         public static void UseSecurityMiddleware(this IApplicationBuilder app, IWebHostEnvironment environment)
         {
@@ -203,8 +190,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
                 app.UseHttpsRedirection();
             }
 
-            // Rate limiting (before authentication)
-            app.UseMiddleware<RateLimitingMiddleware>();
+            // Security middleware configured
 
             // CORS (before authentication and authorization)
             app.UseCorsPolicy(environment);

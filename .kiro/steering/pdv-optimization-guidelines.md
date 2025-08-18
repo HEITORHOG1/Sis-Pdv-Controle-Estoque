@@ -111,7 +111,7 @@
 - Ensure data consistency across related entities
 
 ### Performance Considerations
-- Cache frequently accessed product information
+- Optimize frequently accessed product information
 - Use background services for heavy operations
 - Implement proper connection pooling
 - Monitor database performance and optimize queries

@@ -23,7 +23,6 @@ using Interfaces.Services;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
 using Sis_Pdv_Controle_Estoque_API.Services;
 using Sis_Pdv_Controle_Estoque_API.Services.Auth;
-using Sis_Pdv_Controle_Estoque_API.Services.Cache;
 using Sis_Pdv_Controle_Estoque_API.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -80,7 +79,6 @@ namespace Sis_Pdv_Controle_Estoque_API
 
             // Add pipeline behaviors
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Sis_Pdv_Controle_Estoque_API.Behaviors.ValidationBehavior<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Sis_Pdv_Controle_Estoque_API.Behaviors.CachingBehavior<,>));
         }
 
         public static void ConfigureRepositories(this IServiceCollection services, IConfiguration configuration)
@@ -143,11 +141,6 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<AuthSeederService>();
-            
-            // Cache services
-            services.Configure<Sis_Pdv_Controle_Estoque_API.Configuration.CacheOptions>(configuration.GetSection(Sis_Pdv_Controle_Estoque_API.Configuration.CacheOptions.SectionName));
-            services.AddMemoryCache();
-            services.AddScoped<ICacheService, MemoryCacheService>();
             
             // Backup configuration
             services.Configure<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupConfiguration>(configuration.GetSection("Backup"));

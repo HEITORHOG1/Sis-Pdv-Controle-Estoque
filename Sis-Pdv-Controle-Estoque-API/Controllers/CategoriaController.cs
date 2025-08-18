@@ -16,33 +16,6 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     /// <summary>
     /// Category management endpoints for the PDV Control System
     /// </summary>
-    /// <remarks>
-    /// This controller provides comprehensive category management functionality including:
-    /// 
-    /// **Category Operations:**
-    /// - Category creation, update, and deletion
-    /// - Category listing and search functionality
-    /// - Hierarchical category management
-    /// - Category-product relationship management
-    /// 
-    /// **Features:**
-    /// - Unique category name validation
-    /// - Category hierarchy support (parent-child relationships)
-    /// - Product count tracking per category
-    /// - Category status management (active/inactive)
-    /// - Bulk category operations
-    /// 
-    /// **Business Rules:**
-    /// - Category names must be unique within the same parent level
-    /// - Categories with associated products cannot be deleted
-    /// - Category hierarchy depth is limited to prevent circular references
-    /// - Inactive categories are hidden from product assignment
-    /// 
-    /// **Security:**
-    /// - Requires authentication for all operations
-    /// - Category management permissions required for modifications
-    /// - Audit logging for all category changes
-    /// </remarks>
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/categoria")]
@@ -53,6 +26,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<CategoriaController> _logger;
+        
         public CategoriaController(IMediator mediator, IUnitOfWork unitOfWork, ILogger<CategoriaController> logger) : base(unitOfWork)
         {
             _mediator = mediator;
@@ -120,13 +94,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <response code="409">Conflict - category name already exists</response>
         /// <response code="500">Internal server error</response>
         [HttpPost]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status409Conflict)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        [Route("api/Categoria/AdicionarCategoria")]
+        [Route("/api/Categoria/AdicionarCategoria")]
         public async Task<IActionResult> AdicionarCategoria([FromBody] AdicionarCategoriaRequest request)
         {
             try
@@ -149,7 +117,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         /// <returns>Retorna uma lista de todas as categorias.</returns>
         [HttpGet]
-        [Route("api/Categoria/ListarCategoria")]
+        [Route("/api/Categoria/ListarCategoria")]
         public async Task<IActionResult> ListarCategoria()
         {
             _logger.LogInformation("ListarCategoria operation started. CorrelationId: {CorrelationId}", CorrelationId);
@@ -157,10 +125,9 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             var request = new ListarCategoriaRequest();
             var result = await _mediator.Send(request, CancellationToken.None);
             
-            _logger.LogInformation("ListarCategoria operation completed successfully. CorrelationId: {CorrelationId}, Count: {Count}", 
-                CorrelationId, result?.Data?.ToString()?.Length ?? 0);
+            _logger.LogInformation("ListarCategoria operation completed successfully. CorrelationId: {CorrelationId}", CorrelationId);
             
-            return Success(result, "Categories retrieved successfully");
+            return Ok(result);
         }
 
         /// <summary>
@@ -170,7 +137,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna a categoria que corresponde ao identificador fornecido.</returns>
 
         [HttpGet]
-        [Route("api/Categoria/ListarCategoriaPorId/{id:Guid}")]
+        [Route("/api/Categoria/ListarCategoriaPorId/{id:Guid}")]
         public async Task<IActionResult> ListarCategoriaPorId(Guid id)
         {
 
@@ -196,7 +163,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna a categoria que corresponde ao nome fornecido.</returns>
 
         [HttpGet]
-        [Route("api/Categoria/ListarCategoriaPorNomeCategoria/{NomeCategoria}")]
+        [Route("/api/Categoria/ListarCategoriaPorNomeCategoria/{NomeCategoria}")]
         public async Task<IActionResult> ListarCategoriaPorNomeCategoria(string NomeCategoria)
         {
 
@@ -222,7 +189,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna a resposta da solicitação de atualização.</returns>
 
         [HttpPut]
-        [Route("api/Categoria/AlterarCategoria")]
+        [Route("/api/Categoria/AlterarCategoria")]
         public async Task<IActionResult> AlterarCategoria([FromBody] AlterarCategoriaRequest request)
         {
             try
@@ -230,6 +197,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 _logger.LogInformation("AlterarCategoria");
                 var response = await _mediator.Send(request, CancellationToken.None);
                 _logger.LogInformation("AlterarCategoria - Response: {@response}", response);
+                
                 return await ResponseAsync(response);
             }
             catch (System.Exception ex)
@@ -245,7 +213,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <param name="id">O identificador da categoria que se deseja remover.</param>
         /// <returns>Retorna a resposta da solicitação de remoção.</returns>
         [HttpDelete]
-        [Route("api/Categoria/RemoverCategoria/{id:Guid}")]
+        [Route("/api/Categoria/RemoverCategoria/{id:Guid}")]
         public async Task<IActionResult> RemoverCategoria(Guid id)
         {
             try
@@ -254,6 +222,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 var request = new RemoverCategoriaResquest(id);
                 var result = await _mediator.Send(request, CancellationToken.None);
                 _logger.LogInformation("RemoverCategoria - Response: {@response}", result);
+                
                 return await ResponseAsync(result);
 
             }

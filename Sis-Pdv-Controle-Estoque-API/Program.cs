@@ -105,24 +105,26 @@ using (var scope = app.Services.CreateScope())
                           || await db.Produtos.AnyAsync()
                           || await db.Categorias.AnyAsync();
 
+        var authSeeder = scope.ServiceProvider.GetRequiredService<Sis_Pdv_Controle_Estoque_API.Services.Auth.AuthSeederService>();
         if (!hasCoreData)
         {
-            var authSeeder = scope.ServiceProvider.GetRequiredService<Sis_Pdv_Controle_Estoque_API.Services.Auth.AuthSeederService>();
             await authSeeder.SeedAsync();
 
             var domainSeeder = scope.ServiceProvider.GetRequiredService<DomainSeederService>();
             await domainSeeder.SeedAsync();
 
-            Log.Information("Database migrated and seeded successfully (first run)");
+            Serilog.Log.Information("Database migrated and seeded successfully (first run)");
         }
         else
         {
-            Log.Information("Database already contains data. Skipping seed.");
+            // Ensure core admin/role mapping exists even when skipping full seed
+            await authSeeder.EnsureAdminUserAndRolesAsync();
+            Serilog.Log.Information("Database already contains data. Skipping seed. Ensured admin user/role.");
         }
     }
     catch (Exception ex)
     {
-        Log.Error(ex, "Failed to migrate and seed the database");
+        Serilog.Log.Error(ex, "Failed to migrate and seed the database");
         throw;
     }
 }
