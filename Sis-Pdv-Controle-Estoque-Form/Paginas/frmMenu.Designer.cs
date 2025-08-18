@@ -73,6 +73,7 @@
             this.pnStatus = new System.Windows.Forms.Panel();
             this.lblStatusSistema = new System.Windows.Forms.Label();
             this.lblVersaoSistema = new System.Windows.Forms.Label();
+            this.lblAutor = new System.Windows.Forms.LinkLabel();
             this.progressStatus = new System.Windows.Forms.ProgressBar();
             
             // Timer
@@ -534,6 +535,7 @@
             this.pnStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
             this.pnStatus.Controls.Add(this.lblStatusSistema);
             this.pnStatus.Controls.Add(this.lblVersaoSistema);
+            this.pnStatus.Controls.Add(this.lblAutor);
             this.pnStatus.Controls.Add(this.progressStatus);
             this.pnStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pnStatus.Location = new System.Drawing.Point(0, 730);
@@ -565,6 +567,23 @@
             this.lblVersaoSistema.Size = new System.Drawing.Size(140, 15);
             this.lblVersaoSistema.TabIndex = 1;
             this.lblVersaoSistema.Text = "📍 v2.0.0 - Build 2024.08";
+            // 
+            // lblAutor
+            // 
+            this.lblAutor.ActiveLinkColor = System.Drawing.Color.LightSkyBlue;
+            this.lblAutor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblAutor.AutoSize = true;
+            this.lblAutor.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblAutor.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.lblAutor.LinkColor = System.Drawing.Color.LightGray;
+            this.lblAutor.Location = new System.Drawing.Point(980, 8);
+            this.lblAutor.Name = "lblAutor";
+            this.lblAutor.Size = new System.Drawing.Size(252, 15);
+            this.lblAutor.TabIndex = 3;
+            this.lblAutor.TabStop = true;
+            this.lblAutor.Text = "Feito por Heitor Gonçalves · LinkedIn (clique)";
+            this.lblAutor.VisitedLinkColor = System.Drawing.Color.Silver;
+            this.lblAutor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblAutor_LinkClicked);
             
             // 
             // progressStatus
@@ -658,6 +677,7 @@
         private System.Windows.Forms.Panel pnStatus;
         private System.Windows.Forms.Label lblStatusSistema;
         private System.Windows.Forms.Label lblVersaoSistema;
+    private System.Windows.Forms.LinkLabel lblAutor;
         private System.Windows.Forms.ProgressBar progressStatus;
         
         // Timer

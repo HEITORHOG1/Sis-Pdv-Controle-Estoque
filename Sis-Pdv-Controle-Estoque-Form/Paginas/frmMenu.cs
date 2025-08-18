@@ -16,8 +16,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
         #region Campos Privados
         
         private readonly string _nomeUsuario;
-        private Form _formFilhoAtivo;
-        private Button _botaoAtivo;
+        private Form? _formFilhoAtivo; // nullable
+        private Button? _botaoAtivo;   // nullable
         private bool _menuCollapsed = false;
         private bool _isLoading = false;
         
@@ -152,7 +152,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
             }
         }
         
-        private void DesativarBotao(Button botao)
+        private void DesativarBotao(Button? botao)
         {
             if (botao == null) return;
             
@@ -284,7 +284,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         
-        private void PdvFormClosed(object sender, FormClosedEventArgs e)
+        private void PdvFormClosed(object? sender, FormClosedEventArgs e)
         {
             this.Show();
             this.WindowState = FormWindowState.Maximized;
@@ -482,34 +482,34 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
                 switch (keyData)
                 {
                     case Keys.F1:
-                        btnHome_Click(null, null);
+                        btnHome_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F2:
-                        btnProdutos_Click(null, null);
+                        btnProdutos_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F3:
-                        btnColaboradores_Click(null, null);
+                        btnColaboradores_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F4:
-                        btnFornecedores_Click(null, null);
+                        btnFornecedores_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F5:
-                        btnPDV_Click(null, null);
+                        btnPDV_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F9:
-                        btnRelatorios_Click(null, null);
+                        btnRelatorios_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F11:
                         ToggleMenu();
                         return true;
                     case Keys.F12:
-                        btnMax_Click(null, null);
+                        btnMax_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.Escape:
-                        btnLogout_Click(null, null);
+                        btnLogout_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.Alt | Keys.F4:
-                        btnClose_Click(null, null);
+                        btnClose_Click(this, EventArgs.Empty);
                         return true;
                 }
             }
@@ -550,25 +550,35 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
         
         #endregion
         
-        #region Métodos de Compatibilidade (Manter para não quebrar código existente)
-        
-        // Eventos mantidos para compatibilidade
-        private void btnDashbord_Click(object sender, EventArgs e) => btnHome_Click(sender, e);
-        private void btnProduto_Click_1(object sender, EventArgs e) => btnProdutos_Click(sender, e);
-        private void btnColaborador_Click(object sender, EventArgs e) => btnColaboradores_Click(sender, e);
-        private void btnFornecedor_Click(object sender, EventArgs e) => btnFornecedores_Click(sender, e);
-        private void iconButton1_Click(object sender, EventArgs e) => btnCategorias_Click(sender, e);
-        private void imgDepartamento_Click(object sender, EventArgs e) => btnDepartamentos_Click(sender, e);
-        private void iconButton2_Click(object sender, EventArgs e) => btnPDV_Click(sender, e);
-        private void btnRelatorios_Click_1(object sender, EventArgs e) => btnRelatorios_Click(sender, e);
-        private void btnLogOut_Click(object sender, EventArgs e) => btnLogout_Click(sender, e);
-        
-        // Métodos legados vazios para compatibilidade
-        private void btnLogo_Click(object sender, EventArgs e) { /* Compatibilidade */ }
-        private void iconMenu_Click(object sender, EventArgs e) { ToggleMenu(); }
-        private void pnForm_Paint(object sender, PaintEventArgs e) { /* Compatibilidade */ }
-        private void frmMenu_Paint(object sender, PaintEventArgs e) { /* Compatibilidade */ }
-        
+        #region Créditos do Autor
+        private void lblAutor_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                var url = "https://www.linkedin.com/in/heitorhog/";
+#if NETFRAMEWORK
+                System.Diagnostics.Process.Start(url);
+#else
+                try
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo
+                    {
+                        FileName = url,
+                        UseShellExecute = true
+                    };
+                    Process.Start(psi);
+                }
+                catch
+                {
+                    Process.Start(url);
+                }
+#endif
+            }
+            catch (Exception ex)
+            {
+                MenuLogger.LogError($"Falha ao abrir LinkedIn: {ex.Message}", "AuthorLink", ex);
+            }
+        }
         #endregion
         
         #region Classes de Log Auxiliares
@@ -580,7 +590,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
                 Console.WriteLine($"[INFO] [Menu-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
-            public static void LogError(string message, string category, Exception ex = null)
+            public static void LogError(string message, string category, Exception? ex = null)
             {
                 Console.WriteLine($"[ERROR] [Menu-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)

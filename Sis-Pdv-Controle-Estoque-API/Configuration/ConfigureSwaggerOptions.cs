@@ -43,8 +43,8 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 Description = "PDV Control System API documentation",
                 Contact = new OpenApiContact
                 {
-                    Name = "PDV System Development Team",
-                    Email = "dev@pdvsystem.com"
+                    Name = "Heitor Gonçalves",
+                    Url = new Uri("https://www.linkedin.com/in/heitorhog/")
                 },
                 License = new OpenApiLicense
                 {

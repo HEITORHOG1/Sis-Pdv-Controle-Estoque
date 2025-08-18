@@ -583,3 +583,7 @@ For technical support and additional documentation:
 - Review this deployment guide
 - Contact system administrator
 - Refer to API documentation at `/swagger`
+
+---
+
+Author: Heitor Gonçalves — https://www.linkedin.com/in/heitorhog/

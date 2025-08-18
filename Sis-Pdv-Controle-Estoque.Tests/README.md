@@ -254,3 +254,7 @@ When adding new tests:
 - **Integration Tests**: All API endpoints covered
 - **E2E Tests**: All critical business workflows covered
 - **Edge Cases**: All validation rules tested
+
+## Autor
+
+- Heitor Gonçalves — LinkedIn: https://www.linkedin.com/in/heitorhog/

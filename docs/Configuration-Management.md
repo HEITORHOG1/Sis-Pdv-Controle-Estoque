@@ -275,3 +275,7 @@ docker-compose -f docker-compose.yml up
 - Implement proper firewall rules
 - Use VPNs or private networks when possible
 - Monitor network traffic for anomalies
+
+---
+
+Author: Heitor Gonçalves — https://www.linkedin.com/in/heitorhog/

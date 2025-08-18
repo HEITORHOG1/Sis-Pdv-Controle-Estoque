@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\MessageBus.csproj" />
+    <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
     <ProjectReference Include="..\Sis-Pdv-Controle-Estoque-Infra\Sis-Pdv-Controle-Estoque-Infra.csproj" />
     <ProjectReference Include="..\Sis-Pdv-Controle-Estoque\Sis-Pdv-Controle-Estoque-Domain.csproj" />
   </ItemGroup>

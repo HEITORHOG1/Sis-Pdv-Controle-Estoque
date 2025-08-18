@@ -6,7 +6,7 @@ WORKDIR /src
 COPY ["Sis-Pdv-Controle-Estoque-API/Sis-Pdv-Controle-Estoque-API.csproj", "Sis-Pdv-Controle-Estoque-API/"]
 COPY ["Sis-Pdv-Controle-Estoque/Sis-Pdv-Controle-Estoque-Domain.csproj", "Sis-Pdv-Controle-Estoque/"]
 COPY ["Sis-Pdv-Controle-Estoque-Infra/Sis-Pdv-Controle-Estoque-Infra.csproj", "Sis-Pdv-Controle-Estoque-Infra/"]
-COPY ["ClassLibrary1/MessageBus.csproj", "ClassLibrary1/"]
+COPY ["MessageBus/MessageBus.csproj", "MessageBus/"]
 
 # Restore dependencies
 RUN dotnet restore "Sis-Pdv-Controle-Estoque-API/Sis-Pdv-Controle-Estoque-API.csproj"

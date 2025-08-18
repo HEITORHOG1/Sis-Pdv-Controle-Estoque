@@ -779,3 +779,7 @@ sudo systemctl start pdv-system
 ---
 
 *This guide should be reviewed and updated quarterly to ensure accuracy and completeness.*
+
+---
+
+Author: Heitor Gonçalves — https://www.linkedin.com/in/heitorhog/

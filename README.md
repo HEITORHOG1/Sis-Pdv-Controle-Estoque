@@ -19,6 +19,11 @@ E MAIS O PDV DE VENDA FRENTE DE LOJA.
 
 > Um sistema robusto de Ponto de Venda (PDV) e gerenciamento de estoque implementado em ASP.NET Core.
 
+## Autor e contato
+
+- Autor: Heitor Gonçalves
+- LinkedIn: https://www.linkedin.com/in/heitorhog/
+
 ## Sobre o Projeto
 
 Este é um projeto open-source destinado àqueles interessados em aprender sobre o desenvolvimento de um PDV. Utilizamos práticas modernas de desenvolvimento e padrões de arquitetura, como o Domain-Driven Design (DDD) e CQRS (Command Query Responsibility Segregation). A aplicação é construída em ASP.NET Core, integrada a um banco de dados MySQL, e utiliza o RabbitMQ para o processamento assíncrono de mensagens.
