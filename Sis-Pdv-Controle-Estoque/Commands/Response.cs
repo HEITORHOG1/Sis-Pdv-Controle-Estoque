@@ -4,6 +4,11 @@ namespace Commands
 {
     public class Response
     {
+        // Parameterless constructor required for JSON deserialization in logging/middleware
+        public Response()
+        {
+        }
+
         public Response(INotifiable notifiable)
         {
             Success = notifiable.IsValid();
@@ -17,9 +22,10 @@ namespace Commands
             Notifications = notifiable.Notifications;
         }
 
-        public IEnumerable<Notification> Notifications { get; }
-        public bool Success { get; private set; }
-        public object Data { get; private set; }
+        // Make settable to support deserialization scenarios
+        public IEnumerable<Notification> Notifications { get; set; } = Enumerable.Empty<Notification>();
+        public bool Success { get; set; }
+        public object Data { get; set; }
 
         //public void SetResult<TData>(TData data) where TData : class;
         //public void SetResult(object data);

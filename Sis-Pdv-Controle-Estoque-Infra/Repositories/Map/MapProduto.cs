@@ -19,9 +19,19 @@ namespace Repositories.Map
             builder.Property(x => x.DataFabricao).IsRequired();
             builder.Property(x => x.DataVencimento).IsRequired();
             builder.Property(x => x.QuatidadeEstoqueProduto).IsRequired();
+            builder.Property(x => x.MinimumStock).HasPrecision(18, 2).HasDefaultValue(0);
+            builder.Property(x => x.MaximumStock).HasPrecision(18, 2).HasDefaultValue(0);
+            builder.Property(x => x.ReorderPoint).HasPrecision(18, 2).HasDefaultValue(0);
+            builder.Property(x => x.Location).HasMaxLength(100);
             builder.Property(x => x.StatusAtivo).IsRequired();
             builder.Property(x => x.FornecedorId).IsRequired();
             builder.Property(x => x.CategoriaId).IsRequired();
+            
+            // Relationships
+            builder.HasMany(x => x.StockMovements)
+                   .WithOne(x => x.Produto)
+                   .HasForeignKey(x => x.ProdutoId)
+                   .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

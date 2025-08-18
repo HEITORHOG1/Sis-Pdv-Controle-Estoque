@@ -11,9 +11,9 @@
     "Sis_Pdv_Controle_Estoque_API": {
         "commandName": "Project",
         "dotnetRunMessages": true,
-        "launchBrowser": true,
-        "launchUrl": "swagger",
-        "applicationUrl": "https://localhost:7265;http://localhost:5265",
+  "launchBrowser": true,
+  "launchUrl": "api-docs",
+  "applicationUrl": "http://localhost:7003",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development"
         }
@@ -22,8 +22,8 @@
         "commandName": "IISExpress",
         "dotnetRunMessages": true,
         "launchBrowser": true,
-        "launchUrl": "swagger",
-        "applicationUrl": "https://www.trucogold.somee.com;http://www.trucogold.somee.com",
+  "launchUrl": "api-docs",
+  "applicationUrl": "https://www.trucogold.somee.com;http://www.trucogold.somee.com",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development"
         }

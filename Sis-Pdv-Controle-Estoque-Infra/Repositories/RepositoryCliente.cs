@@ -1,4 +1,5 @@
 ﻿using Repositories.Base;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repositories
 {
@@ -8,6 +9,11 @@ namespace Repositories
         public RepositoryCliente(PdvContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await _context.Clientes.CountAsync();
         }
     }
 }

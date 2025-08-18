@@ -16,27 +16,12 @@ namespace Commands.Fornecedor.AdicionarFornecedor
 
         public async Task<Response> Handle(AdicionarFornecedorRequest request, CancellationToken cancellationToken)
         {
-            // Instancia o validador
-            var validator = new AdicionarFornecedorRequestValidator();
+            // Validation is now handled by the ValidationBehavior pipeline
 
-            // Valida a requisição
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-            // Se não passou na validação, adiciona as falhas como notificações
-            if (!validationResult.IsValid)
+            //Verificar se o fornecedor já existe
+            if (await _repositoryFornecedor.ExisteAsync(x => x.Cnpj == request.Cnpj))
             {
-                foreach (var error in validationResult.Errors)
-                {
-                    AddNotification(error.PropertyName, error.ErrorMessage);
-                }
-
-                return new Response(this);
-            }
-
-            //Verificar se o usuário já existe
-            if (_repositoryFornecedor.Existe(x => x.Cnpj == request.Cnpj))
-            {
-                AddNotification("Cnpj", "Cnpj ja Cadastrada");
+                AddNotification("Cnpj", "Fornecedor já cadastrado com este CNPJ");
                 return new Response(this);
             }
 
@@ -58,12 +43,12 @@ namespace Commands.Fornecedor.AdicionarFornecedor
                 return new Response(this);
             }
 
-            Fornecedor = _repositoryFornecedor.Adicionar(Fornecedor);
+            Fornecedor = await _repositoryFornecedor.AdicionarAsync(Fornecedor);
 
             //Criar meu objeto de resposta
             var response = new Response(this, Fornecedor);
 
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }

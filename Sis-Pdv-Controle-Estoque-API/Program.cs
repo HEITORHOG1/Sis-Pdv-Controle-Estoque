@@ -1,42 +1,188 @@
+using System.Linq;
 using Serilog;
 using Serilog.Events;
 using Sis_Pdv_Controle_Estoque_API;
+using Sis_Pdv_Controle_Estoque_API.Configuration;
+using Sis_Pdv_Controle_Estoque_API.Middleware;
+using Sis_Pdv_Controle_Estoque_API.Services;
+using Repositories.Base;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add configuration management with environment variable substitution
+builder.Services.AddConfigurationManagement(builder.Configuration);
+
+// Descobrir URLs de hospedagem priorizando variáveis padrão (ASPNETCORE_URLS/urls) e usar fallback para 7003
+var configuredUrls =
+    builder.Configuration["urls"]
+    ?? builder.Configuration["ASPNETCORE_URLS"]
+    ?? Environment.GetEnvironmentVariable("ASPNETCORE_URLS")
+    ?? builder.Configuration["Hosting:Urls"]
+    ?? "http://localhost:7003";
+
+builder.WebHost.UseUrls(configuredUrls);
+
+// Configure enhanced Serilog with enrichers and structured logging
 var loggerConfiguration = new LoggerConfiguration()
-    .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Debug)
-    .WriteTo.File("log.txt", restrictedToMinimumLevel: LogEventLevel.Information)
-    .MinimumLevel.Verbose();
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .Enrich.WithCorrelationId()
+    .Enrich.WithEnvironmentName()
+    .Enrich.WithMachineName()
+    .Enrich.WithProcessId()
+    .Enrich.WithThreadId()
+    .WriteTo.Console(
+        restrictedToMinimumLevel: LogEventLevel.Debug,
+        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
+    .WriteTo.File(
+        "logs/pdv-api-.log",
+        restrictedToMinimumLevel: LogEventLevel.Information,
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30,
+        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {CorrelationId} {Message:lj} {Properties:j}{NewLine}{Exception}")
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+    .MinimumLevel.Override("System", LogEventLevel.Warning);
+
+// Set minimum level based on environment
+if (builder.Environment.IsDevelopment())
+{
+    loggerConfiguration.MinimumLevel.Debug();
+}
+else
+{
+    loggerConfiguration.MinimumLevel.Information();
+}
 
 Log.Logger = loggerConfiguration.CreateLogger();
 
+// Use Serilog for all logging
+builder.Host.UseSerilog();
+
+// Add services to the container
 builder.Services.ConfigureRepositories(builder.Configuration);
 builder.Services.ConfigureMediatR();
-builder.Services.AddControllers();
+builder.Services.ConfigureValidation();
+builder.Services.ConfigureHealthChecks(builder.Configuration);
 
+// Configure API versioning
+builder.Services.ConfigureApiVersioning();
+
+// Configure controllers with enhanced JSON options
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.WriteIndented = builder.Environment.IsDevelopment();
+    });
+
+// Configure API documentation via centralized configuration
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger(builder.Environment);
+
+// Configure comprehensive security
+builder.Services.ConfigureSecurity(builder.Configuration, builder.Environment);
+
+// Register seeders
+builder.Services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.AuthSeederService>();
+builder.Services.AddScoped<DomainSeederService>();
 
 var app = builder.Build();
-app.UseStaticFiles();
-app.UseSwagger();
-app.UseSwaggerUI();
-app.UseExceptionHandler("/error");
-app.UseHsts();
-app.UseDeveloperExceptionPage();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Apply migrations and seed data at startup
+using (var scope = app.Services.CreateScope())
 {
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<PdvContext>();
+        await db.Database.MigrateAsync();
 
+        // Run seeds only once: if database is empty (no core data), then seed
+        var hasCoreData = await db.Usuarios.AnyAsync()
+                          || await db.Roles.AnyAsync()
+                          || await db.Permissions.AnyAsync()
+                          || await db.Produtos.AnyAsync()
+                          || await db.Categorias.AnyAsync();
+
+        var authSeeder = scope.ServiceProvider.GetRequiredService<Sis_Pdv_Controle_Estoque_API.Services.Auth.AuthSeederService>();
+        if (!hasCoreData)
+        {
+            await authSeeder.SeedAsync();
+
+            var domainSeeder = scope.ServiceProvider.GetRequiredService<DomainSeederService>();
+            await domainSeeder.SeedAsync();
+
+            Serilog.Log.Information("Database migrated and seeded successfully (first run)");
+        }
+        else
+        {
+            // Ensure core admin/role mapping exists even when skipping full seed
+            await authSeeder.EnsureAdminUserAndRolesAsync();
+            Serilog.Log.Information("Database already contains data. Skipping seed. Ensured admin user/role.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Serilog.Log.Error(ex, "Failed to migrate and seed the database");
+        throw;
+    }
 }
 
-app.UseHttpsRedirection();
+// Configure the HTTP request pipeline with proper middleware order
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
 
-app.UseAuthorization();
+// Add global exception handling middleware (must be early in pipeline)
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
+// Add request logging middleware
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+// Add metrics collection middleware
+app.UseMiddleware<Sis_Pdv_Controle_Estoque_API.Middleware.MetricsMiddleware>();
+
+// Apply security middleware (includes HTTPS, CORS, rate limiting, security headers)
+app.UseSecurityMiddleware(app.Environment);
+
+app.UseStaticFiles();
+
+// Custom authentication middleware (after built-in authentication)
+app.UseMiddleware<AuthenticationMiddleware>();
+
+// Configure health check endpoints
+app.UseHealthCheckEndpoints();
+
+// Enable Swagger & Swagger UI using centralized configuration
+app.UseSwaggerDocumentation(app.Environment);
 
 app.MapControllers();
 
-app.Run();
+// Log application startup
+Log.Information("PDV Control System API starting up...");
+Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
+var baseUrl = configuredUrls?.Split(';').FirstOrDefault() ?? "http://localhost:7003";
+var swaggerUrl = baseUrl.TrimEnd('/') + "/api-docs";
+Log.Information("Swagger UI available at: {SwaggerUrl}", swaggerUrl);
+
+try
+{
+    // Validate configuration before starting the application
+    await app.Services.ValidateConfigurationAsync();
+    Log.Information("Configuration validation completed successfully");
+    
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
+// Make Program class accessible for testing
+public partial class Program { }

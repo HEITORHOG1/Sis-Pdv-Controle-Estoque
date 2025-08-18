@@ -16,27 +16,12 @@ namespace Commands.Cliente.AdicionarCliente
 
         public async Task<Response> Handle(AdicionarClienteRequest request, CancellationToken cancellationToken)
         {
-            // Instancia o validador
-            var validator = new AdicionarClienteRequestValidator();
+            // Validation is now handled by the ValidationBehavior pipeline
 
-            // Valida a requisição
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-            // Se não passou na validação, adiciona as falhas como notificações
-            if (!validationResult.IsValid)
+            //Verificar se o cliente já existe
+            if (await _repositoryCliente.ExisteAsync(x => x.CpfCnpj == request.CpfCnpj))
             {
-                foreach (var error in validationResult.Errors)
-                {
-                    AddNotification(error.PropertyName, error.ErrorMessage);
-                }
-
-                return new Response(this);
-            }
-
-            //Verificar se o usuário já existe
-            if (_repositoryCliente.Existe(x => x.CpfCnpj == request.CpfCnpj))
-            {
-                AddNotification("CpfCnpj", "Categoria ja Cadastrada");
+                AddNotification("CpfCnpj", "Cliente já cadastrado com este CPF/CNPJ");
                 return new Response(this);
             }
 
@@ -46,12 +31,13 @@ namespace Commands.Cliente.AdicionarCliente
             {
                 return new Response(this);
             }
-            cliente = _repositoryCliente.Adicionar(cliente);
+            
+            cliente = await _repositoryCliente.AdicionarAsync(cliente);
 
             //Criar meu objeto de resposta
             var response = new Response(this, cliente);
 
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }
