@@ -110,7 +110,7 @@ namespace Repositories
 
         public async Task<Usuario?> GetByLoginAsync(string login)
         {
-            return await _context.Usuarios
+            return await _context.Set<Usuario>()
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .ThenInclude(r => r.RolePermissions)
@@ -120,7 +120,7 @@ namespace Repositories
 
         public async Task<Usuario?> GetByEmailAsync(string email)
         {
-            return await _context.Usuarios
+            return await _context.Set<Usuario>()
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .ThenInclude(r => r.RolePermissions)
@@ -130,13 +130,13 @@ namespace Repositories
 
         public async Task<Usuario?> GetByRefreshTokenAsync(string refreshToken)
         {
-            return await _context.Usuarios
+            return await _context.Set<Usuario>()
                 .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && !u.IsDeleted && u.StatusAtivo);
         }
 
         public async Task<IEnumerable<Role>> GetUserRolesAsync(Guid userId)
         {
-            return await _context.UserRoles
+            return await _context.Set<UserRole>()
                 .Where(ur => ur.UserId == userId && !ur.IsDeleted)
                 .Include(ur => ur.Role)
                 .ThenInclude(r => r.RolePermissions)
@@ -147,7 +147,7 @@ namespace Repositories
 
         public async Task<IEnumerable<Permission>> GetUserPermissionsAsync(Guid userId)
         {
-            return await _context.UserRoles
+            return await _context.Set<UserRole>()
                 .Where(ur => ur.UserId == userId && !ur.IsDeleted)
                 .SelectMany(ur => ur.Role.RolePermissions)
                 .Where(rp => !rp.IsDeleted)
@@ -158,7 +158,7 @@ namespace Repositories
 
         public async Task<bool> HasPermissionAsync(Guid userId, string permission)
         {
-            return await _context.UserRoles
+            return await _context.Set<UserRole>()
                 .Where(ur => ur.UserId == userId && !ur.IsDeleted)
                 .SelectMany(ur => ur.Role.RolePermissions)
                 .Where(rp => !rp.IsDeleted)
@@ -167,7 +167,7 @@ namespace Repositories
 
         public async Task<int> CountActiveUsersAsync()
         {
-            return await _context.Usuarios
+            return await _context.Set<Usuario>()
                 .CountAsync(u => u.StatusAtivo && !u.IsDeleted);
         }
 

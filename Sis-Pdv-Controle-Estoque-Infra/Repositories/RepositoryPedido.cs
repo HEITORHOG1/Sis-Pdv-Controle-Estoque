@@ -1,7 +1,6 @@
 ﻿using Commands.Pedidos.ListarVendaPedidoPorData;
-using Dapper;
-using MySql.Data.MySqlClient;
 using Repositories.Base;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repositories
 {
@@ -15,28 +14,19 @@ namespace Repositories
 
         public async Task<IList<ListarVendaPedidoPorDataResponse>> ListarVendaPedidoPorData(DateTime DataInicio, DateTime DataFim)
         {
-            var sql = @"SELECT id,
-                            dataDoPedido,
-                            formaPagamento,
-                            totalPedido
-                                    FROM pedido
-                                    WHERE dataDoPedido " +
-                                      $" BETWEEN '{DataInicio.Date.ToString("yyyy-MM-dd")}' " +
-                                      $" AND     '{DataFim.Date.ToString("yyyy-MM-dd")}'";
-
-            using (var connection = new MySqlConnection("Server=localhost;Database=PDV_02;Uid=root;Pwd=q1w2e3r4;"))
-            {
-                connection.Open();
-                return connection.Query(sql)
-                            .Select(row => new ListarVendaPedidoPorDataResponse
-                            {
-                                Id = (Guid?)row.id,
-                                dataDoPedido = (DateTime?)row.dataDoPedido,
-                                formaPagamento = (string)row.formaPagamento,
-                                totalPedido = (decimal)row.totalPedido
-                            }
-                            ).ToList();
-            }
+            return await _context.Set<Pedido>()
+                .Where(p => !p.IsDeleted && 
+                           p.DataDoPedido.HasValue &&
+                           p.DataDoPedido.Value.Date >= DataInicio.Date && 
+                           p.DataDoPedido.Value.Date <= DataFim.Date)
+                .Select(p => new ListarVendaPedidoPorDataResponse
+                {
+                    Id = p.Id,
+                    dataDoPedido = p.DataDoPedido,
+                    formaPagamento = p.FormaPagamento,
+                    totalPedido = p.TotalPedido
+                })
+                .ToListAsync();
         }
     }
 }
