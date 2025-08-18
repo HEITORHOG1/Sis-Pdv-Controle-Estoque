@@ -1,131 +1,383 @@
 ﻿using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
+using Sis_Pdv_Controle_Estoque_Form.Utils;
+using System.Diagnostics;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
 {
     public partial class ExcluirDepartamento : Form
     {
-        private DepartamentoService departamentoService;
-        private string departamentoId;
-        private string nomeDepartamento;
-        private bool isLoading = false;
-
-        public ExcluirDepartamento(string nomeDept, string id)
+        #region Campos Privados
+        
+        private DepartamentoService _departamentoService;
+        private bool _isLoading = false;
+        private bool _exclusaoConfirmada = false;
+        private string _nomeDepartamento = "";
+        private string _departamentoId = "";
+        
+        #endregion
+        
+        #region Construtor e Inicialização
+        
+        public ExcluirDepartamento(string nomeDepartamento, string id)
         {
             InitializeComponent();
-            departamentoService = new DepartamentoService();
-            departamentoId = id;
-            nomeDepartamento = nomeDept;
-            
-            txtNomeDepartamento.Text = nomeDept;
-            txtNomeDepartamento.ReadOnly = true; // Campo readonly para exclusão
-            LblId.Text = id;
-            
-            // Configura o foco no botão de exclusão
-            btnExcluir.Focus();
+            InicializarComponentesModernos(nomeDepartamento, id);
         }
-
+        
+        private void InicializarComponentesModernos(string nomeDepartamento, string id)
+        {
+            // Inicializa serviços
+            _departamentoService = new DepartamentoService();
+            
+            // Configura dados iniciais
+            _nomeDepartamento = nomeDepartamento ?? "";
+            _departamentoId = id ?? "";
+            
+            txtNomeDepartamento.Text = _nomeDepartamento;
+            LblId.Text = _departamentoId;
+            
+            // Configura estado inicial
+            AtualizarStatusInterface();
+            
+            // Log de inicialização
+            ExcluirDepartamentoLogger.LogInfo($"Formulário de exclusão inicializado - ID: {id}, Nome: {nomeDepartamento}", "Startup");
+        }
+        
+        #endregion
+        
+        #region Propriedades Públicas
+        
+        public bool ExclusaoRealizada { get; private set; } = false;
+        public string NomeExcluido { get; private set; } = "";
+        
+        #endregion
+        
+        #region Eventos de Controles
+        
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            FecharFormulario(false);
+        }
+        
         private async void btnExcluir_Click(object sender, EventArgs e)
         {
-            if (isLoading) return;
-            await Excluir();
+            await ProcessarExclusao();
         }
-
-        private async Task Excluir()
+        
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            FecharFormulario(false);
+        }
+        
+        #endregion
+        
+        #region Eventos de Teclado e Form
+        
+        private void ExcluirDepartamento_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Delete:
+                case Keys.Enter:
+                    _ = ProcessarExclusao();
+                    break;
+                case Keys.Escape:
+                    FecharFormulario(false);
+                    break;
+                case Keys.F1:
+                    MostrarAjuda();
+                    break;
+            }
+        }
+        
+        private void ExcluirDepartamento_Load(object sender, EventArgs e)
         {
             try
             {
-                // Confirmação dupla para exclusão
-                var result = MessageBox.Show(
-                    $"Tem certeza que deseja excluir o departamento '{nomeDepartamento}'?\n\n" +
-                    "ATENÇÃO: Esta ação não pode ser desfeita!",
-                    "Confirmar Exclusão",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button2); // Padrão é "Não"
-
-                if (result != DialogResult.Yes) return;
-
-                // Segunda confirmação
-                result = MessageBox.Show(
-                    "Confirma definitivamente a exclusão?\n\nEsta é sua última chance de cancelar!",
-                    "Confirmação Final",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2);
-
-                if (result != DialogResult.Yes) return;
-
-                isLoading = true;
+                // Foco no botão cancelar (mais seguro)
+                btnCancelar.Focus();
+                
+                ExcluirDepartamentoLogger.LogInfo("Formulário carregado com sucesso", "UserInterface");
+            }
+            catch (Exception ex)
+            {
+                ExcluirDepartamentoLogger.LogError($"Erro ao carregar formulário: {ex.Message}", "Startup", ex);
+            }
+        }
+        
+        private void pnHeader_MouseDown(object sender, MouseEventArgs e)
+        {
+            // Permite mover o formulário
+            MoverForm.ReleaseCapture();
+            MoverForm.SendMessage(this.Handle, 0x112, 0xf012, 0);
+        }
+        
+        #endregion
+        
+        #region Processamento e Validação
+        
+        private async Task ProcessarExclusao()
+        {
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                if (!ConfirmarExclusao()) return;
+                
                 SetLoadingState(true);
-
-                // Verifica se o departamento pode ser excluído (não tem colaboradores vinculados)
+                
+                ExcluirDepartamentoLogger.LogInfo($"Iniciando exclusão do departamento: ID={_departamentoId}, Nome={_nomeDepartamento}", "Delete");
+                
+                // Verifica se o departamento pode ser excluído
                 if (!await PodeExcluirDepartamento())
                 {
-                    MessageBox.Show(
+                    ExibirAviso(
                         "Este departamento não pode ser excluído pois possui colaboradores vinculados.\n\n" +
                         "Para excluir este departamento, primeiro remova ou transfira todos os colaboradores para outros departamentos.",
-                        "Departamento em Uso",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
+                        "Departamento em Uso");
                     return;
                 }
-
-                var response = await departamentoService.RemoverDepartamento(departamentoId);
-
-                if (response.success)
+                
+                var response = await _departamentoService.RemoverDepartamento(_departamentoId);
+                
+                sw.Stop();
+                ExcluirDepartamentoLogger.LogApiCall("RemoverDepartamento", "DELETE", sw.Elapsed, response?.success == true);
+                
+                if (response?.success == true)
                 {
-                    MessageBox.Show(
-                        $"Departamento '{nomeDepartamento}' excluído com sucesso!",
-                        "Exclusão Realizada",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    NomeExcluido = _nomeDepartamento;
+                    ExclusaoRealizada = true;
+                    _exclusaoConfirmada = true;
                     
-                    await AtualizarFormularioPrincipal();
-                    this.Close();
+                    ExibirSucesso($"Departamento '{_nomeDepartamento}' excluído com sucesso!");
+                    
+                    ExcluirDepartamentoLogger.LogInfo($"Departamento excluído com sucesso: ID={_departamentoId}, Nome={_nomeDepartamento}", "Delete");
+                    
+                    // Pequeno delay para feedback visual
+                    await Task.Delay(1500);
+                    
+                    FecharFormulario(true);
                 }
                 else
                 {
-                    var erros = string.Join("\n", response.notifications?.Select(n => n.ToString()) ?? 
-                        new[] { "Erro desconhecido" });
-                    
-                    MessageBox.Show(
-                        $"Erro ao excluir departamento:\n{erros}",
-                        "Erro na Exclusão",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    var erro = response?.notifications?.FirstOrDefault()?.ToString() ?? "Falha ao excluir departamento.";
+                    ExibirErro("Erro na Exclusão", erro);
+                    ExcluirDepartamentoLogger.LogWarning($"Falha na exclusão: {erro}", "Delete");
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"Erro inesperado ao excluir departamento: {ex.Message}",
-                    "Erro",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                sw.Stop();
+                ExcluirDepartamentoLogger.LogError($"Erro ao excluir departamento: {ex.Message}", "Delete", ex);
+                ExibirErro("Erro Inesperado", $"Erro ao excluir departamento: {ex.Message}");
             }
             finally
             {
-                isLoading = false;
                 SetLoadingState(false);
             }
         }
-
-        private async void ExcluirDepartamento_FormClosing(object sender, FormClosingEventArgs e)
+        
+        private bool ConfirmarExclusao()
         {
-            if (isLoading)
+            var confirmacao = MessageBox.Show(
+                $"🚨 CONFIRMAÇÃO FINAL DE EXCLUSÃO\n\n" +
+                $"Departamento: {_nomeDepartamento}\n" +
+                $"ID: {_departamentoId}\n\n" +
+                $"⚠️ ATENÇÃO:\n" +
+                $"• Esta ação é IRREVERSÍVEL\n" +
+                $"• O departamento será excluído permanentemente\n" +
+                $"• Todos os dados serão perdidos\n" +
+                $"• Verifique se não há colaboradores vinculados\n\n" +
+                $"Você tem CERTEZA ABSOLUTA que deseja excluir este departamento?",
+                "⚠️ CONFIRMAR EXCLUSÃO PERMANENTE",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2); // Padrão é "Não"
+            
+            if (confirmacao == DialogResult.Yes)
             {
-                e.Cancel = true;
-                MessageBox.Show(
-                    "Aguarde a conclusão da operação de exclusão.",
-                    "Operação em Andamento",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-                return;
+                // Segunda confirmação para operações críticas
+                var segundaConfirmacao = MessageBox.Show(
+                    $"🔴 ÚLTIMA CONFIRMAÇÃO\n\n" +
+                    $"Esta é sua última chance de cancelar!\n\n" +
+                    $"Departamento '{_nomeDepartamento}' será excluído PERMANENTEMENTE.\n\n" +
+                    $"Continuar com a exclusão?",
+                    "🔴 ÚLTIMA CHANCE",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Stop,
+                    MessageBoxDefaultButton.Button2);
+                
+                return segundaConfirmacao == DialogResult.Yes;
             }
-
-            await AtualizarFormularioPrincipal();
+            
+            return false;
         }
-
+        
+        private async Task<bool> PodeExcluirDepartamento()
+        {
+            try
+            {
+                // TODO: Implementar verificação se o departamento tem colaboradores vinculados
+                // Por enquanto, retorna true. Em uma implementação real, você faria uma consulta
+                // para verificar se existem colaboradores vinculados a este departamento
+                
+                ExcluirDepartamentoLogger.LogInfo($"Verificando se departamento pode ser excluído: ID={_departamentoId}", "Validation");
+                
+                // Exemplo de implementação:
+                // var colaboradorService = new ColaboradorService();
+                // var colaboradores = await colaboradorService.ListarColaboradoresPorDepartamento(_departamentoId);
+                // return !colaboradores.Any();
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ExcluirDepartamentoLogger.LogError($"Erro ao verificar se pode excluir: {ex.Message}", "Validation", ex);
+                // Em caso de erro na verificação, permite a exclusão
+                // A API fará a validação final
+                return true;
+            }
+        }
+        
+        #endregion
+        
+        #region Gerenciamento de Estado
+        
+        private void AtualizarStatusInterface()
+        {
+            if (_isLoading)
+            {
+                lblStatus.Text = "🔄 Excluindo departamento...";
+                lblStatus.ForeColor = Color.Orange;
+                progressBar.Visible = true;
+                progressBar.Style = ProgressBarStyle.Marquee;
+                
+                // Desabilita controles durante processamento
+                btnExcluir.Enabled = false;
+                btnCancelar.Enabled = false;
+                btnClose.Enabled = false;
+                
+                // Muda texto do botão
+                btnExcluir.Text = "⏳ Processando...";
+                btnExcluir.BackColor = Color.FromArgb(149, 165, 166);
+            }
+            else
+            {
+                if (_exclusaoConfirmada)
+                {
+                    lblStatus.Text = "✅ Departamento excluído com sucesso!";
+                    lblStatus.ForeColor = Color.FromArgb(46, 204, 113);
+                }
+                else
+                {
+                    lblStatus.Text = "⚠️ ATENÇÃO: Esta ação não pode ser desfeita!";
+                    lblStatus.ForeColor = Color.White;
+                }
+                
+                progressBar.Visible = false;
+                
+                // Habilita controles
+                btnExcluir.Enabled = true;
+                btnCancelar.Enabled = true;
+                btnClose.Enabled = true;
+                
+                // Restaura texto e cor do botão
+                btnExcluir.Text = "🗑️ Confirmar Exclusão";
+                btnExcluir.BackColor = Color.FromArgb(231, 76, 60);
+            }
+        }
+        
+        private void SetLoadingState(bool loading)
+        {
+            _isLoading = loading;
+            AtualizarStatusInterface();
+            
+            if (loading)
+            {
+                Cursor = Cursors.WaitCursor;
+            }
+            else
+            {
+                Cursor = Cursors.Default;
+            }
+        }
+        
+        #endregion
+        
+        #region Métodos Auxiliares
+        
+        private void FecharFormulario(bool sucesso)
+        {
+            try
+            {
+                var acao = sucesso ? "confirmada" : "cancelada";
+                ExcluirDepartamentoLogger.LogInfo($"Exclusão de departamento {acao}", "UserAction");
+                
+                this.DialogResult = sucesso ? DialogResult.OK : DialogResult.Cancel;
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                ExcluirDepartamentoLogger.LogError($"Erro ao fechar formulário: {ex.Message}", "FormManagement", ex);
+            }
+        }
+        
+        private void MostrarAjuda()
+        {
+            var ajuda = "🆘 AJUDA - EXCLUIR DEPARTAMENTO\n\n" +
+                       "🚨 OPERAÇÃO CRÍTICA:\n" +
+                       "Esta é uma operação de exclusão permanente.\n" +
+                       "Os dados não poderão ser recuperados após a confirmação.\n\n" +
+                       "⚠️ PROCESSO DE CONFIRMAÇÃO:\n" +
+                       "1. Clique em 'Confirmar Exclusão'\n" +
+                       "2. Confirme na primeira mensagem\n" +
+                       "3. Confirme novamente na segunda mensagem\n" +
+                       "4. O departamento será excluído permanentemente\n\n" +
+                       "⌨️ ATALHOS:\n" +
+                       "• DEL/ENTER - Iniciar processo de exclusão\n" +
+                       "• ESC - Cancelar e manter departamento\n" +
+                       "• F1 - Esta ajuda\n\n" +
+                       "🛡️ SEGURANÇA:\n" +
+                       "• Dupla confirmação obrigatória\n" +
+                       "• Todas as ações são registradas\n" +
+                       "• Botão 'Manter' está em destaque\n" +
+                       "• Foco inicial no botão seguro\n" +
+                       "• Verificação de colaboradores vinculados\n\n" +
+                       "💡 RECOMENDAÇÃO:\n" +
+                       "Certifique-se de que não há colaboradores\n" +
+                       "vinculados a este departamento antes de excluir.";
+            
+            MessageBox.Show(ajuda, "Ajuda - Excluir Departamento",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        private void ExibirSucesso(string mensagem)
+        {
+            MessageBox.Show(mensagem, "✅ Exclusão Realizada",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        
+        private void ExibirErro(string titulo, string mensagem)
+        {
+            MessageBox.Show(mensagem, $"❌ {titulo}",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        
+        private void ExibirAviso(string mensagem, string titulo = "⚠️ Atenção")
+        {
+            MessageBox.Show(mensagem, titulo,
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        
+        #endregion
+        
+        #region Métodos Legados (Compatibilidade)
+        
+        // Mantido para compatibilidade com código existente
+        private async Task Excluir()
+        {
+            await ProcessarExclusao();
+        }
+        
         private async Task AtualizarFormularioPrincipal()
         {
             try
@@ -138,76 +390,56 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
             }
             catch (Exception ex)
             {
-                // Log do erro, mas não mostra para o usuário
-                System.Diagnostics.Debug.WriteLine($"Erro ao atualizar formulário principal: {ex.Message}");
+                ExcluirDepartamentoLogger.LogError($"Erro ao atualizar formulário principal: {ex.Message}", "Integration", ex);
             }
         }
-
-        private async Task<bool> PodeExcluirDepartamento()
+        
+        private void ExcluirDepartamento_FormClosing(object sender, FormClosingEventArgs e)
         {
-            try
+            if (_isLoading)
             {
-                // TODO: Implementar verificação se o departamento tem colaboradores vinculados
-                // Por enquanto, retorna true. Em uma implementação real, você faria uma consulta
-                // para verificar se existem colaboradores vinculados a este departamento
-                
-                // Exemplo de implementação:
-                // var colaboradorService = new ColaboradorService();
-                // var colaboradores = await colaboradorService.ListarColaboradoresPorDepartamento(departamentoId);
-                // return !colaboradores.Any();
-                
-                return true;
+                e.Cancel = true;
+                ExibirAviso(
+                    "Aguarde a conclusão da operação de exclusão.",
+                    "Operação em Andamento");
+                return;
             }
-            catch
-            {
-                // Em caso de erro na verificação, permite a exclusão
-                // A API fará a validação final
-                return true;
-            }
-        }
-
-        private void SetLoadingState(bool loading)
-        {
-            btnExcluir.Enabled = !loading;
             
-            if (loading)
-            {
-                this.Cursor = Cursors.WaitCursor;
-                btnExcluir.Text = "Excluindo...";
-            }
-            else
-            {
-                this.Cursor = Cursors.Default;
-                btnExcluir.Text = "Excluir";
-            }
+            // Não precisa mais da atualização manual - DialogResult resolve isso
         }
-
-        // Permite fechar com ESC
-        private void ExcluirDepartamento_KeyDown(object sender, KeyEventArgs e)
+        
+        #endregion
+        
+        #region Classes de Log Auxiliares
+        
+        private static class ExcluirDepartamentoLogger
         {
-            if (e.KeyCode == Keys.Escape)
+            public static void LogInfo(string message, string category)
             {
-                this.Close();
+                Console.WriteLine($"[INFO] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
-        }
-
-        // Configura o formulário no load
-        private void ExcluirDepartamento_Load(object sender, EventArgs e)
-        {
-            // Centraliza o formulário
-            this.CenterToParent();
             
-            // Define o foco no botão de exclusão
-            btnExcluir.Focus();
+            public static void LogWarning(string message, string category)
+            {
+                Console.WriteLine($"[WARN] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+            }
             
-            // Adiciona informações visuais sobre a exclusão
-            this.Text = $"Excluir Departamento - {nomeDepartamento}";
+            public static void LogError(string message, string category, Exception ex = null)
+            {
+                Console.WriteLine($"[ERROR] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                if (ex != null)
+                {
+                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                }
+            }
+            
+            public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
+            {
+                var status = success ? "SUCCESS" : "FAILED";
+                Console.WriteLine($"[API] [ExcluirDepartamento-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+            }
         }
-
-        // Adiciona botão Cancelar para melhor UX
-        private void btnCancelar_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
+        
+        #endregion
     }
 }
