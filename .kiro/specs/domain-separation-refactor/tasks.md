@@ -18,7 +18,12 @@
   - Criar migrações para alterações no banco de dados
   - _Requirements: 1.1, 1.2, 2.1, 6.1, 6.2_
 
-- [ ] 2. Implementar sistema de cálculo de saldo de estoque baseado em movimentações
+- [x] 2. Implementar sistema de cálculo de saldo de estoque baseado em movimentações
+
+
+
+
+
   - Criar serviço InventoryBalanceService para calcular saldos atuais
   - Implementar método para atualizar saldos baseado em StockMovements
   - Criar job/processo para materializar saldos para performance
@@ -27,7 +32,15 @@
   - Criar índices otimizados para consultas de saldo
   - _Requirements: 2.1, 2.2, 2.3, 6.2, 6.4_
 
-- [ ] 3. Expandir e padronizar API REST para Produtos e Inventory
+- [x] 3. Expandir e padronizar API REST para Produtos e Inventory
+
+
+
+
+
+
+
+
   - Implementar endpoints REST completos para Produto (POST, PUT, DELETE)
   - Melhorar endpoints existentes de Inventory com validações robustas
   - Padronizar respostas da API seguindo padrão ApiResponse<T>

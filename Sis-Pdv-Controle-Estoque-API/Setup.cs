@@ -72,6 +72,11 @@ namespace Sis_Pdv_Controle_Estoque_API
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.ProcessPayment.ProcessPaymentRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.RefundPayment.RefundPaymentRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.CancelPayment.CancelPaymentRequest).GetTypeInfo().Assembly);
+                
+                // Register inventory handlers
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Inventory.CreateMovement.CreateMovementRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Inventory.RecalculateBalance.RecalculateBalanceRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Inventory.AdjustStock.AdjustStockRequest).GetTypeInfo().Assembly);
 
                 cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
@@ -121,6 +126,8 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddTransient<IRepositoryAuditLog, RepositoryAuditLog>();
             services.AddTransient<IRepositoryUserSession, RepositoryUserSession>();
             services.AddTransient<Interfaces.Repositories.IRepositoryStockMovement, RepositoryStockMovement>();
+            services.AddTransient<IRepositoryInventoryBalance, RepositoryInventoryBalance>();
+            services.AddTransient<IRepositoryStockMovementDetail, RepositoryStockMovementDetail>();
 
             services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.AddTransient<IRabbitMQMessageSender, RabbitMQMessageSender>();
@@ -136,6 +143,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             
             // Inventory services
             services.AddScoped<IStockValidationService, StockValidationService>();
+            services.AddScoped<IInventoryBalanceService, InventoryBalanceService>();
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IPasswordService, PasswordService>();
             services.AddScoped<Interfaces.Services.IPasswordService, PasswordService>();
             services.AddScoped<IPermissionService, PermissionService>();
@@ -157,6 +165,8 @@ namespace Sis_Pdv_Controle_Estoque_API
             
             // Background services
             services.AddHostedService<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackgroundBackupService>();
+            services.AddHostedService<InventoryMaterializationService>();
+            services.AddHostedService<BatchManagementService>();
             
             // Health check services
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.IMetricsCollectionService, Sis_Pdv_Controle_Estoque_API.Services.Health.MetricsCollectionService>();

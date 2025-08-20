@@ -26,7 +26,7 @@ namespace Commands.Inventory.GetStockAlerts
                 ProductId = a.ProductId,
                 ProductName = a.ProductName,
                 ProductCode = a.ProductCode,
-                CurrentStock = a.CurrentStock,
+                CurrentStock = (int)a.CurrentStock,
                 ReorderPoint = a.ReorderPoint,
                 MinimumStock = a.MinimumStock,
                 AlertType = a.AlertType,

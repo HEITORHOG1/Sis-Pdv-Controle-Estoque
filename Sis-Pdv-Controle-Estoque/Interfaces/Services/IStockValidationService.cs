@@ -4,7 +4,7 @@ namespace Interfaces.Services
 {
     public interface IStockValidationService
     {
-        Task<StockValidationResult> ValidateStockAvailabilityAsync(Guid productId, int requestedQuantity, CancellationToken cancellationToken = default);
+        Task<StockValidationResult> ValidateStockAvailabilityAsync(Guid productId, decimal requestedQuantity, CancellationToken cancellationToken = default);
         Task<StockValidationResult> ValidateStockAvailabilityAsync(IEnumerable<StockValidationRequest> requests, CancellationToken cancellationToken = default);
         Task<IEnumerable<Produto>> GetLowStockProductsAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<Produto>> GetOutOfStockProductsAsync(CancellationToken cancellationToken = default);
@@ -14,7 +14,7 @@ namespace Interfaces.Services
     public class StockValidationRequest
     {
         public Guid ProductId { get; set; }
-        public int RequestedQuantity { get; set; }
+        public decimal RequestedQuantity { get; set; }
     }
 
     public class StockValidationResult
@@ -28,8 +28,8 @@ namespace Interfaces.Services
     {
         public Guid ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
-        public int RequestedQuantity { get; set; }
-        public int AvailableQuantity { get; set; }
+        public decimal RequestedQuantity { get; set; }
+        public decimal AvailableQuantity { get; set; }
         public string ErrorMessage { get; set; } = string.Empty;
     }
 
@@ -38,7 +38,7 @@ namespace Interfaces.Services
         public Guid ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public string ProductCode { get; set; } = string.Empty;
-        public int CurrentStock { get; set; }
+        public decimal CurrentStock { get; set; }
         public decimal ReorderPoint { get; set; }
         public decimal MinimumStock { get; set; }
         public StockAlertType AlertType { get; set; }

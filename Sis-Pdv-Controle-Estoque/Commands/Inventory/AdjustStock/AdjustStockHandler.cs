@@ -1,4 +1,5 @@
 using Interfaces.Repositories;
+using Interfaces.Services;
 using MediatR;
 using Model;
 using Interfaces;
@@ -8,17 +9,14 @@ namespace Commands.Inventory.AdjustStock
     public class AdjustStockHandler : IRequestHandler<AdjustStockRequest, AdjustStockResponse>
     {
         private readonly IRepositoryProduto _productRepository;
-        private readonly IRepositoryStockMovement _stockMovementRepository;
-        private readonly IRepositoryInventoryBalance _inventoryBalanceRepository;
+        private readonly IInventoryBalanceService _inventoryBalanceService;
 
         public AdjustStockHandler(
             IRepositoryProduto productRepository,
-            IRepositoryStockMovement stockMovementRepository,
-            IRepositoryInventoryBalance inventoryBalanceRepository)
+            IInventoryBalanceService inventoryBalanceService)
         {
             _productRepository = productRepository;
-            _stockMovementRepository = stockMovementRepository;
-            _inventoryBalanceRepository = inventoryBalanceRepository;
+            _inventoryBalanceService = inventoryBalanceService;
         }
 
         public async Task<AdjustStockResponse> Handle(AdjustStockRequest request, CancellationToken cancellationToken)
@@ -34,53 +32,38 @@ namespace Commands.Inventory.AdjustStock
                 };
             }
 
-            // Get or create inventory balance
-            var inventoryBalance = await _inventoryBalanceRepository.GetByProductIdAsync(request.ProductId, cancellationToken);
-            if (inventoryBalance == null)
+            // Create stock movement request
+            var movementRequest = new CreateStockMovementRequest
             {
-                inventoryBalance = new InventoryBalance(request.ProductId);
-                await _inventoryBalanceRepository.AddAsync(inventoryBalance, cancellationToken);
-            }
+                ProdutoId = request.ProductId,
+                Quantity = request.NewQuantity, // For adjustments, quantity represents the new total
+                Type = StockMovementType.Adjustment,
+                Reason = request.Reason,
+                UnitCost = 0, // Unit cost not available for adjustments
+                ReferenceDocument = request.ReferenceDocument,
+                UserId = request.UserId
+            };
 
-            var previousStock = inventoryBalance.CurrentStock;
-            var quantityDifference = request.NewQuantity - previousStock;
+            // Process the movement using the inventory balance service
+            var result = await _inventoryBalanceService.ProcessMovementAsync(movementRequest, cancellationToken);
 
-            // Create stock movement record
-            var stockMovement = new StockMovement(
-                request.ProductId,
-                quantityDifference,
-                StockMovementType.Adjustment,
-                request.Reason,
-                0, // Unit cost not available in product anymore
-                previousStock,
-                request.NewQuantity,
-                request.ReferenceDocument,
-                request.UserId
-            );
-
-            // Update inventory balance
-            inventoryBalance.UpdateStock(request.NewQuantity);
-
-            try
+            if (result.Success)
             {
-                await _stockMovementRepository.AddAsync(stockMovement, cancellationToken);
-                await _inventoryBalanceRepository.UpdateAsync(inventoryBalance, cancellationToken);
-
                 return new AdjustStockResponse
                 {
                     Success = true,
-                    Message = "Estoque ajustado com sucesso",
-                    StockMovementId = stockMovement.Id,
-                    PreviousStock = (int)previousStock,
-                    NewStock = request.NewQuantity
+                    Message = result.Message,
+                    StockMovementId = result.Movement?.Id ?? Guid.Empty,
+                    PreviousStock = (int)(result.Movement?.PreviousStock ?? 0),
+                    NewStock = (int)(result.UpdatedBalance?.CurrentStock ?? 0)
                 };
             }
-            catch (Exception ex)
+            else
             {
                 return new AdjustStockResponse
                 {
                     Success = false,
-                    Message = $"Erro ao ajustar estoque: {ex.Message}"
+                    Message = result.Message
                 };
             }
         }

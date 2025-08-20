@@ -11,8 +11,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Transactions;
 using Sis_Pdv_Controle_Estoque_API.Controllers.Base;
+using Sis_Pdv_Controle_Estoque_API.Models;
+using Sis_Pdv_Controle_Estoque_API.Models.DTOs;
+using Sis_Pdv_Controle_Estoque_API.Services.Validation;
+using Sis_Pdv_Controle_Estoque_API.Exceptions;
 using Asp.Versioning;
 using System.ComponentModel.DataAnnotations;
+using Services;
+using Sis_Pdv_Controle_Estoque_API.Services;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
@@ -55,10 +61,362 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     public class ProdutoController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IModelValidationService _validationService;
+        private readonly IApplicationLogger _appLogger;
+        private readonly ILogger<ProdutoController> _logger;
 
-        public ProdutoController(IMediator mediator, IUnitOfWork unitOfWork) : base(unitOfWork)
+        public ProdutoController(
+            IMediator mediator, 
+            IUnitOfWork unitOfWork,
+            IModelValidationService validationService,
+            IApplicationLogger appLogger,
+            ILogger<ProdutoController> logger) : base(unitOfWork)
         {
             _mediator = mediator;
+            _validationService = validationService;
+            _appLogger = appLogger;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// Create a new product
+        /// </summary>
+        /// <param name="request">Product creation data</param>
+        /// <returns>Created product information</returns>
+        /// <remarks>
+        /// **Usage:**
+        /// 
+        /// Creates a new product with master data only (no stock, pricing, or cost information).
+        /// All validation rules are applied including barcode uniqueness and required fields.
+        /// 
+        /// **Request Body:**
+        /// ```json
+        /// {
+        ///   "codBarras": "1234567890123",
+        ///   "nomeProduto": "Notebook Dell Inspiron 15",
+        ///   "descricaoProduto": "Notebook Dell Inspiron 15 com 8GB RAM",
+        ///   "isPerecivel": false,
+        ///   "fornecedorId": "123e4567-e89b-12d3-a456-426614174000",
+        ///   "categoriaId": "456e7890-f12b-34c5-d678-901234567890",
+        ///   "statusAtivo": 1
+        /// }
+        /// ```
+        /// 
+        /// **Business Rules:**
+        /// - Barcode must be unique and contain 8-20 digits
+        /// - Product name is required and must be 2-100 characters
+        /// - Supplier and category must exist
+        /// - Status must be 0 (inactive) or 1 (active)
+        /// </remarks>
+        /// <response code="201">Product created successfully</response>
+        /// <response code="400">Invalid request data or business rule violation</response>
+        /// <response code="401">Unauthorized - invalid or missing token</response>
+        /// <response code="403">Forbidden - insufficient permissions</response>
+        /// <response code="409">Conflict - barcode already exists</response>
+        /// <response code="422">Unprocessable entity - validation failed</response>
+        /// <response code="500">Internal server error</response>
+        [HttpPost]
+        [Authorize(Policy = "ProductManagement")]
+        [ProducesResponseType(typeof(ApiResponse<ProductResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ApiResponse<ProductResponse>>> CreateProduct(
+            [FromBody, Required] CreateProductRequest request)
+        {
+            try
+            {
+                _appLogger.LogUserAction("CreateProduct", GetCurrentUserId(), new { request.CodBarras, request.NomeProduto });
+
+                // Validate model
+                _validationService.ValidateModel(request);
+
+                // Validate business rules
+                var businessValidation = await _validationService.ValidateProductCreationAsync(
+                    request.CodBarras, request.FornecedorId, request.CategoriaId);
+
+                if (!businessValidation.IsValid)
+                {
+                    return UnprocessableEntity(ApiResponse.Error("Validation failed", businessValidation.Errors, CorrelationId));
+                }
+
+                // Map to command
+                var command = new AdicionarProdutoRequest
+                {
+                    codBarras = request.CodBarras,
+                    nomeProduto = request.NomeProduto,
+                    descricaoProduto = request.DescricaoProduto,
+                    isPerecivel = request.IsPerecivel,
+                    FornecedorId = request.FornecedorId,
+                    CategoriaId = request.CategoriaId,
+                    statusAtivo = request.StatusAtivo
+                };
+
+                var response = await _mediator.Send(command);
+                
+                if (response.Notifications.Any())
+                {
+                    var errors = response.Notifications.Select(n => n.Message);
+                    return BadRequest(ApiResponse.Error("Validation failed", errors, CorrelationId));
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                return CreatedAtAction(nameof(GetProductById), 
+                    new { id = response.Data }, 
+                    ApiResponse<object>.Ok(response.Data, "Produto criado com sucesso", CorrelationId));
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ApiResponse.Error("Validation failed", ex.Errors, CorrelationId));
+            }
+            catch (DuplicateException ex)
+            {
+                return Conflict(ApiResponse.Error(ex.Message, correlationId: CorrelationId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating product with barcode {Barcode}", request.CodBarras);
+                return StatusCode(500, ApiResponse.Error("Erro interno do servidor", correlationId: CorrelationId));
+            }
+        }
+
+        /// <summary>
+        /// Update an existing product
+        /// </summary>
+        /// <param name="id">Product ID</param>
+        /// <param name="request">Product update data</param>
+        /// <returns>Updated product information</returns>
+        /// <response code="200">Product updated successfully</response>
+        /// <response code="400">Invalid request data</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden</response>
+        /// <response code="404">Product not found</response>
+        /// <response code="409">Conflict - barcode already exists</response>
+        /// <response code="422">Validation failed</response>
+        /// <response code="500">Internal server error</response>
+        [HttpPut("{id:guid}")]
+        [Authorize(Policy = "ProductManagement")]
+        [ProducesResponseType(typeof(ApiResponse<ProductResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status422UnprocessableEntity)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ApiResponse<ProductResponse>>> UpdateProduct(
+            [FromRoute] Guid id,
+            [FromBody, Required] UpdateProductRequest request)
+        {
+            try
+            {
+                if (id != request.Id)
+                {
+                    return BadRequest(ApiResponse.Error("ID na URL não corresponde ao ID no corpo da requisição", correlationId: CorrelationId));
+                }
+
+                _appLogger.LogUserAction("UpdateProduct", GetCurrentUserId(), new { id, request.CodBarras, request.NomeProduto });
+
+                // Validate model
+                _validationService.ValidateModel(request);
+
+                // Validate business rules
+                var businessValidation = await _validationService.ValidateProductUpdateAsync(
+                    request.Id, request.CodBarras, request.FornecedorId, request.CategoriaId);
+
+                if (!businessValidation.IsValid)
+                {
+                    return UnprocessableEntity(ApiResponse.Error("Validation failed", businessValidation.Errors, CorrelationId));
+                }
+
+                // Map to command
+                var command = new AlterarProdutoRequest
+                {
+                    Id = request.Id,
+                    codBarras = request.CodBarras,
+                    nomeProduto = request.NomeProduto,
+                    descricaoProduto = request.DescricaoProduto,
+                    isPerecivel = request.IsPerecivel,
+                    FornecedorId = request.FornecedorId,
+                    CategoriaId = request.CategoriaId,
+                    statusAtivo = request.StatusAtivo
+                };
+
+                var response = await _mediator.Send(command);
+                
+                if (response.Notifications.Any())
+                {
+                    var errors = response.Notifications.Select(n => n.Message);
+                    return BadRequest(ApiResponse.Error("Validation failed", errors, CorrelationId));
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                return Ok(ApiResponse<object>.Ok(response.Data, "Produto atualizado com sucesso", CorrelationId));
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ApiResponse.Error("Validation failed", ex.Errors, CorrelationId));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ApiResponse.Error(ex.Message, correlationId: CorrelationId));
+            }
+            catch (DuplicateException ex)
+            {
+                return Conflict(ApiResponse.Error(ex.Message, correlationId: CorrelationId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating product {ProductId}", id);
+                return StatusCode(500, ApiResponse.Error("Erro interno do servidor", correlationId: CorrelationId));
+            }
+        }
+
+        /// <summary>
+        /// Delete a product
+        /// </summary>
+        /// <param name="id">Product ID</param>
+        /// <returns>Deletion confirmation</returns>
+        /// <response code="200">Product deleted successfully</response>
+        /// <response code="400">Invalid request</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden</response>
+        /// <response code="404">Product not found</response>
+        /// <response code="409">Conflict - product has dependencies</response>
+        /// <response code="500">Internal server error</response>
+        [HttpDelete("{id:guid}")]
+        [Authorize(Policy = "ProductManagement")]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ApiResponse>> DeleteProduct([FromRoute] Guid id)
+        {
+            try
+            {
+                _appLogger.LogUserAction("DeleteProduct", GetCurrentUserId(), new { id });
+
+                var command = new RemoverProdutoResquest(id);
+                var response = await _mediator.Send(command);
+                
+                if (response.Notifications.Any())
+                {
+                    var errors = response.Notifications.Select(n => n.Message);
+                    return BadRequest(ApiResponse.Error("Validation failed", errors, CorrelationId));
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                return Ok(ApiResponse.Ok("Produto removido com sucesso", CorrelationId));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ApiResponse.Error(ex.Message, correlationId: CorrelationId));
+            }
+            catch (BusinessRuleException ex)
+            {
+                return Conflict(ApiResponse.Error(ex.Message, correlationId: CorrelationId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting product {ProductId}", id);
+                return StatusCode(500, ApiResponse.Error("Erro interno do servidor", correlationId: CorrelationId));
+            }
+        }
+
+        /// <summary>
+        /// Get product by ID
+        /// </summary>
+        /// <param name="id">Product ID</param>
+        /// <returns>Product information</returns>
+        /// <response code="200">Product retrieved successfully</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden</response>
+        /// <response code="404">Product not found</response>
+        /// <response code="500">Internal server error</response>
+        [HttpGet("{id:guid}")]
+        [Authorize(Policy = "ProductView")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ApiResponse<object>>> GetProductById([FromRoute] Guid id)
+        {
+            try
+            {
+                _appLogger.LogUserAction("GetProductById", GetCurrentUserId(), new { id });
+
+                var command = new ListarProdutoPorIdRequest(id);
+                var response = await _mediator.Send(command);
+
+                if (response == null)
+                {
+                    return NotFound(ApiResponse.Error("Produto não encontrado", correlationId: CorrelationId));
+                }
+
+                return Ok(ApiResponse<object>.Ok(response, "Produto obtido com sucesso", CorrelationId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting product {ProductId}", id);
+                return StatusCode(500, ApiResponse.Error("Erro interno do servidor", correlationId: CorrelationId));
+            }
+        }
+
+        /// <summary>
+        /// Get product by barcode
+        /// </summary>
+        /// <param name="barcode">Product barcode</param>
+        /// <returns>Product information</returns>
+        /// <response code="200">Product retrieved successfully</response>
+        /// <response code="400">Invalid barcode format</response>
+        /// <response code="401">Unauthorized</response>
+        /// <response code="403">Forbidden</response>
+        /// <response code="404">Product not found</response>
+        /// <response code="500">Internal server error</response>
+        [HttpGet("barcode/{barcode}")]
+        [Authorize(Policy = "ProductView")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ApiResponse<object>>> GetProductByBarcode([FromRoute] string barcode)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(barcode))
+                {
+                    return BadRequest(ApiResponse.Error("Código de barras é obrigatório", correlationId: CorrelationId));
+                }
+
+                _appLogger.LogUserAction("GetProductByBarcode", GetCurrentUserId(), new { barcode });
+
+                var command = new ListarProdutoPorCodBarrasRequest(barcode);
+                var response = await _mediator.Send(command);
+
+                if (response == null)
+                {
+                    return NotFound(ApiResponse.Error("Produto não encontrado", correlationId: CorrelationId));
+                }
+
+                return Ok(ApiResponse<object>.Ok(response, "Produto obtido com sucesso", CorrelationId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting product by barcode {Barcode}", barcode);
+                return StatusCode(500, ApiResponse.Error("Erro interno do servidor", correlationId: CorrelationId));
+            }
         }
 
         /// <summary>
@@ -82,7 +440,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// 
         /// **Example Request:**
         /// ```
-        /// GET /api/v1/produto/paginated?page=1&amp;pageSize=20&amp;search=notebook&amp;isActive=true
+        /// GET /api/v1/produto?page=1&amp;pageSize=20&amp;search=notebook&amp;isActive=true
         /// ```
         /// 
         /// **Example Response:**
@@ -96,11 +454,9 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         ///         "id": "123e4567-e89b-12d3-a456-426614174000",
         ///         "nome": "Notebook Dell",
         ///         "descricao": "Notebook Dell Inspiron 15",
-        ///         "preco": 2499.99,
         ///         "codigoBarras": "1234567890123",
         ///         "categoria": "Eletrônicos",
         ///         "fornecedor": "Dell Inc.",
-        ///         "estoque": 15,
         ///         "isActive": true
         ///       }
         ///     ],
@@ -122,41 +478,98 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <response code="401">Unauthorized - invalid or missing token</response>
         /// <response code="403">Forbidden - insufficient permissions</response>
         /// <response code="500">Internal server error</response>
+        [HttpGet]
+        [Authorize(Policy = "ProductView")]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ApiResponse<object>>> GetProducts([FromQuery] ProductSearchRequest request)
+        {
+            try
+            {
+                _appLogger.LogUserAction("GetProducts", GetCurrentUserId(), request);
+
+                // Validate model
+                _validationService.ValidateModel(request);
+
+                // Map to existing command
+                var command = new ListarProdutosPaginadoRequest
+                {
+                    Page = request.Page,
+                    PageSize = request.PageSize,
+                    Search = request.Search,
+                    CategoriaId = request.CategoriaId,
+                    FornecedorId = request.FornecedorId,
+                    IsActive = request.IsActive
+                };
+
+                var response = await _mediator.Send(command);
+                return Ok(ApiResponse<object>.Ok(response, "Produtos listados com sucesso", CorrelationId));
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ApiResponse.Error("Validation failed", ex.Errors, CorrelationId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting products");
+                return StatusCode(500, ApiResponse.Error("Erro interno do servidor", correlationId: CorrelationId));
+            }
+        }
+
+        #region Legacy Endpoints (Backward Compatibility)
+        
+        /// <summary>
+        /// Legacy endpoint for paginated product listing
+        /// </summary>
         [HttpGet("paginated")]
-        [ProducesResponseType(typeof(Models.ApiResponse<Models.PagedResult<object>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status500InternalServerError)]
+        [Obsolete("Use GET /api/v1/produto instead")]
         public async Task<IActionResult> ListarProdutosPaginado([FromQuery, Required] ListarProdutosPaginadoRequest request)
         {
             var response = await _mediator.Send(request);
             return await ResponseAsync(response);
         }
 
-        // Rotas versionadas equivalentes às rotas legadas
+        /// <summary>
+        /// Legacy endpoint for adding products
+        /// </summary>
         [HttpPost("AdicionarProduto")]
+        [Obsolete("Use POST /api/v1/produto instead")]
         public async Task<IActionResult> AdicionarProduto([FromBody] AdicionarProdutoRequest request)
         {
             var response = await _mediator.Send(request);
             return await ResponseAsync(response);
         }
 
+        /// <summary>
+        /// Legacy endpoint for updating products
+        /// </summary>
         [HttpPut("AlterarProduto")]
+        [Obsolete("Use PUT /api/v1/produto/{id} instead")]
         public async Task<IActionResult> AlterarProduto([FromBody] AlterarProdutoRequest request)
         {
             var response = await _mediator.Send(request);
             return await ResponseAsync(response);
         }
 
+        /// <summary>
+        /// Legacy endpoint for stock updates - DEPRECATED: Use Inventory API instead
+        /// </summary>
         [HttpPut("AtualizaEstoque")]
+        [Obsolete("Use POST /api/v1/inventory/movements instead")]
         public async Task<IActionResult> AtualizaEstoque([FromBody] AtualizarEstoqueRequest request)
         {
             var response = await _mediator.Send(request);
             return await ResponseAsync(response);
         }
 
+        /// <summary>
+        /// Legacy endpoint for removing products
+        /// </summary>
         [HttpDelete("RemoverProduto/{id:Guid}")]
+        [Obsolete("Use DELETE /api/v1/produto/{id} instead")]
         public async Task<IActionResult> RemoverProduto(Guid id)
         {
             var request = new RemoverProdutoResquest(id);
@@ -164,7 +577,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             return await ResponseAsync(response);
         }
 
+        /// <summary>
+        /// Legacy endpoint for listing all products
+        /// </summary>
         [HttpGet("ListarProduto")]
+        [Obsolete("Use GET /api/v1/produto instead")]
         public async Task<IActionResult> ListarProduto()
         {
             var request = new ListarProdutoRequest();
@@ -172,7 +589,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Legacy endpoint for getting product by ID
+        /// </summary>
         [HttpGet("ListarProdutoPorId/{id:Guid}")]
+        [Obsolete("Use GET /api/v1/produto/{id} instead")]
         public async Task<IActionResult> ListarProdutoPorId(Guid id)
         {
             var request = new ListarProdutoPorIdRequest(id);
@@ -180,12 +601,18 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Legacy endpoint for getting product by barcode
+        /// </summary>
         [HttpGet("ListarProdutoPorCodBarras/{codBarras}")]
+        [Obsolete("Use GET /api/v1/produto/barcode/{barcode} instead")]
         public async Task<IActionResult> ListarProdutoPorCodBarras(string codBarras)
         {
             var request = new ListarProdutoPorCodBarrasRequest(codBarras);
             var response = await _mediator.Send(request);
             return Ok(response);
         }
+
+        #endregion
     }
 }
