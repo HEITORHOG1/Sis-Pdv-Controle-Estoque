@@ -40,12 +40,7 @@ namespace Commands.Produto.AlterarProduto
                 request.codBarras,
                 request.nomeProduto,
                 request.descricaoProduto,
-                request.precoCusto,
-                request.precoVenda,
-                request.margemLucro,
-                request.dataFabricao,
-                request.dataVencimento,
-                request.quatidadeEstoqueProduto,
+                request.isPerecivel,
                 request.FornecedorId,
                 request.CategoriaId,
                 request.statusAtivo);

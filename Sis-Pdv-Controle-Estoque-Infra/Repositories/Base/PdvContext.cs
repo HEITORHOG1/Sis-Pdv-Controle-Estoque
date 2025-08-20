@@ -36,6 +36,8 @@ namespace Repositories.Base
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<UserSession> UserSessions { get; set; }
         public DbSet<StockMovement> StockMovements { get; set; }
+        public DbSet<InventoryBalance> InventoryBalances { get; set; }
+        public DbSet<StockMovementDetail> StockMovementDetails { get; set; }
         
         // Payment entities
         public DbSet<Payment> Payments { get; set; }
@@ -80,6 +82,8 @@ namespace Repositories.Base
             modelBuilder.ApplyConfiguration(new MapAuditLog());
             modelBuilder.ApplyConfiguration(new MapUserSession());
             modelBuilder.ApplyConfiguration(new MapStockMovement());
+            modelBuilder.ApplyConfiguration(new MapInventoryBalance());
+            modelBuilder.ApplyConfiguration(new MapStockMovementDetail());
             
             // Payment configurations
             modelBuilder.ApplyConfiguration(new MapPayment());

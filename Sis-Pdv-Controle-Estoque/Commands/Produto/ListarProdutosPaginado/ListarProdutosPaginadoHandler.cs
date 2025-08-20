@@ -34,19 +34,7 @@ namespace Commands.Produto.ListarProdutosPaginado
                                           p.Categoria.NomeCategoria.Contains(request.Categoria);
                 }
 
-                if (request.PrecoMinimo.HasValue)
-                {
-                    var precoMinimoFilter = whereExpression;
-                    whereExpression = p => (precoMinimoFilter == null || precoMinimoFilter.Compile()(p)) &&
-                                          p.PrecoVenda >= request.PrecoMinimo.Value;
-                }
-
-                if (request.PrecoMaximo.HasValue)
-                {
-                    var precoMaximoFilter = whereExpression;
-                    whereExpression = p => (precoMaximoFilter == null || precoMaximoFilter.Compile()(p)) &&
-                                          p.PrecoVenda <= request.PrecoMaximo.Value;
-                }
+                // Price filters removed - prices are now in separate domain
 
                 if (request.ApenasAtivos == true)
                 {

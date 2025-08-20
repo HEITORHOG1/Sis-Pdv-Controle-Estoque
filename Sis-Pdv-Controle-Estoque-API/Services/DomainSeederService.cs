@@ -64,7 +64,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services
 
         private async Task SeedDepartamentosAsync(int min)
         {
-            var names = new[] { "Vendas", "Estoque", "Financeiro", "Administração", "Atendimento" };
+            var names = new[] { "Vendas", "Estoque", "Financeiro", "Administraï¿½ï¿½o", "Atendimento" };
             foreach (var n in names)
             {
                 if (!await _context.Departamentos.AnyAsync(x => x.NomeDepartamento == n))
@@ -96,7 +96,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services
                 Numero = (100 + i).ToString(),
                 Complemento = $"Sala {i}",
                 Bairro = "Centro",
-                Cidade = "São Paulo",
+                Cidade = "Sï¿½o Paulo",
                 CepFornecedor = 01000000 + i,
                 StatusAtivo = 1,
                 Cnpj = $"1234567800019{i}",
@@ -134,7 +134,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services
             var existing = await _context.Roles.CountAsync();
             var toAdd = new[]
             {
-                new Role { Name = "Support", Description = "Suporte ao usuário" },
+                new Role { Name = "Support", Description = "Suporte ao usuï¿½rio" },
                 new Role { Name = "Auditor", Description = "Auditoria e conformidade" },
                 new Role { Name = "Operator", Description = "Operador geral da loja" }
             };
@@ -153,11 +153,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Services
             // Admin is created by AuthSeederService. Create more users to reach 'min'.
             var templates = new[]
             {
-                new { Login = "user1", Email = "user1@pdv.com", Nome = "Usuário 1" },
-                new { Login = "user2", Email = "user2@pdv.com", Nome = "Usuário 2" },
-                new { Login = "user3", Email = "user3@pdv.com", Nome = "Usuário 3" },
-                new { Login = "user4", Email = "user4@pdv.com", Nome = "Usuário 4" },
-                new { Login = "user5", Email = "user5@pdv.com", Nome = "Usuário 5" }
+                new { Login = "user1", Email = "user1@pdv.com", Nome = "Usuï¿½rio 1" },
+                new { Login = "user2", Email = "user2@pdv.com", Nome = "Usuï¿½rio 2" },
+                new { Login = "user3", Email = "user3@pdv.com", Nome = "Usuï¿½rio 3" },
+                new { Login = "user4", Email = "user4@pdv.com", Nome = "Usuï¿½rio 4" },
+                new { Login = "user5", Email = "user5@pdv.com", Nome = "Usuï¿½rio 5" }
             };
 
             foreach (var t in templates)
@@ -220,20 +220,16 @@ namespace Sis_Pdv_Controle_Estoque_API.Services
             {
                 CodBarras = $"78900000010{i}",
                 NomeProduto = $"Produto {i}",
-                DescricaoProduto = $"Descrição do produto {i}",
-                PrecoCusto = 2.50m + i,
-                PrecoVenda = 4.00m + i,
-                MargemLucro = 1.50m,
-                DataFabricao = DateTime.UtcNow.AddMonths(-1),
-                DataVencimento = DateTime.UtcNow.AddMonths(6),
-                QuatidadeEstoqueProduto = 50 * i,
+                DescricaoProduto = $"Descriï¿½ï¿½o do produto {i}",
+                IsPerecivel = i % 3 == 0, // Alguns produtos perecÃ­veis
+
+
+
+
+
                 FornecedorId = fornecedor.Id,
                 CategoriaId = categoria.Id,
-                StatusAtivo = 1,
-                MinimumStock = 5,
-                MaximumStock = 1000,
-                ReorderPoint = 10,
-                Location = $"A{i}"
+                StatusAtivo = 1
             });
 
             foreach (var p in list)
@@ -262,7 +258,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services
                         Quantity = 10,
                         Type = StockMovementType.Entry,
                         Reason = "Estoque inicial",
-                        UnitCost = prod.PrecoCusto,
+                        UnitCost = 2.50m,
                         PreviousStock = 0,
                         NewStock = 10,
                         MovementDate = DateTime.UtcNow
@@ -324,7 +320,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services
                 {
                     Status = 1,
                     DataDoPedido = DateTime.UtcNow.AddMinutes(-orderIndex * 10),
-                    FormaPagamento = orderIndex % 2 == 0 ? "Cartão de Crédito" : "Dinheiro",
+                    FormaPagamento = orderIndex % 2 == 0 ? "Cartï¿½o de Crï¿½dito" : "Dinheiro",
                     TotalPedido = 0m,
                     ColaboradorId = col.Id,
                     ClienteId = cli.Id
@@ -338,7 +334,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services
                 {
                     var prod = produtos[(orderIndex + k) % produtos.Count];
                     var qty = 1 + (k % 3);
-                    var itemTotal = prod.PrecoVenda * qty;
+                    var itemTotal = 4.00m * qty; // PreÃ§o fixo para seed
                     total += itemTotal;
                     await _context.ProdutoPedidos.AddAsync(new ProdutoPedido
                     {

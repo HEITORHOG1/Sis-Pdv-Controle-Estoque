@@ -116,8 +116,10 @@ namespace Repositories
 
         public async Task<IEnumerable<Produto>> GetLowStockProductsAsync()
         {
+            // Low stock logic moved to InventoryBalance domain
+            // This method should be updated to use InventoryBalance or removed
             return await _context.Produtos
-                .Where(p => !p.IsDeleted && p.StatusAtivo == 1 && p.QuatidadeEstoqueProduto <= p.MinimumStock)
+                .Where(p => !p.IsDeleted && p.StatusAtivo == 1)
                 .ToListAsync();
         }
 

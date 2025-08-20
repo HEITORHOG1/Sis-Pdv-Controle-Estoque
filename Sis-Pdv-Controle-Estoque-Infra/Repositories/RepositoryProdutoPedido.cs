@@ -21,7 +21,7 @@ namespace Repositories
                 {
                     quantidadeItemPedido = pp.QuantidadeItemPedido ?? 0,
                     nomeProduto = pp.Produto != null ? pp.Produto.NomeProduto : string.Empty,
-                    precoVenda = pp.Produto != null ? pp.Produto.PrecoVenda : 0,
+                    precoVenda = 0, // Price information moved to separate domain
                     totalProdutoPedido = pp.TotalProdutoPedido ?? 0
                 })
                 .ToListAsync();

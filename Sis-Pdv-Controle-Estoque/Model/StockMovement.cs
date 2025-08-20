@@ -18,7 +18,9 @@ namespace Model
             decimal previousStock,
             decimal newStock,
             string? referenceDocument = null,
-            Guid? userId = null)
+            Guid? userId = null,
+            string? lote = null,
+            DateTime? dataValidade = null)
         {
             ProdutoId = produtoId;
             Quantity = quantity;
@@ -29,6 +31,8 @@ namespace Model
             NewStock = newStock;
             ReferenceDocument = referenceDocument;
             UserId = userId;
+            Lote = lote;
+            DataValidade = dataValidade;
             MovementDate = DateTime.UtcNow;
         }
 
@@ -43,6 +47,9 @@ namespace Model
         public DateTime MovementDate { get; set; }
         public string? ReferenceDocument { get; set; }
         public Guid? UserId { get; set; }
+        public string? Lote { get; set; }
+        public DateTime? DataValidade { get; set; }
+        public virtual ICollection<StockMovementDetail> MovementDetails { get; set; } = new List<StockMovementDetail>();
 
         public void UpdateMovement(
             decimal quantity,
@@ -51,7 +58,9 @@ namespace Model
             decimal unitCost,
             decimal previousStock,
             decimal newStock,
-            string? referenceDocument = null)
+            string? referenceDocument = null,
+            string? lote = null,
+            DateTime? dataValidade = null)
         {
             Quantity = quantity;
             Type = type;
@@ -60,7 +69,15 @@ namespace Model
             PreviousStock = previousStock;
             NewStock = newStock;
             ReferenceDocument = referenceDocument;
+            Lote = lote;
+            DataValidade = dataValidade;
             MovementDate = DateTime.UtcNow;
+        }
+
+        public void AddMovementDetail(string? lote, DateTime? dataValidade, decimal quantity)
+        {
+            var detail = new StockMovementDetail(Id, quantity, lote, dataValidade);
+            MovementDetails.Add(detail);
         }
     }
 

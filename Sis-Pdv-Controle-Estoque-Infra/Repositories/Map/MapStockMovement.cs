@@ -24,6 +24,8 @@ namespace Repositories.Map
             builder.Property(x => x.MovementDate).IsRequired();
             builder.Property(x => x.ReferenceDocument).HasMaxLength(100);
             builder.Property(x => x.UserId);
+            builder.Property(x => x.Lote).HasMaxLength(50);
+            builder.Property(x => x.DataValidade);
             
             // Relationships
             builder.HasOne(x => x.Produto)
@@ -31,10 +33,18 @@ namespace Repositories.Map
                    .HasForeignKey(x => x.ProdutoId)
                    .OnDelete(DeleteBehavior.Restrict);
             
+            // Relationships for MovementDetails
+            builder.HasMany(x => x.MovementDetails)
+                   .WithOne(x => x.StockMovement)
+                   .HasForeignKey(x => x.StockMovementId)
+                   .OnDelete(DeleteBehavior.Cascade);
+            
             // Indexes
             builder.HasIndex(x => x.ProdutoId);
             builder.HasIndex(x => x.MovementDate);
             builder.HasIndex(x => x.Type);
+            builder.HasIndex(x => x.Lote);
+            builder.HasIndex(x => x.DataValidade);
             builder.HasIndex(x => new { x.ProdutoId, x.MovementDate });
         }
     }

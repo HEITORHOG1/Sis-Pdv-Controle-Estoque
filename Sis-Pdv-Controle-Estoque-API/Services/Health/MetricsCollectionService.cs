@@ -90,7 +90,7 @@ public class MetricsCollectionService : IMetricsCollectionService
             var pedidos = await _pedidoRepository.GetAllAsync(cancellationToken);
 
             var totalProducts = produtos.Count();
-            var lowStockProducts = produtos.Count(p => p.QuatidadeEstoqueProduto <= p.ReorderPoint);
+            var lowStockProducts = 0; // TODO: Implementar usando InventoryBalance
             var activeUsers = usuarios.Count(u => u.StatusAtivo);
             
             var todayPedidos = pedidos.Where(p => p.DataDoPedido?.Date == DateTime.Today).ToList();

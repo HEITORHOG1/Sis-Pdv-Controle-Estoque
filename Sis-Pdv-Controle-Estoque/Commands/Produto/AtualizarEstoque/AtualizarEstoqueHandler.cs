@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using prmToolkit.NotificationPattern;
+using Model;
+using Interfaces.Repositories;
 
 namespace Commands.Produto.AtualizarEstoque
 {
@@ -7,11 +9,19 @@ namespace Commands.Produto.AtualizarEstoque
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryProduto _repositoryProduto;
+        private readonly IRepositoryInventoryBalance _inventoryBalanceRepository;
+        private readonly IRepositoryStockMovement _stockMovementRepository;
 
-        public AtualizarEstoqueHandler(IMediator mediator, IRepositoryProduto repositoryProduto)
+        public AtualizarEstoqueHandler(
+            IMediator mediator, 
+            IRepositoryProduto repositoryProduto,
+            IRepositoryInventoryBalance inventoryBalanceRepository,
+            IRepositoryStockMovement stockMovementRepository)
         {
             _mediator = mediator;
             _repositoryProduto = repositoryProduto;
+            _inventoryBalanceRepository = inventoryBalanceRepository;
+            _stockMovementRepository = stockMovementRepository;
         }
 
         public async Task<Response> Handle(AtualizarEstoqueRequest request, CancellationToken cancellationToken)
@@ -33,36 +43,69 @@ namespace Commands.Produto.AtualizarEstoque
                 return new Response(this);
             }
 
-            Model.Produto Produto = new Model.Produto();
+            var produto = _repositoryProduto.Listar().Where(x => x.Id == request.Id).FirstOrDefault();
 
-            var retornoExist = _repositoryProduto.Listar().Where(x => x.Id == request.Id).FirstOrDefault();
-
-            if (retornoExist == null)
+            if (produto == null)
             {
-                AddNotification("Produto", "");
+                AddNotification("Produto", "Produto não encontrado");
                 return new Response(this);
             }
-            if (retornoExist.QuatidadeEstoqueProduto <= 0)
+
+            // Get or create inventory balance
+            var inventoryBalance = await _inventoryBalanceRepository.GetByProductIdAsync(request.Id, cancellationToken);
+            if (inventoryBalance == null)
+            {
+                inventoryBalance = new InventoryBalance(request.Id);
+                await _inventoryBalanceRepository.AddAsync(inventoryBalance, cancellationToken);
+            }
+
+            if (inventoryBalance.CurrentStock <= 0)
             {
                 AddNotification("Produto", "Produto Sem Estoque");
                 return new Response(this);
             }
-            if (request.quatidadeEstoqueProduto > retornoExist.QuatidadeEstoqueProduto)
+            if (request.quatidadeEstoqueProduto > inventoryBalance.CurrentStock)
             {
-                AddNotification("Produto", "Quantidade em estoque " + retornoExist.QuatidadeEstoqueProduto);
+                AddNotification("Produto", "Quantidade em estoque " + inventoryBalance.CurrentStock);
                 return new Response(this);
             }
 
-            retornoExist.QuatidadeEstoqueProduto = retornoExist.QuatidadeEstoqueProduto - request.quatidadeEstoqueProduto;
-            Produto = _repositoryProduto.Editar(retornoExist);
+            var previousStock = inventoryBalance.CurrentStock;
+            var newStock = inventoryBalance.CurrentStock - request.quatidadeEstoqueProduto;
 
-            //Criar meu objeto de resposta
-            var response = new Response(this, Produto);
-            
+            // Create stock movement record
+            var stockMovement = new StockMovement(
+                request.Id,
+                -request.quatidadeEstoqueProduto, // Negative for exit
+                StockMovementType.Exit,
+                "Saída de estoque via atualização",
+                0, // Unit cost not available
+                previousStock,
+                newStock,
+                null,
+                null
+            );
 
-            Console.WriteLine($"Produto atualizado. Novo estoque: {Produto.QuatidadeEstoqueProduto}");
+            // Update inventory balance
+            inventoryBalance.UpdateStock(newStock);
 
-            return await Task.FromResult(response);
+            try
+            {
+                await _stockMovementRepository.AddAsync(stockMovement, cancellationToken);
+                await _inventoryBalanceRepository.UpdateAsync(inventoryBalance, cancellationToken);
+
+                //Criar meu objeto de resposta
+                var response = new Response(this, produto);
+                
+                Console.WriteLine($"Estoque atualizado. Novo estoque: {newStock}");
+
+                return await Task.FromResult(response);
+            }
+            catch (Exception ex)
+            {
+                AddNotification("Error", $"Erro ao atualizar estoque: {ex.Message}");
+                return new Response(this);
+            }
         }
     }
 }

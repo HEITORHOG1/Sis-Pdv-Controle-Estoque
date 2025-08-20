@@ -7,10 +7,12 @@ namespace Services.Stock
     public class StockValidationService : IStockValidationService
     {
         private readonly IRepositoryProduto _productRepository;
+        private readonly IRepositoryInventoryBalance _inventoryRepository;
 
-        public StockValidationService(IRepositoryProduto productRepository)
+        public StockValidationService(IRepositoryProduto productRepository, IRepositoryInventoryBalance inventoryRepository)
         {
             _productRepository = productRepository;
+            _inventoryRepository = inventoryRepository;
         }
 
         public async Task<StockValidationResult> ValidateStockAvailabilityAsync(Guid productId, int requestedQuantity, CancellationToken cancellationToken = default)
@@ -37,8 +39,10 @@ namespace Services.Stock
                 };
             }
 
-            if (!product.HasSufficientStock(requestedQuantity))
+            var inventory = await _inventoryRepository.GetByProductIdAsync(productId, cancellationToken);
+            if (inventory == null || !inventory.HasSufficientStock(requestedQuantity))
             {
+                var availableStock = inventory?.AvailableStock ?? 0;
                 return new StockValidationResult
                 {
                     IsValid = false,
@@ -50,8 +54,8 @@ namespace Services.Stock
                             ProductId = productId,
                             ProductName = product.NomeProduto,
                             RequestedQuantity = requestedQuantity,
-                            AvailableQuantity = product.QuatidadeEstoqueProduto,
-                            ErrorMessage = $"Estoque insuficiente. Disponível: {product.QuatidadeEstoqueProduto}, Solicitado: {requestedQuantity}"
+                            AvailableQuantity = (int)availableStock,
+                            ErrorMessage = $"Estoque insuficiente. Disponível: {availableStock}, Solicitado: {requestedQuantity}"
                         }
                     }
                 };
@@ -87,15 +91,17 @@ namespace Services.Stock
                     continue;
                 }
 
-                if (!product.HasSufficientStock(request.RequestedQuantity))
+                var inventory = await _inventoryRepository.GetByProductIdAsync(request.ProductId, cancellationToken);
+                if (inventory == null || !inventory.HasSufficientStock(request.RequestedQuantity))
                 {
+                    var availableStock = inventory?.AvailableStock ?? 0;
                     errors.Add(new StockValidationError
                     {
                         ProductId = request.ProductId,
                         ProductName = product.NomeProduto,
                         RequestedQuantity = request.RequestedQuantity,
-                        AvailableQuantity = product.QuatidadeEstoqueProduto,
-                        ErrorMessage = $"Estoque insuficiente para {product.NomeProduto}. Disponível: {product.QuatidadeEstoqueProduto}, Solicitado: {request.RequestedQuantity}"
+                        AvailableQuantity = (int)availableStock,
+                        ErrorMessage = $"Estoque insuficiente para {product.NomeProduto}. Disponível: {availableStock}, Solicitado: {request.RequestedQuantity}"
                     });
                 }
             }
@@ -110,14 +116,25 @@ namespace Services.Stock
 
         public async Task<IEnumerable<Produto>> GetLowStockProductsAsync(CancellationToken cancellationToken = default)
         {
-            var products = await _productRepository.GetAllAsync(cancellationToken);
-            return products.Where(p => p.IsLowStock() && p.StatusAtivo == 1);
+            var lowStockBalances = await _inventoryRepository.GetLowStockBalancesAsync(cancellationToken);
+            return lowStockBalances.Where(ib => ib.Produto.StatusAtivo == 1).Select(ib => ib.Produto);
         }
 
         public async Task<IEnumerable<Produto>> GetOutOfStockProductsAsync(CancellationToken cancellationToken = default)
         {
             var products = await _productRepository.GetAllAsync(cancellationToken);
-            return products.Where(p => p.IsOutOfStock() && p.StatusAtivo == 1);
+            var outOfStockProducts = new List<Produto>();
+            
+            foreach (var product in products.Where(p => p.StatusAtivo == 1))
+            {
+                var inventory = await _inventoryRepository.GetByProductIdAsync(product.Id, cancellationToken);
+                if (inventory != null && inventory.IsOutOfStock())
+                {
+                    outOfStockProducts.Add(product);
+                }
+            }
+            
+            return outOfStockProducts;
         }
 
         public async Task<IEnumerable<StockAlert>> GetStockAlertsAsync(CancellationToken cancellationToken = default)
@@ -127,32 +144,35 @@ namespace Services.Stock
 
             foreach (var product in products.Where(p => p.StatusAtivo == 1))
             {
-                if (product.IsOutOfStock())
+                var inventory = await _inventoryRepository.GetByProductIdAsync(product.Id, cancellationToken);
+                if (inventory == null) continue;
+
+                if (inventory.IsOutOfStock())
                 {
                     alerts.Add(new StockAlert
                     {
                         ProductId = product.Id,
                         ProductName = product.NomeProduto,
                         ProductCode = product.CodBarras,
-                        CurrentStock = product.QuatidadeEstoqueProduto,
-                        ReorderPoint = product.ReorderPoint,
-                        MinimumStock = product.MinimumStock,
+                        CurrentStock = (int)inventory.CurrentStock,
+                        ReorderPoint = (int)inventory.ReorderPoint,
+                        MinimumStock = (int)inventory.MinimumStock,
                         AlertType = StockAlertType.OutOfStock,
                         Message = $"Produto {product.NomeProduto} está sem estoque"
                     });
                 }
-                else if (product.IsLowStock())
+                else if (inventory.IsLowStock())
                 {
                     alerts.Add(new StockAlert
                     {
                         ProductId = product.Id,
                         ProductName = product.NomeProduto,
                         ProductCode = product.CodBarras,
-                        CurrentStock = product.QuatidadeEstoqueProduto,
-                        ReorderPoint = product.ReorderPoint,
-                        MinimumStock = product.MinimumStock,
+                        CurrentStock = (int)inventory.CurrentStock,
+                        ReorderPoint = (int)inventory.ReorderPoint,
+                        MinimumStock = (int)inventory.MinimumStock,
                         AlertType = StockAlertType.LowStock,
-                        Message = $"Produto {product.NomeProduto} está com estoque baixo (atual: {product.QuatidadeEstoqueProduto}, ponto de reposição: {product.ReorderPoint})"
+                        Message = $"Produto {product.NomeProduto} está com estoque baixo (atual: {inventory.CurrentStock}, ponto de reposição: {inventory.ReorderPoint})"
                     });
                 }
             }

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Interfaces;
 using Interfaces.Repositories;
 using Interfaces.Services;
@@ -6,23 +10,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services.Reports
 {
-    public class ReportDataService : IReportDataService
+    public partial class ReportDataService : IReportDataService
     {
         private readonly IRepositoryPedido _pedidoRepository;
         private readonly IRepositoryProduto _produtoRepository;
-        private readonly IRepositoryStockMovement _stockMovementRepository;
         private readonly IRepositoryProdutoPedido _produtoPedidoRepository;
+        private readonly IRepositoryStockMovement _stockMovementRepository;
 
         public ReportDataService(
             IRepositoryPedido pedidoRepository,
             IRepositoryProduto produtoRepository,
-            IRepositoryStockMovement stockMovementRepository,
-            IRepositoryProdutoPedido produtoPedidoRepository)
+            IRepositoryProdutoPedido produtoPedidoRepository,
+            IRepositoryStockMovement stockMovementRepository)
         {
             _pedidoRepository = pedidoRepository;
             _produtoRepository = produtoRepository;
-            _stockMovementRepository = stockMovementRepository;
             _produtoPedidoRepository = produtoPedidoRepository;
+            _stockMovementRepository = stockMovementRepository;
         }
 
         public async Task<SalesReportData> GetSalesReportDataAsync(DateTime startDate, DateTime endDate, Guid? salesPersonId = null)
@@ -58,7 +62,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Reports
                         ProductName = pi.Produto?.NomeProduto ?? "N/A",
                         ProductCode = pi.CodBarras ?? "N/A",
                         Quantity = pi.QuantidadeItemPedido ?? 0,
-                        UnitPrice = pi.Produto?.PrecoVenda ?? 0,
+                        UnitPrice = 0, // TODO: Implementar preço do domínio de pricing
                         TotalPrice = pi.TotalProdutoPedido ?? 0
                     }).ToList()
                 };
@@ -101,8 +105,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Reports
                     .OrderByDescending(sm => sm.MovementDate)
                     .FirstOrDefault();
 
-                var stockStatus = p.IsOutOfStock() ? "Out of Stock" :
-                                 p.IsLowStock() ? "Low Stock" : "Normal";
+                var inv = p.InventoryBalance;
+                var status = (inv?.IsOutOfStock() ?? false) ? "Out of Stock" : ((inv?.IsLowStock() ?? false) ? "Low Stock" : "Normal");
 
                 return new InventoryReportItem
                 {
@@ -111,15 +115,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Reports
                     ProductCode = p.CodBarras,
                     Category = p.Categoria?.NomeCategoria ?? "N/A",
                     Supplier = p.Fornecedor?.NomeFantasia ?? "N/A",
-                    CurrentStock = p.QuatidadeEstoqueProduto,
-                    MinimumStock = p.MinimumStock,
-                    MaximumStock = p.MaximumStock,
-                    ReorderPoint = p.ReorderPoint,
-                    Location = p.Location,
-                    UnitCost = p.PrecoCusto,
-                    UnitPrice = p.PrecoVenda,
-                    StockValue = p.QuatidadeEstoqueProduto * p.PrecoCusto,
-                    StockStatus = stockStatus,
+                    CurrentStock = (int)(inv?.CurrentStock ?? 0),
+                    MinimumStock = inv?.MinimumStock ?? 0,
+                    MaximumStock = inv?.MaximumStock ?? 0,
+                    ReorderPoint = inv?.ReorderPoint ?? 0,
+                    Location = inv?.Location ?? string.Empty,
+                    UnitCost = 0,  // TODO integrate pricing
+                    UnitPrice = 0, // TODO integrate pricing
+                    StockValue = 0, // (inv?.CurrentStock ?? 0) * UnitCost
+                    StockStatus = status,
                     LastMovementDate = lastMovement?.MovementDate,
                     IsActive = p.StatusAtivo == 1
                 };
@@ -229,7 +233,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Reports
                     .ToList();
 
                 var dayRevenue = dayPedidos.Sum(p => p.TotalPedido);
-                var dayCost = dayProdutosPedido.Sum(pp => (pp.QuantidadeItemPedido ?? 0) * (pp.Produto?.PrecoCusto ?? 0));
+                var dayCost = 0m; // TODO: Implementar cálculo de custo usando domínio de pricing
 
                 dailyData.Add(new FinancialReportDailyData
                 {
@@ -256,7 +260,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Reports
                 {
                     var quantitySold = productItems.Sum(pi => pi.QuantidadeItemPedido ?? 0);
                     var revenue = productItems.Sum(pi => pi.TotalProdutoPedido ?? 0);
-                    var cost = quantitySold * produto.PrecoCusto;
+                    var cost = 0m; // TODO: Implementar cálculo de custo usando domínio de pricing
 
                     productData.Add(new FinancialReportProductData
                     {
@@ -307,7 +311,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Reports
             var produtos = await _produtoRepository.GetAllAsync();
 
             return produtos
-                .Where(p => p.IsLowStock() || p.IsOutOfStock())
+                .Where(p => p.StatusAtivo == 1)
                 .Select(p => new InventoryReportItem
                 {
                     ProductId = p.Id,
@@ -315,15 +319,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Reports
                     ProductCode = p.CodBarras,
                     Category = p.Categoria?.NomeCategoria ?? "N/A",
                     Supplier = p.Fornecedor?.NomeFantasia ?? "N/A",
-                    CurrentStock = p.QuatidadeEstoqueProduto,
-                    MinimumStock = p.MinimumStock,
-                    MaximumStock = p.MaximumStock,
-                    ReorderPoint = p.ReorderPoint,
-                    Location = p.Location,
-                    UnitCost = p.PrecoCusto,
-                    UnitPrice = p.PrecoVenda,
-                    StockValue = p.QuatidadeEstoqueProduto * p.PrecoCusto,
-                    StockStatus = p.IsOutOfStock() ? "Out of Stock" : "Low Stock",
+                    CurrentStock = (int)(p.InventoryBalance?.CurrentStock ?? 0),
+                    MinimumStock = p.InventoryBalance?.MinimumStock ?? 0,
+                    MaximumStock = p.InventoryBalance?.MaximumStock ?? 0,
+                    ReorderPoint = p.InventoryBalance?.ReorderPoint ?? 0,
+                    Location = p.InventoryBalance?.Location ?? string.Empty,
+                    UnitCost = 0,
+                    UnitPrice = 0,
+                    StockValue = 0,
+                    StockStatus = (p.InventoryBalance?.IsOutOfStock() ?? false) ? "Out of Stock" : ((p.InventoryBalance?.IsLowStock() ?? false) ? "Low Stock" : "OK"),
                     IsActive = p.StatusAtivo == 1
                 })
                 .OrderBy(p => p.CurrentStock)

@@ -35,12 +35,7 @@ namespace Commands.Produto.ListarProduto
                     NomeFornecedor = item.Fornecedor.NomeFantasia,
                     NomeCategoria = item.Categoria.NomeCategoria,
                     descricaoProduto = item.DescricaoProduto,
-                    quatidadeEstoqueProduto = item.QuatidadeEstoqueProduto,
-                    precoVenda = item.PrecoVenda,
-                    precoCusto = item.PrecoCusto,
-                    margemLucro = item.MargemLucro,
-                    dataFabricao = item.DataFabricao,
-                    dataVencimento = item.DataVencimento,
+                    isPerecivel = item.IsPerecivel,
                     statusAtivo = item.StatusAtivo
                 };
                 _lista.Add(produto);

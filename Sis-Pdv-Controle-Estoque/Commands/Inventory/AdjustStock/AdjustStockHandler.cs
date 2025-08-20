@@ -1,6 +1,7 @@
 using Interfaces.Repositories;
 using MediatR;
 using Model;
+using Interfaces;
 
 namespace Commands.Inventory.AdjustStock
 {
@@ -8,13 +9,16 @@ namespace Commands.Inventory.AdjustStock
     {
         private readonly IRepositoryProduto _productRepository;
         private readonly IRepositoryStockMovement _stockMovementRepository;
+        private readonly IRepositoryInventoryBalance _inventoryBalanceRepository;
 
         public AdjustStockHandler(
             IRepositoryProduto productRepository,
-            IRepositoryStockMovement stockMovementRepository)
+            IRepositoryStockMovement stockMovementRepository,
+            IRepositoryInventoryBalance inventoryBalanceRepository)
         {
             _productRepository = productRepository;
             _stockMovementRepository = stockMovementRepository;
+            _inventoryBalanceRepository = inventoryBalanceRepository;
         }
 
         public async Task<AdjustStockResponse> Handle(AdjustStockRequest request, CancellationToken cancellationToken)
@@ -30,7 +34,15 @@ namespace Commands.Inventory.AdjustStock
                 };
             }
 
-            var previousStock = product.QuatidadeEstoqueProduto;
+            // Get or create inventory balance
+            var inventoryBalance = await _inventoryBalanceRepository.GetByProductIdAsync(request.ProductId, cancellationToken);
+            if (inventoryBalance == null)
+            {
+                inventoryBalance = new InventoryBalance(request.ProductId);
+                await _inventoryBalanceRepository.AddAsync(inventoryBalance, cancellationToken);
+            }
+
+            var previousStock = inventoryBalance.CurrentStock;
             var quantityDifference = request.NewQuantity - previousStock;
 
             // Create stock movement record
@@ -39,27 +51,27 @@ namespace Commands.Inventory.AdjustStock
                 quantityDifference,
                 StockMovementType.Adjustment,
                 request.Reason,
-                product.PrecoCusto,
+                0, // Unit cost not available in product anymore
                 previousStock,
                 request.NewQuantity,
                 request.ReferenceDocument,
                 request.UserId
             );
 
-            // Update product stock
-            product.QuatidadeEstoqueProduto = request.NewQuantity;
+            // Update inventory balance
+            inventoryBalance.UpdateStock(request.NewQuantity);
 
             try
             {
                 await _stockMovementRepository.AddAsync(stockMovement, cancellationToken);
-                await _productRepository.UpdateAsync(product, cancellationToken);
+                await _inventoryBalanceRepository.UpdateAsync(inventoryBalance, cancellationToken);
 
                 return new AdjustStockResponse
                 {
                     Success = true,
                     Message = "Estoque ajustado com sucesso",
                     StockMovementId = stockMovement.Id,
-                    PreviousStock = previousStock,
+                    PreviousStock = (int)previousStock,
                     NewStock = request.NewQuantity
                 };
             }

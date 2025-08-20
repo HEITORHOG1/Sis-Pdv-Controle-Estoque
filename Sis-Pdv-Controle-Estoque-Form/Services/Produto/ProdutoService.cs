@@ -39,12 +39,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                     codBarras = dto.codBarras.Trim(),
                     nomeProduto = dto.nomeProduto.Trim(),
                     descricaoProduto = dto.descricaoProduto?.Trim() ?? string.Empty,
-                    precoCusto = dto.precoCusto,
-                    precoVenda = dto.precoVenda,
-                    margemLucro = dto.margemLucro,
-                    dataFabricao = dto.dataFabricao,
-                    dataVencimento = dto.dataVencimento,
-                    quatidadeEstoqueProduto = dto.quatidadeEstoqueProduto,
+                    isPerecivel = dto.dataVencimento > DateTime.MinValue, // inferência simples
                     FornecedorId = dto.FornecedorId,
                     CategoriaId = dto.CategoriaId,
                     statusAtivo = dto.statusAtivo
@@ -53,9 +48,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                 System.Diagnostics.Debug.WriteLine($"Tentando adicionar produto: {request.nomeProduto}");
                 System.Diagnostics.Debug.WriteLine($"FornecedorId: {request.FornecedorId}");
                 System.Diagnostics.Debug.WriteLine($"CategoriaId: {request.CategoriaId}");
-                System.Diagnostics.Debug.WriteLine($"URL: {BasePath}/v1/produto/AdicionarProduto");
+                System.Diagnostics.Debug.WriteLine($"URL: {BasePath}/Produto/AdicionarProduto");
 
-                var response = await _client.PostAsJson($"{BasePath}/v1/produto/AdicionarProduto", request);
+                var response = await _client.PostAsJson($"{BasePath}/Produto/AdicionarProduto", request);
                 
                 System.Diagnostics.Debug.WriteLine($"Status Code: {response.StatusCode}");
                 
@@ -78,7 +73,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                 System.Diagnostics.Debug.WriteLine($"Erro na API - Status: {response.StatusCode}, Content: {errorContent}");
 
                 await ThrowDetailedException(response, nameof(AdicionarProduto));
-                throw new Exception("Falha desconhecida ao adicionar produto.");
+                throw new Exception("Falha desconheida ao adicionar produto.");
             }
             catch (ApplicationException appEx)
             {
@@ -108,7 +103,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             {
                 _client = Services.Http.HttpClientManager.GetClient();
 
-                var response = await _client.GetAsync($"{BasePath}/v1/produto/ListarProduto");
+                var response = await _client.GetAsync($"{BasePath}/Produto/ListarProduto");
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -157,7 +152,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
-                var response = await _client.GetAsync($"{BasePath}/v1/produto/ListarProdutoPorId/{id}");
+                var response = await _client.GetAsync($"{BasePath}/Produto/ListarProdutoPorId/{id}");
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -209,7 +204,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
-                var response = await _client.GetAsync($"{BasePath}/v1/produto/ListarProdutoPorCodBarras/{Uri.EscapeDataString(codBarras)}");
+                var response = await _client.GetAsync($"{BasePath}/Produto/ListarProdutoPorCodBarras/{Uri.EscapeDataString(codBarras)}");
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -275,18 +270,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                     codBarras = dto.codBarras.Trim(),
                     nomeProduto = dto.nomeProduto.Trim(),
                     descricaoProduto = dto.descricaoProduto?.Trim() ?? string.Empty,
-                    precoCusto = dto.precoCusto,
-                    precoVenda = dto.precoVenda,
-                    margemLucro = dto.margemLucro,
-                    dataFabricao = dto.dataFabricao,
-                    dataVencimento = dto.dataVencimento,
-                    quatidadeEstoqueProduto = dto.quatidadeEstoqueProduto,
+                    isPerecivel = dto.dataVencimento > DateTime.MinValue,
                     FornecedorId = dto.FornecedorId,
                     CategoriaId = dto.CategoriaId,
                     statusAtivo = dto.statusAtivo
                 };
 
-                var response = await _client.PutAsJson($"{BasePath}/v1/produto/AlterarProduto", request);
+                var response = await _client.PutAsJson($"{BasePath}/Produto/AlterarProduto", request);
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -348,7 +338,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                     quatidadeEstoqueProduto = dto.quatidadeEstoqueProduto
                 };
 
-                var response = await _client.PutAsJson($"{BasePath}/v1/produto/AtualizaEstoque", request);
+                var response = await _client.PutAsJson($"{BasePath}/Produto/AtualizaEstoque", request);
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -401,7 +391,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
-                var response = await _client.DeleteAsync($"{BasePath}/v1/produto/RemoverProduto/{id}");
+                var response = await _client.DeleteAsync($"{BasePath}/Produto/RemoverProduto/{id}");
                 
                 if (response.IsSuccessStatusCode)
                 {

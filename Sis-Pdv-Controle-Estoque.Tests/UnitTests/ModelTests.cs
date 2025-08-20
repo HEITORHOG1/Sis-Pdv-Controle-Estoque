@@ -22,44 +22,40 @@ public class ModelTests
     }
 
     [Fact]
-    public void Produto_IsLowStock_ShouldReturnTrue_WhenStockBelowReorderPoint()
+    public void InventoryBalance_IsLowStock_ShouldReturnTrue_WhenStockBelowReorderPoint()
     {
         // Arrange
-        var produto = new Produto();
-        produto.QuatidadeEstoqueProduto = 5;
-        produto.ReorderPoint = 10;
+        var inv = new InventoryBalance(Guid.NewGuid(), currentStock: 5, reorderPoint: 10);
         
         // Act
-        var result = produto.IsLowStock();
+        var result = inv.IsLowStock();
         
         // Assert
         result.Should().BeTrue();
     }
 
     [Fact]
-    public void Produto_IsOutOfStock_ShouldReturnTrue_WhenStockIsZero()
+    public void InventoryBalance_IsOutOfStock_ShouldReturnTrue_WhenStockIsZero()
     {
         // Arrange
-        var produto = new Produto();
-        produto.QuatidadeEstoqueProduto = 0;
+        var inv = new InventoryBalance(Guid.NewGuid(), currentStock: 0);
         
         // Act
-        var result = produto.IsOutOfStock();
+        var result = inv.IsOutOfStock();
         
         // Assert
         result.Should().BeTrue();
     }
 
     [Fact]
-    public void Produto_HasSufficientStock_ShouldReturnTrue_WhenStockIsEnough()
+    public void InventoryBalance_HasSufficientStock_ShouldReturnTrue_WhenStockIsEnough()
     {
         // Arrange
-        var produto = new Produto();
-        produto.QuatidadeEstoqueProduto = 100;
+        var inv = new InventoryBalance(Guid.NewGuid(), currentStock: 100);
         var requestedQuantity = 50;
         
         // Act
-        var result = produto.HasSufficientStock(requestedQuantity);
+        var result = inv.HasSufficientStock(requestedQuantity);
         
         // Assert
         result.Should().BeTrue();
