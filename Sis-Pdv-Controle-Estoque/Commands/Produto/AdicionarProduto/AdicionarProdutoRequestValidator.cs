@@ -5,8 +5,14 @@ namespace Commands.Produto.AdicionarProduto
 {
     public class AdicionarProdutoRequestValidator : AbstractValidator<AdicionarProdutoRequest>
     {
-        public AdicionarProdutoRequestValidator()
+        private readonly IRepositoryFornecedor _repositoryFornecedor;
+        private readonly IRepositoryCategoria _repositoryCategoria;
+
+        public AdicionarProdutoRequestValidator(IRepositoryFornecedor repositoryFornecedor, IRepositoryCategoria repositoryCategoria)
         {
+            _repositoryFornecedor = repositoryFornecedor;
+            _repositoryCategoria = repositoryCategoria;
+
             RuleFor(request => request.codBarras)
                 .NotEmpty().WithMessage("O código de barras é obrigatório.")
                 .MustBeValidBarcode()
@@ -55,10 +61,12 @@ namespace Commands.Produto.AdicionarProduto
                 .LessThan(1000000).WithMessage("Quantidade em estoque muito alta, verifique o valor.");
 
             RuleFor(request => request.FornecedorId)
-                .NotEmpty().WithMessage("O ID do fornecedor é obrigatório.");
+                .NotEmpty().WithMessage("O ID do fornecedor é obrigatório.")
+                .Must(FornecedorExiste).WithMessage("Fornecedor não encontrado. Verifique se o fornecedor selecionado ainda existe.");
 
             RuleFor(request => request.CategoriaId)
-                .NotEmpty().WithMessage("O ID da categoria é obrigatório.");
+                .NotEmpty().WithMessage("O ID da categoria é obrigatório.")
+                .Must(CategoriaExiste).WithMessage("Categoria não encontrada. Verifique se a categoria selecionada ainda existe.");
 
             RuleFor(request => request.statusAtivo)
                 .InclusiveBetween(0, 1).WithMessage("O Status deve ser 0 (inativo) ou 1 (ativo).");
@@ -68,6 +76,18 @@ namespace Commands.Produto.AdicionarProduto
                 .Must(ValidarMargemLucro)
                 .WithMessage("A margem de lucro não confere com a diferença entre preço de venda e custo.")
                 .WithName("margemLucro");
+        }
+
+        private bool FornecedorExiste(Guid fornecedorId)
+        {
+            if (fornecedorId == Guid.Empty) return false;
+            return _repositoryFornecedor.Existe(f => f.Id == fornecedorId && f.StatusAtivo == 1);
+        }
+
+        private bool CategoriaExiste(Guid categoriaId)
+        {
+            if (categoriaId == Guid.Empty) return false;
+            return _repositoryCategoria.Existe(c => c.Id == categoriaId);
         }
 
         private bool ValidarMargemLucro(AdicionarProdutoRequest request)

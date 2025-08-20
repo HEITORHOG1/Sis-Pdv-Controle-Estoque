@@ -1,4 +1,11 @@
 ﻿using Commands.Produto.ListarProdutosPaginado;
+using Commands.Produto.AdicionarProduto;
+using Commands.Produto.AlterarProduto;
+using Commands.Produto.AtualizarEstoque;
+using Commands.Produto.ListarProduto;
+using Commands.Produto.ListarProdutoPorId;
+using Commands.Produto.ListarProdutoPorNomeProduto;
+using Commands.Produto.RemoverProduto;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -125,6 +132,60 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         {
             var response = await _mediator.Send(request);
             return await ResponseAsync(response);
+        }
+
+        // Rotas versionadas equivalentes às rotas legadas
+        [HttpPost("AdicionarProduto")]
+        public async Task<IActionResult> AdicionarProduto([FromBody] AdicionarProdutoRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        [HttpPut("AlterarProduto")]
+        public async Task<IActionResult> AlterarProduto([FromBody] AlterarProdutoRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        [HttpPut("AtualizaEstoque")]
+        public async Task<IActionResult> AtualizaEstoque([FromBody] AtualizarEstoqueRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        [HttpDelete("RemoverProduto/{id:Guid}")]
+        public async Task<IActionResult> RemoverProduto(Guid id)
+        {
+            var request = new RemoverProdutoResquest(id);
+            var response = await _mediator.Send(request);
+            return await ResponseAsync(response);
+        }
+
+        [HttpGet("ListarProduto")]
+        public async Task<IActionResult> ListarProduto()
+        {
+            var request = new ListarProdutoRequest();
+            var response = await _mediator.Send(request);
+            return Ok(response);
+        }
+
+        [HttpGet("ListarProdutoPorId/{id:Guid}")]
+        public async Task<IActionResult> ListarProdutoPorId(Guid id)
+        {
+            var request = new ListarProdutoPorIdRequest(id);
+            var response = await _mediator.Send(request);
+            return Ok(response);
+        }
+
+        [HttpGet("ListarProdutoPorCodBarras/{codBarras}")]
+        public async Task<IActionResult> ListarProdutoPorCodBarras(string codBarras)
+        {
+            var request = new ListarProdutoPorCodBarrasRequest(codBarras);
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
     }
 }

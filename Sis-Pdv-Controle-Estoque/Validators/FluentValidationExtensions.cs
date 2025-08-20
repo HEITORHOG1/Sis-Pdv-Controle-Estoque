@@ -24,8 +24,16 @@ namespace Validators
 
         public static IRuleBuilderOptions<T, string> MustBeValidBarcode<T>(this IRuleBuilder<T, string> ruleBuilder)
         {
-            return ruleBuilder.Must(BarcodeValidator.IsValidBarcode)
-                .WithMessage("Código de barras inválido");
+            return ruleBuilder.Must(s =>
+            {
+                if (string.IsNullOrWhiteSpace(s)) return false;
+                // Primeiro tenta EAN/UPC com dígito verificador
+                if (BarcodeValidator.IsValidBarcode(s)) return true;
+                // Fallback: aceitamos códigos numéricos entre 8 e 20 dígitos (sem validar dígito verificador)
+                var clean = s.Trim();
+                return clean.Length >= 8 && clean.Length <= 20 && clean.All(char.IsDigit);
+            })
+            .WithMessage("Código de barras inválido para formato EAN/UPC");
         }
 
         public static IRuleBuilderOptions<T, string> MustBeValidInternalCode<T>(this IRuleBuilder<T, string> ruleBuilder)
@@ -67,7 +75,7 @@ namespace Validators
         public static IRuleBuilderOptions<T, decimal> MustBeValidPercentage<T>(this IRuleBuilder<T, decimal> ruleBuilder)
         {
             return ruleBuilder.Must(BusinessValidator.IsValidPercentage)
-                .WithMessage("Percentual deve estar entre 0 e 100");
+                .WithMessage("Percentual deve estar entre 0 e 9999,99");
         }
 
         public static IRuleBuilderOptions<T, string> MustBeValidName<T>(this IRuleBuilder<T, string> ruleBuilder)

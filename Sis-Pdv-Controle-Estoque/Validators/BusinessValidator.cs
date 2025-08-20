@@ -69,11 +69,13 @@ namespace Validators
         }
 
         /// <summary>
-        /// Validates percentage (0-100)
+        /// Validates percentage (0-9999.99)
         /// </summary>
         public static bool IsValidPercentage(decimal percentage)
         {
-            return percentage >= 0 && percentage <= 100;
+            // Muitos produtos podem ter margem acima de 100% (ex.: custo 5, venda 11 => 120%).
+            // Ampliamos o limite superior para alinhar com o cliente (até 9999.99%).
+            return percentage >= 0 && percentage <= 9999.99m;
         }
 
         /// <summary>
