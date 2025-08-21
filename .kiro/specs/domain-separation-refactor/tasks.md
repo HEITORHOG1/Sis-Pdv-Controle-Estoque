@@ -76,8 +76,6 @@
   - Criar InventoryService completo com todas as operações de estoque
   - Implementar tratamento robusto de erros HTTP com mensagens específicas
   - Adicionar retry logic e timeout para chamadas de API
-  - Implementar cache local para melhorar performance de consultas frequentes
-  - Padronizar logging e telemetria nos services
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 8.3_
 
 - [ ] 7. Integrar PDV com novo sistema de Inventory
@@ -85,7 +83,6 @@
   - Implementar criação automática de movimentações de saída no PDV
   - Adicionar validação em tempo real de disponibilidade de estoque
   - Implementar tratamento de produtos perecíveis no PDV (seleção de lote)
-  - Adicionar alertas de estoque baixo durante o processo de venda
   - Garantir transações atômicas entre venda e movimentação de estoque
   - _Requirements: 4.3, 2.4, 7.2, 9.4_
 

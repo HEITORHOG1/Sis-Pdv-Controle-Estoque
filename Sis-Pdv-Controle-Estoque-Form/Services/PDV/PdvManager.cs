@@ -4,6 +4,7 @@ using Sis_Pdv_Controle_Estoque_Form.Services.Produto;
 using Sis_Pdv_Controle_Estoque_Form.Services.Pedido;
 using Sis_Pdv_Controle_Estoque_Form.Services.Cliente;
 using Sis_Pdv_Controle_Estoque_Form.Services.ProdutoPedido;
+using Sis_Pdv_Controle_Estoque_Form.Services.Inventory;
 using Sis_Pdv_Controle_Estoque_Form.Extensions;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.Diagnostics;
@@ -19,6 +20,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
         private readonly PedidoService _pedidoService;
         private readonly ClienteService _clienteService;
         private readonly ProdutoPedidoService _produtoPedidoService;
+        private readonly InventoryService _inventoryService;
         private readonly ConfiguracaoPdvDto _configuracao;
         
         public VendaDto VendaAtual { get; private set; }
@@ -32,6 +34,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             _pedidoService = new PedidoService();
             _clienteService = new ClienteService();
             _produtoPedidoService = new ProdutoPedidoService();
+            _inventoryService = new InventoryService();
             _configuracao = CarregarConfiguracoes();
             
             PdvLogger.LogInicioVenda(Guid.NewGuid(), "PDV Manager inicializado");
@@ -455,7 +458,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                     await _produtoPedidoService.AdicionarProdutoPedido(produtoPedidoDto);
                     
                     // Atualiza estoque - deduz a quantidade vendida
-                    await _produtoService.AtualizarEstoque(item.ProdutoId.ToString(), item.Quantidade);
+                    await _inventoryService.AtualizarEstoque(item.ProdutoId.ToString(), item.Quantidade);
                 }
                 
                 VendaAtual.StatusVenda = "FINALIZADA";
