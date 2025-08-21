@@ -50,6 +50,10 @@
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 8.1, 8.2_
 
 - [ ] 4. Refatorar interface WinForms para separação de responsabilidades
+
+
+
+
   - Limpar frmProduto removendo campos de quantidade, custo e preço
   - Ajustar binding e validações para focar apenas em dados mestres
   - Implementar validação rigorosa de código de barras (8-20 dígitos)

@@ -34,7 +34,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
         {
             ProdutoLogger.LogOperation("CarregamentoFormulario");
             
-            rbPerecivel.Checked = true;
+            // Estados padrão
+            rbPerecivel.Checked = false;
+            rbNaoPerecivel.Checked = true;
             rbProdutoAtivo.Checked = true;
             
             await CarregarDados();
@@ -167,28 +169,28 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 if (response.IsValidResponse())
                 {
                     produtosList.Clear();
-                        if (response.data != null)
-                        {
-                    foreach (var produto in response.data)
+                    if (response.data != null)
                     {
-                        produtosList.Add(produto.ToDto());
-                    }
+                        foreach (var produto in response.data)
+                        {
+                            produtosList.Add(produto.ToDto());
                         }
+                    }
 
                     dgvProduto.DataSource = null;
                     dgvProduto.DataSource = produtosList;
                     DefinirCabecalhos(new List<string>() {
-                        "ID", "Cód barras", "Nome", "Descrição", "P. Custo", "P. Venda",
-                        "Margem", "Dt. Fabri.", "Dt. Venci.", "Qtd.", "Fornecedor", "Categoria", "Ativo"
+                        "ID", "Cód barras", "Nome", "Descrição", "Tipo", "Fornecedor", "Categoria", "Ativo"
                     });
 
                     // Oculta colunas desnecessárias
                     if (dgvProduto.Columns["Id"] != null)
                         dgvProduto.Columns["Id"].Visible = false;
+                    if (dgvProduto.Columns["FornecedorId"] != null)
+                        dgvProduto.Columns["FornecedorId"].Visible = false;
+                    if (dgvProduto.Columns["CategoriaId"] != null)
+                        dgvProduto.Columns["CategoriaId"].Visible = false;
 
-                    // Formata colunas de preço
-                    FormatarColunas();
-                    
                     // Aplica cores baseadas em alertas
                     AplicarCoresAlertas();
 
@@ -254,11 +256,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     dgvProduto.DataSource = null;
                     dgvProduto.DataSource = produtosList;
                     DefinirCabecalhos(new List<string>() {
-                        "ID", "Cód barras", "Nome", "Descrição", "P. Custo", "P. Venda",
-                        "Margem", "Dt. Fabri.", "Dt. Venci.", "Qtd.", "Fornecedor", "Categoria", "Ativo"
+                        "ID", "Cód barras", "Nome", "Descrição", "Tipo", "Fornecedor", "Categoria", "Ativo"
                     });
 
-                    FormatarColunas();
+                    // Oculta colunas desnecessárias
+                    if (dgvProduto.Columns["Id"] != null)
+                        dgvProduto.Columns["Id"].Visible = false;
+                    if (dgvProduto.Columns["FornecedorId"] != null)
+                        dgvProduto.Columns["FornecedorId"].Visible = false;
+                    if (dgvProduto.Columns["CategoriaId"] != null)
+                        dgvProduto.Columns["CategoriaId"].Visible = false;
+
                     AplicarCoresAlertas();
                     
                     ProdutoLogger.LogInfo($"Busca por código encontrou {response.data.Count} produto(s)", "BuscaCodigo");
@@ -327,12 +335,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     CategoriaId = categoriaId,
                     nomeProduto = txbNome.Text.Trim(),
                     descricaoProduto = rtbDescricao.Text.Trim(),
-                    precoCusto = decimal.Parse(txbPrecoCusto.Text),
-                    precoVenda = decimal.Parse(txbPrecoDeVenda.Text),
-                    margemLucro = decimal.Parse(txbMargemDeLucro.Text),
-                    dataFabricao = GetDataFabricacao(),
-                    dataVencimento = GetDataVencimento(),
-                    quatidadeEstoqueProduto = int.Parse(txbQuantidadeEstoque.Text),
+                    isPerecivel = rbPerecivel.Checked,
                     statusAtivo = rbProdutoAtivo.Checked ? 1 : 0
                 };
 
@@ -356,7 +359,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                 ProdutoLogger.LogOperation("CadastroIniciado", "", dto.nomeProduto);
 
-                // Verifica se já existe produto com o mesmo código de barras
+                // Verifica duplicidade
                 if (await ProdutoJaExiste(dto.codBarras))
                 {
                     ProdutoLogger.LogWarning($"Tentativa de cadastro de produto duplicado: {dto.codBarras}", "Cadastro");
@@ -376,8 +379,6 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     var mensagem = $"Produto '{response.data.nomeProduto}' inserido com sucesso!";
                     
                     ProdutoLogger.LogOperation("CadastroRealizado", response.data.Id.ToString(), response.data.nomeProduto, response.data.codBarras);
-                    ProdutoLogger.LogEstoque(response.data.nomeProduto, 0, response.data.quatidadeEstoqueProduto, "Cadastro");
-                    ProdutoLogger.LogMargemLucro(response.data.nomeProduto, response.data.precoCusto, response.data.precoVenda, response.data.margemLucro);
                     
                     MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await Consultar();
@@ -395,7 +396,6 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 sw.Stop();
                 ProdutoLogger.LogError("Erro inesperado ao cadastrar produto", "Cadastro", ex);
                 
-                // Log mais detalhado do erro
                 var innerException = ex.InnerException?.Message ?? "Nenhuma";
                 ProdutoLogger.LogError($"Detalhes do erro - Message: {ex.Message}, Inner: {innerException}, StackTrace: {ex.StackTrace}", "CadastroDetalhado");
                 
@@ -443,12 +443,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     CategoriaId = categoriaIdAlt,
                     nomeProduto = txbNome.Text.Trim(),
                     descricaoProduto = rtbDescricao.Text.Trim(),
-                    precoCusto = decimal.Parse(txbPrecoCusto.Text),
-                    precoVenda = decimal.Parse(txbPrecoDeVenda.Text),
-                    margemLucro = decimal.Parse(txbMargemDeLucro.Text),
-                    dataFabricao = GetDataFabricacao(),
-                    dataVencimento = GetDataVencimento(),
-                    quatidadeEstoqueProduto = int.Parse(txbQuantidadeEstoque.Text),
+                    isPerecivel = rbPerecivel.Checked,
                     statusAtivo = rbProdutoAtivo.Checked ? 1 : 0
                 };
 
@@ -505,21 +500,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private bool ValidarCamposCadastro()
         {
-            // Validação Código de Barras
+            // Validação Código de Barras - Rigorosa (8-20 dígitos)
             if (string.IsNullOrWhiteSpace(txbCodigoBarras.Text))
             {
-                MessageBox.Show("Informe o código de barras do produto.", "Campo Obrigatório",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txbCodigoBarras.Focus();
+                ExibirErroValidacao("Informe o código de barras do produto.", "Campo Obrigatório", txbCodigoBarras);
                 return false;
             }
 
             var codigo = txbCodigoBarras.Text.Trim();
             if (!Regex.IsMatch(codigo, @"^[0-9]{8,20}$"))
             {
-                MessageBox.Show("Código de barras deve conter apenas números e ter entre 8 e 20 dígitos.",
-                    "Código Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txbCodigoBarras.Focus();
+                ExibirErroValidacao("Código de barras deve conter apenas números e ter entre 8 e 20 dígitos.",
+                    "Código Inválido", txbCodigoBarras);
                 return false;
             }
 
@@ -527,9 +519,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             if (cmbFornecedor.SelectedValue == null || 
                 cmbFornecedor.SelectedValue.ToString() == Guid.Empty.ToString())
             {
-                MessageBox.Show("Selecione um fornecedor.", "Campo Obrigatório",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                cmbFornecedor.Focus();
+                ExibirErroValidacao("Selecione um fornecedor.", "Campo Obrigatório", cmbFornecedor);
                 return false;
             }
 
@@ -537,107 +527,57 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             if (cmbCategoria.SelectedValue == null || 
                 cmbCategoria.SelectedValue.ToString() == Guid.Empty.ToString())
             {
-                MessageBox.Show("Selecione uma categoria.", "Campo Obrigatório",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                cmbCategoria.Focus();
+                ExibirErroValidacao("Selecione uma categoria.", "Campo Obrigatório", cmbCategoria);
                 return false;
             }
 
             // Validação Nome
             if (string.IsNullOrWhiteSpace(txbNome.Text))
             {
-                MessageBox.Show("Informe o nome do produto.", "Campo Obrigatório",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txbNome.Focus();
+                ExibirErroValidacao("Informe o nome do produto.", "Campo Obrigatório", txbNome);
                 return false;
             }
 
-            // Validação Preço de Custo
-            if (!decimal.TryParse(txbPrecoCusto.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out decimal precoCusto) || precoCusto <= 0)
+            if (txbNome.Text.Trim().Length < 2)
             {
-                MessageBox.Show("Informe um preço de custo válido maior que zero.", "Valor Inválido",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txbPrecoCusto.Focus();
+                ExibirErroValidacao("Nome do produto deve ter pelo menos 2 caracteres.", "Nome Muito Curto", txbNome);
                 return false;
             }
 
-            // Validação Preço de Venda
-            if (!decimal.TryParse(txbPrecoDeVenda.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out decimal precoVenda) || precoVenda <= 0)
+            if (txbNome.Text.Length > 100)
             {
-                MessageBox.Show("Informe um preço de venda válido maior que zero.", "Valor Inválido",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txbPrecoDeVenda.Focus();
+                ExibirErroValidacao("Nome do produto não pode ter mais de 100 caracteres.", "Nome Muito Longo", txbNome);
                 return false;
             }
 
-            // Validação: Preço de venda deve ser maior que custo
-            if (precoVenda <= precoCusto)
+            // Validação Descrição
+            if (!string.IsNullOrEmpty(rtbDescricao.Text) && rtbDescricao.Text.Length > 500)
             {
-                MessageBox.Show("O preço de venda deve ser maior que o preço de custo.", "Validação de Negócio",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txbPrecoDeVenda.Focus();
+                ExibirErroValidacao("Descrição não pode ter mais de 500 caracteres.", "Descrição Muito Longa", rtbDescricao);
                 return false;
-            }
-
-            // Validação Quantidade
-            if (!int.TryParse(txbQuantidadeEstoque.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int quantidade) || quantidade < 0)
-            {
-                MessageBox.Show("Informe uma quantidade em estoque válida (maior ou igual a zero).", "Valor Inválido",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txbQuantidadeEstoque.Focus();
-                return false;
-            }
-
-            // Validação Datas para produtos perecíveis
-            if (rbPerecivel.Checked)
-            {
-                var formats = new[] { "dd/MM/yyyy", "d/M/yyyy" };
-                var culture = CultureInfo.GetCultureInfo("pt-BR");
-
-                if (!DateTime.TryParseExact(msktDataFabricacao.Text.Trim(), formats, culture, DateTimeStyles.None, out var dataFab))
-                {
-                    MessageBox.Show("Informe uma data de fabricação válida (dd/MM/aaaa) para produtos perecíveis.", "Data Inválida",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    msktDataFabricacao.Focus();
-                    return false;
-                }
-
-                if (!DateTime.TryParseExact(msktDataVencimento.Text.Trim(), formats, culture, DateTimeStyles.None, out var dataVenc))
-                {
-                    MessageBox.Show("Informe uma data de vencimento válida para produtos perecíveis.", "Data Inválida",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    msktDataVencimento.Focus();
-                    return false;
-                }
-
-                // Valida regras de negócio
-                if (dataVenc <= dataFab)
-                {
-                    MessageBox.Show("A data de vencimento deve ser posterior à data de fabricação.", "Validação de Data",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    msktDataVencimento.Focus();
-                    return false;
-                }
-
-                if (dataVenc <= DateTime.Today)
-                {
-                    MessageBox.Show("Não é possível cadastrar produto com data de vencimento expirada.", "Produto Vencido",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    msktDataVencimento.Focus();
-                    return false;
-                }
-
-                // Opcional: fabricação não pode ser futura
-                if (dataFab > DateTime.Today)
-                {
-                    MessageBox.Show("A data de fabricação não pode ser futura.", "Data Inválida",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    msktDataFabricacao.Focus();
-                    return false;
-                }
             }
 
             return true;
+        }
+
+        private void ExibirErroValidacao(string mensagem, string titulo, Control controle)
+        {
+            MessageBox.Show(mensagem, titulo, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            controle.Focus();
+            
+            // Adiciona feedback visual
+            controle.BackColor = System.Drawing.Color.LightCoral;
+            
+            // Remove o feedback visual após 3 segundos
+            var timer = new System.Windows.Forms.Timer();
+            timer.Interval = 3000;
+            timer.Tick += (s, e) =>
+            {
+                controle.BackColor = System.Drawing.SystemColors.Window;
+                timer.Stop();
+                timer.Dispose();
+            };
+            timer.Start();
         }
 
         private bool ValidarSelecao(string acao)
@@ -667,47 +607,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
         }
 
-        private DateTime GetDataFabricacao()
-        {
-            if (rbNaoPerecivel.Checked || string.IsNullOrWhiteSpace(msktDataFabricacao.Text))
-                return DateTime.MinValue;
 
-            var formats = new[] { "dd/MM/yyyy", "d/M/yyyy" };
-            var culture = CultureInfo.GetCultureInfo("pt-BR");
-            
-            return DateTime.TryParseExact(msktDataFabricacao.Text.Trim(), formats, culture, DateTimeStyles.None, out DateTime data) ? data : DateTime.MinValue;
-        }
-
-        private DateTime GetDataVencimento()
-        {
-            if (rbNaoPerecivel.Checked || string.IsNullOrWhiteSpace(msktDataVencimento.Text))
-                return DateTime.MinValue;
-
-            var formats = new[] { "dd/MM/yyyy", "d/M/yyyy" };
-            var culture = CultureInfo.GetCultureInfo("pt-BR");
-            
-            return DateTime.TryParseExact(msktDataVencimento.Text.Trim(), formats, culture, DateTimeStyles.None, out DateTime data) ? data : DateTime.MinValue;
-        }
-
-        private void FormatarColunas()
-        {
-            // Formatar colunas de preço
-            if (dgvProduto.Columns["precoCusto"] != null)
-                dgvProduto.Columns["precoCusto"].DefaultCellStyle.Format = "C2";
-            
-            if (dgvProduto.Columns["precoVenda"] != null)
-                dgvProduto.Columns["precoVenda"].DefaultCellStyle.Format = "C2";
-            
-            if (dgvProduto.Columns["margemLucro"] != null)
-                dgvProduto.Columns["margemLucro"].DefaultCellStyle.Format = "F2";
-
-            // Formatar datas
-            if (dgvProduto.Columns["dataFabricao"] != null)
-                dgvProduto.Columns["dataFabricao"].DefaultCellStyle.Format = "dd/MM/yyyy";
-            
-            if (dgvProduto.Columns["dataVencimento"] != null)
-                dgvProduto.Columns["dataVencimento"].DefaultCellStyle.Format = "dd/MM/yyyy";
-        }
 
         private void AplicarCoresAlertas()
         {
@@ -727,15 +627,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
         }
 
-        private async void txbPrecoDeVenda_TextChanged(object sender, EventArgs e)
-        {
-            await ValidarValores();
-        }
 
-        private async void txbPrecoCusto_TextChanged(object sender, EventArgs e)
-        {
-            await ValidarValores();
-        }
 
         private async void dgvProduto_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -763,10 +655,6 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             txbCodigoBarras.Text = produto.codBarras;
             txbNome.Text = produto.nomeProduto;
             rtbDescricao.Text = produto.descricaoProduto;
-            txbPrecoCusto.Text = produto.precoCusto.ToString("F2");
-            txbPrecoDeVenda.Text = produto.precoVenda.ToString("F2");
-            txbMargemDeLucro.Text = produto.margemLucro.ToString("F2");
-            txbQuantidadeEstoque.Text = produto.quatidadeEstoqueProduto.ToString();
 
             // Seleciona fornecedor
             if (produto.FornecedorId != Guid.Empty)
@@ -780,26 +668,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 cmbCategoria.SelectedValue = produto.CategoriaId.ToString();
             }
 
-            // Define datas
-            if (produto.dataFabricao > DateTime.MinValue)
-            {
-                msktDataFabricacao.Text = produto.dataFabricao.ToString("dd/MM/yyyy");
-                rbPerecivel.Checked = true;
-            }
-            else
-            {
-                msktDataFabricacao.Text = "";
-                rbNaoPerecivel.Checked = true;
-            }
-
-            if (produto.dataVencimento > DateTime.MinValue)
-            {
-                msktDataVencimento.Text = produto.dataVencimento.ToString("dd/MM/yyyy");
-            }
-            else
-            {
-                msktDataVencimento.Text = "";
-            }
+            // Define tipo de produto
+            rbPerecivel.Checked = produto.isPerecivel;
+            rbNaoPerecivel.Checked = !produto.isPerecivel;
 
             // Define status
             rbProdutoAtivo.Checked = produto.statusAtivo == 1;
@@ -840,28 +711,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private void rbPerecivel_CheckedChanged(object sender, EventArgs e)
         {
-            if (rbPerecivel.Checked)
-            {
-                msktDataFabricacao.Enabled = true;
-                msktDataVencimento.Enabled = true;
-                
-                // Define data de fabricação padrão como hoje se estiver vazia
-                if (string.IsNullOrWhiteSpace(msktDataFabricacao.Text))
-                {
-                    msktDataFabricacao.Text = DateTime.Now.ToString("dd/MM/yyyy");
-                }
-            }
+            // Apenas atualiza o estado visual - não há mais campos de data para habilitar/desabilitar
+            // A informação de perecível é apenas um flag booleano no cadastro
         }
 
         private void rbNaoPerecivel_CheckedChanged(object sender, EventArgs e)
         {
-            if (rbNaoPerecivel.Checked)
-            {
-                msktDataFabricacao.Enabled = false;
-                msktDataVencimento.Enabled = false;
-                msktDataFabricacao.Text = "";
-                msktDataVencimento.Text = "";
-            }
+            // Apenas atualiza o estado visual - não há mais campos de data para habilitar/desabilitar
+            // A informação de perecível é apenas um flag booleano no cadastro
         }
 
         private async void txbCodigoBarras_KeyPress(object sender, KeyPressEventArgs e)
@@ -873,35 +730,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
         }
 
-        private async void txbPrecoCusto_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            // Permite números, vírgula e backspace
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
-            {
-                e.Handled = true;
-            }
 
-            // Permite apenas uma vírgula
-            if (e.KeyChar == ',' && ((TextBox)sender).Text.Contains(','))
-            {
-                e.Handled = true;
-            }
-        }
-
-        private async void txbPrecoDeVenda_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            // Permite números, vírgula e backspace
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
-            {
-                e.Handled = true;
-            }
-
-            // Permite apenas uma vírgula
-            if (e.KeyChar == ',' && ((TextBox)sender).Text.Contains(','))
-            {
-                e.Handled = true;
-            }
-        }
 
         private void DefinirCabecalhos(List<string> listaCabecalhos)
         {
@@ -917,60 +746,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
         }
 
-        private async Task ValidarValores()
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(txbPrecoDeVenda.Text) || 
-                    string.IsNullOrWhiteSpace(txbPrecoCusto.Text) ||
-                    txbPrecoCusto.Text == "0" || txbPrecoDeVenda.Text == "0")
-                {
-                    return;
-                }
 
-                if (decimal.TryParse(txbPrecoDeVenda.Text, out decimal precoVenda) &&
-                    decimal.TryParse(txbPrecoCusto.Text, out decimal precoCusto) &&
-                    precoCusto > 0)
-                {
-                    decimal margem = ((precoVenda / precoCusto) - 1) * 100;
-                    txbMargemDeLucro.Text = margem.ToString("F2");
-
-                    // Log da margem calculada
-                    ProdutoLogger.LogMargemLucro(txbNome.Text, precoCusto, precoVenda, margem);
-
-                    // Alerta para margem muito baixa
-                    if (margem < 10)
-                    {
-                        txbMargemDeLucro.BackColor = System.Drawing.Color.LightCoral;
-                    }
-                    else if (margem < 20)
-                    {
-                        txbMargemDeLucro.BackColor = System.Drawing.Color.LightYellow;
-                    }
-                    else
-                    {
-                        txbMargemDeLucro.BackColor = System.Drawing.Color.LightGreen;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ProdutoLogger.LogError("Erro ao calcular margem de lucro", "CalculoMargem", ex);
-            }
-        }
 
         private void LimparCampos()
         {
             txbId.Text = "IdProduto";
             txbCodigoBarras.Clear();
-            txbMargemDeLucro.Clear();
             txbNome.Clear();
-            txbPrecoDeVenda.Clear();
-            txbPrecoCusto.Clear();
-            txbQuantidadeEstoque.Clear();
             rtbDescricao.Clear();
-            msktDataFabricacao.Text = "";
-            msktDataVencimento.Text = "";
 
             if (cmbFornecedor.Items.Count > 0)
                 cmbFornecedor.SelectedIndex = 0;
@@ -979,11 +762,20 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 cmbCategoria.SelectedIndex = 0;
 
             rbProdutoAtivo.Checked = true;
-            rbPerecivel.Checked = true;
+            rbNaoPerecivel.Checked = true;
             btnAdicionar.Enabled = true;
 
-            // Reset cor da margem
-            txbMargemDeLucro.BackColor = System.Drawing.SystemColors.Window;
+            // Reset cores de validação
+            ResetarCoresValidacao();
+        }
+
+        private void ResetarCoresValidacao()
+        {
+            txbCodigoBarras.BackColor = System.Drawing.SystemColors.Window;
+            txbNome.BackColor = System.Drawing.SystemColors.Window;
+            rtbDescricao.BackColor = System.Drawing.SystemColors.Window;
+            cmbFornecedor.BackColor = System.Drawing.SystemColors.Window;
+            cmbCategoria.BackColor = System.Drawing.SystemColors.Window;
         }
 
         private void SetLoadingState(bool loading)
@@ -997,17 +789,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             txbCodigoBarras.Enabled = !loading;
             txbNome.Enabled = !loading;
             rtbDescricao.Enabled = !loading;
-            txbPrecoCusto.Enabled = !loading;
-            txbPrecoDeVenda.Enabled = !loading;
-            txbQuantidadeEstoque.Enabled = !loading;
             cmbFornecedor.Enabled = !loading;
             cmbCategoria.Enabled = !loading;
             rbProdutoAtivo.Enabled = !loading;
             rbProdutoInativo.Enabled = !loading;
             rbPerecivel.Enabled = !loading;
             rbNaoPerecivel.Enabled = !loading;
-            msktDataFabricacao.Enabled = !loading && rbPerecivel.Checked;
-            msktDataVencimento.Enabled = !loading && rbPerecivel.Checked;
 
             if (loading)
             {
@@ -1063,30 +850,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
         }
 
-        private void msktDataVencimento_Leave(object sender, EventArgs e)
-        {
-            // Verifica proximidade do vencimento
-            var formats = new[] { "dd/MM/yyyy", "d/M/yyyy" };
-            var culture = CultureInfo.GetCultureInfo("pt-BR");
-            
-            if (DateTime.TryParseExact(msktDataVencimento.Text.Trim(), formats, culture, DateTimeStyles.None, out DateTime dataVenc))
-            {
-                var diasRestantes = (dataVenc - DateTime.Now).Days;
-                
-                ProdutoLogger.LogVencimento(txbNome.Text, dataVenc, diasRestantes);
-                
-                if (diasRestantes <= 0)
-                {
-                    MessageBox.Show("ATENÇÃO: Este produto já está vencido!", 
-                        "Produto Vencido", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                else if (diasRestantes <= 7)
-                {
-                    MessageBox.Show($"ATENÇÃO: Este produto vence em {diasRestantes} dias!", 
-                        "Vencimento Próximo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-            }
-        }
+
 
         private void frmProduto_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -1133,13 +897,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
         private void ExportarCSV(List<ProdutoDto> produtos, string arquivo)
         {
             var csv = new System.Text.StringBuilder();
-            csv.AppendLine("Codigo,Nome,Descricao,PrecoCusto,PrecoVenda,Margem,Estoque,Categoria,Fornecedor,Status");
+            csv.AppendLine("Codigo,Nome,Descricao,Tipo,Categoria,Fornecedor,Status");
 
             foreach (var produto in produtos)
             {
                 csv.AppendLine($"{produto.codBarras},{produto.nomeProduto},{produto.descricaoProduto}," +
-                              $"{produto.precoCusto:F2},{produto.precoVenda:F2},{produto.margemLucro:F2}," +
-                              $"{produto.quatidadeEstoqueProduto},{produto.CategoriaId},{produto.FornecedorId}," +
+                              $"{produto.GetTipoFormatado()},{produto.CategoriaId},{produto.FornecedorId}," +
                               $"{produto.GetStatusFormatado()}");
             }
 
@@ -1150,36 +913,35 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        public void GerarRelatorioEstoqueBaixo(int limiteMinimo = 10)
+        public void GerarRelatorioProdutos()
         {
             try
             {
-                var produtosBaixoEstoque = produtosList.Where(p => p.EstoqueAbaixoMinimo(limiteMinimo)).ToList();
+                var produtosAtivos = produtosList.Where(p => p.EstaAtivo()).ToList();
+                var produtosInativos = produtosList.Where(p => !p.EstaAtivo()).ToList();
                 
-                ProdutoLogger.LogRelatorio("EstoqueBaixo", produtosBaixoEstoque.Count, $"Limite: {limiteMinimo}");
+                ProdutoLogger.LogRelatorio("Produtos", produtosList.Count, $"Ativos: {produtosAtivos.Count}, Inativos: {produtosInativos.Count}");
                 
-                if (produtosBaixoEstoque.Any())
+                var relatorio = "RELATÓRIO - CADASTRO DE PRODUTOS\n";
+                relatorio += $"Data: {DateTime.Now:dd/MM/yyyy HH:mm}\n";
+                relatorio += $"Total de produtos: {produtosList.Count}\n";
+                relatorio += $"Produtos ativos: {produtosAtivos.Count}\n";
+                relatorio += $"Produtos inativos: {produtosInativos.Count}\n\n";
+                
+                if (produtosAtivos.Any())
                 {
-                    var relatorio = "RELATÓRIO - PRODUTOS COM ESTOQUE BAIXO\n";
-                    relatorio += $"Data: {DateTime.Now:dd/MM/yyyy HH:mm}\n";
-                    relatorio += $"Limite mínimo: {limiteMinimo} unidades\n\n";
-                    
-                    foreach (var produto in produtosBaixoEstoque.OrderBy(p => p.quatidadeEstoqueProduto))
+                    relatorio += "PRODUTOS ATIVOS:\n";
+                    foreach (var produto in produtosAtivos.OrderBy(p => p.nomeProduto))
                     {
-                        relatorio += $"• {produto.nomeProduto} - Código: {produto.codBarras} - Estoque: {produto.quatidadeEstoqueProduto}\n";
+                        relatorio += $"• {produto.nomeProduto} - Código: {produto.codBarras} - Tipo: {produto.GetTipoFormatado()}\n";
                     }
-                    
-                    MessageBox.Show(relatorio, "Relatório de Estoque Baixo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                else
-                {
-                    MessageBox.Show("Nenhum produto com estoque abaixo do limite encontrado.", "Relatório", 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                
+                MessageBox.Show(relatorio, "Relatório de Produtos", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                ProdutoLogger.LogError("Erro ao gerar relatório de estoque baixo", "Relatorio", ex);
+                ProdutoLogger.LogError("Erro ao gerar relatório de produtos", "Relatorio", ex);
                 MessageBox.Show($"Erro ao gerar relatório: {ex.Message}", "Erro", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

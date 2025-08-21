@@ -1,4 +1,4 @@
-﻿using Commands.Produto.ListarProdutosPaginado;
+using Commands.Produto.ListarProdutosPaginado;
 using Commands.Produto.AdicionarProduto;
 using Commands.Produto.AlterarProduto;
 using Commands.Produto.AtualizarEstoque;
@@ -169,7 +169,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                     new { id = response.Data }, 
                     ApiResponse<object>.Ok(response.Data, "Produto criado com sucesso", CorrelationId));
             }
-            catch (ValidationException ex)
+            catch (Sis_Pdv_Controle_Estoque_API.Exceptions.ValidationException ex)
             {
                 return BadRequest(ApiResponse.Error("Validation failed", ex.Errors, CorrelationId));
             }
@@ -216,7 +216,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             {
                 if (id != request.Id)
                 {
-                    return BadRequest(ApiResponse.Error("ID na URL não corresponde ao ID no corpo da requisição", correlationId: CorrelationId));
+                    return BadRequest(ApiResponse.Error("ID na URL n�o corresponde ao ID no corpo da requisi��o", correlationId: CorrelationId));
                 }
 
                 _appLogger.LogUserAction("UpdateProduct", GetCurrentUserId(), new { id, request.CodBarras, request.NomeProduto });
@@ -258,7 +258,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
 
                 return Ok(ApiResponse<object>.Ok(response.Data, "Produto atualizado com sucesso", CorrelationId));
             }
-            catch (ValidationException ex)
+            catch (Sis_Pdv_Controle_Estoque_API.Exceptions.ValidationException ex)
             {
                 return BadRequest(ApiResponse.Error("Validation failed", ex.Errors, CorrelationId));
             }
@@ -360,7 +360,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
 
                 if (response == null)
                 {
-                    return NotFound(ApiResponse.Error("Produto não encontrado", correlationId: CorrelationId));
+                    return NotFound(ApiResponse.Error("Produto n�o encontrado", correlationId: CorrelationId));
                 }
 
                 return Ok(ApiResponse<object>.Ok(response, "Produto obtido com sucesso", CorrelationId));
@@ -397,7 +397,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             {
                 if (string.IsNullOrWhiteSpace(barcode))
                 {
-                    return BadRequest(ApiResponse.Error("Código de barras é obrigatório", correlationId: CorrelationId));
+                    return BadRequest(ApiResponse.Error("C�digo de barras � obrigat�rio", correlationId: CorrelationId));
                 }
 
                 _appLogger.LogUserAction("GetProductByBarcode", GetCurrentUserId(), new { barcode });
@@ -407,7 +407,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
 
                 if (response == null)
                 {
-                    return NotFound(ApiResponse.Error("Produto não encontrado", correlationId: CorrelationId));
+                    return NotFound(ApiResponse.Error("Produto n�o encontrado", correlationId: CorrelationId));
                 }
 
                 return Ok(ApiResponse<object>.Ok(response, "Produto obtido com sucesso", CorrelationId));
@@ -455,7 +455,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         ///         "nome": "Notebook Dell",
         ///         "descricao": "Notebook Dell Inspiron 15",
         ///         "codigoBarras": "1234567890123",
-        ///         "categoria": "Eletrônicos",
+        ///         "categoria": "Eletr�nicos",
         ///         "fornecedor": "Dell Inc.",
         ///         "isActive": true
         ///       }
@@ -497,18 +497,17 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 // Map to existing command
                 var command = new ListarProdutosPaginadoRequest
                 {
-                    Page = request.Page,
+                    PageNumber = request.Page,
                     PageSize = request.PageSize,
-                    Search = request.Search,
-                    CategoriaId = request.CategoriaId,
-                    FornecedorId = request.FornecedorId,
-                    IsActive = request.IsActive
+                    SearchTerm = request.Search,
+                    Categoria = request.CategoriaId?.ToString(),
+                    ApenasAtivos = request.IsActive
                 };
 
                 var response = await _mediator.Send(command);
                 return Ok(ApiResponse<object>.Ok(response, "Produtos listados com sucesso", CorrelationId));
             }
-            catch (ValidationException ex)
+            catch (Sis_Pdv_Controle_Estoque_API.Exceptions.ValidationException ex)
             {
                 return BadRequest(ApiResponse.Error("Validation failed", ex.Errors, CorrelationId));
             }

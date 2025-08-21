@@ -4,6 +4,7 @@ using Commands.Produto.AtualizarEstoque;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Produto;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
@@ -39,7 +40,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                     codBarras = dto.codBarras.Trim(),
                     nomeProduto = dto.nomeProduto.Trim(),
                     descricaoProduto = dto.descricaoProduto?.Trim() ?? string.Empty,
-                    isPerecivel = dto.dataVencimento > DateTime.MinValue, // inferência simples
+                    isPerecivel = dto.isPerecivel,
                     FornecedorId = dto.FornecedorId,
                     CategoriaId = dto.CategoriaId,
                     statusAtivo = dto.statusAtivo
@@ -270,7 +271,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                     codBarras = dto.codBarras.Trim(),
                     nomeProduto = dto.nomeProduto.Trim(),
                     descricaoProduto = dto.descricaoProduto?.Trim() ?? string.Empty,
-                    isPerecivel = dto.dataVencimento > DateTime.MinValue,
+                    isPerecivel = dto.isPerecivel,
                     FornecedorId = dto.FornecedorId,
                     CategoriaId = dto.CategoriaId,
                     statusAtivo = dto.statusAtivo
@@ -317,67 +318,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
         }
 
-        public async Task<ProdutoResponse> AtualizarEstoque(ProdutoDto dto)
-        {
-            try
-            {
-                if (dto == null)
-                    throw new ArgumentNullException(nameof(dto));
-                
-                if (dto.Id == Guid.Empty)
-                    throw new ArgumentException("Id é obrigatório.");
 
-                if (dto.quatidadeEstoqueProduto < 0)
-                    throw new ArgumentException("Quantidade não pode ser negativa.");
-
-                _client = Services.Http.HttpClientManager.GetClient();
-
-                AtualizarEstoqueRequest request = new AtualizarEstoqueRequest()
-                {
-                    Id = dto.Id,
-                    quatidadeEstoqueProduto = dto.quatidadeEstoqueProduto
-                };
-
-                var response = await _client.PutAsJson($"{BasePath}/Produto/AtualizaEstoque", request);
-                
-                if (response.IsSuccessStatusCode)
-                {
-                    try
-                    {
-                        var result = await response.ReadContentAs<ProdutoResponse>();
-                        return result ?? new ProdutoResponse { success = false, notifications = new List<object> { "Resposta vazia da API" } };
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"Erro ao deserializar resposta de AtualizarEstoque: {ex.Message}");
-                        throw new Exception($"Erro ao processar resposta da API: {ex.Message}");
-                    }
-                }
-
-                await ThrowDetailedException(response, nameof(AtualizarEstoque));
-                throw new Exception("Falha desconhecida ao atualizar estoque.");
-            }
-            catch (ApplicationException appEx)
-            {
-                throw new Exception($"Erro na comunicação com API: {appEx.Message}");
-            }
-            catch (HttpRequestException ex)
-            {
-                throw new Exception($"Erro de conexão: {ex.Message}");
-            }
-            catch (TaskCanceledException ex)
-            {
-                throw new Exception($"Timeout na requisição: {ex.Message}");
-            }
-            catch (JsonException ex)
-            {
-                throw new Exception($"Erro ao processar dados JSON: {ex.Message}");
-            }
-            catch (Exception ex) when (!(ex is ArgumentException || ex is ArgumentNullException))
-            {
-                throw new Exception($"Erro inesperado: {ex.Message}");
-            }
-        }
 
         public async Task<ProdutoResponse> RemoverProduto(string id)
         {
@@ -417,6 +358,57 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             catch (HttpRequestException ex)
             {
                 throw new Exception($"Erro de conexão: {ex.Message}");
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout na requisição: {ex.Message}");
+            }
+            catch (JsonException ex)
+            {
+                throw new Exception($"Erro ao processar dados JSON: {ex.Message}");
+            }
+            catch (Exception ex) when (!(ex is ArgumentException))
+            {
+                throw new Exception($"Erro inesperado: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Atualiza o estoque de um produto
+        /// </summary>
+        /// <param name="produtoId">ID do produto</param>
+        /// <param name="quantidade">Nova quantidade em estoque</param>
+        /// <returns>Resposta da API</returns>
+        public async Task<ProdutoResponse> AtualizarEstoque(string produtoId, int quantidade)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(produtoId))
+                    throw new ArgumentException("ID do produto é obrigatório", nameof(produtoId));
+
+                if (quantidade < 0)
+                    throw new ArgumentException("Quantidade não pode ser negativa", nameof(quantidade));
+
+                var comando = new { ProdutoId = produtoId, QuantidadeEstoque = quantidade };
+
+                var jsonContent = JsonSerializer.Serialize(comando);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                var response = await _client.PutAsync($"api/Produto/estoque/{produtoId}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var result = JsonSerializer.Deserialize<ProdutoResponse>(responseContent);
+                    return result ?? new ProdutoResponse { success = false };
+                }
+
+                await ThrowDetailedException(response, nameof(AtualizarEstoque));
+                return new ProdutoResponse { success = false };
+            }
+            catch (ArgumentException)
+            {
+                throw;
             }
             catch (TaskCanceledException ex)
             {

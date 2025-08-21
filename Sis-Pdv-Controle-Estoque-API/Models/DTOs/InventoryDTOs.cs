@@ -59,7 +59,48 @@ namespace Sis_Pdv_Controle_Estoque_API.Models.DTOs
         public string? UserName { get; set; }
     }
 
+    /// <summary>
+    /// DTO for stock validation request
+    /// </summary>
+    public class StockValidationRequest
+    {
+        [Required(ErrorMessage = "O ID do produto é obrigatório")]
+        [NotEmptyGuid]
+        public Guid ProductId { get; set; }
 
+        [Required(ErrorMessage = "A quantidade solicitada é obrigatória")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "A quantidade deve ser maior que zero")]
+        public decimal RequestedQuantity { get; set; }
+
+        /// <summary>
+        /// Optional batch number for perishable products
+        /// </summary>
+        public string? Lote { get; set; }
+    }
+
+    /// <summary>
+    /// DTO for stock validation result
+    /// </summary>
+    public class StockValidationResult
+    {
+        public bool IsValid { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public IEnumerable<StockValidationItem> Items { get; set; } = new List<StockValidationItem>();
+    }
+
+    /// <summary>
+    /// Individual stock validation item
+    /// </summary>
+    public class StockValidationItem
+    {
+        public Guid ProductId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public decimal RequestedQuantity { get; set; }
+        public decimal AvailableQuantity { get; set; }
+        public bool IsAvailable { get; set; }
+        public decimal ShortageQuantity { get; set; }
+        public string? Lote { get; set; }
+    }
 
     /// <summary>
     /// DTO for stock validation response
@@ -149,6 +190,17 @@ namespace Sis_Pdv_Controle_Estoque_API.Models.DTOs
     }
 
     /// <summary>
+    /// Stock alert types
+    /// </summary>
+    public enum StockAlertType
+    {
+        OutOfStock = 1,
+        LowStock = 2,
+        ExpiringBatch = 3,
+        ExpiredBatch = 4
+    }
+
+    /// <summary>
     /// DTO for stock alerts
     /// </summary>
     public class StockAlertResponse
@@ -165,5 +217,43 @@ namespace Sis_Pdv_Controle_Estoque_API.Models.DTOs
         public IEnumerable<BatchInfo>? ExpiringBatches { get; set; }
     }
 
+    /// <summary>
+    /// Batch balance information
+    /// </summary>
+    public class BatchBalance
+    {
+        public string Lote { get; set; } = string.Empty;
+        public DateTime? DataValidade { get; set; }
+        public decimal AvailableQuantity { get; set; }
+        public bool IsExpired => DataValidade.HasValue && DataValidade.Value < DateTime.Now;
+        public bool IsExpiringSoon => DataValidade.HasValue && DataValidade.Value <= DateTime.Now.AddDays(30);
+        public int DaysUntilExpiry => DataValidade.HasValue ? 
+            Math.Max(0, (int)(DataValidade.Value - DateTime.Now).TotalDays) : int.MaxValue;
+    }
 
+    /// <summary>
+    /// Expired batch information
+    /// </summary>
+    public class ExpiredBatch
+    {
+        public Guid ProductId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public string Lote { get; set; } = string.Empty;
+        public DateTime DataValidade { get; set; }
+        public decimal Quantity { get; set; }
+        public int DaysExpired => (int)(DateTime.Now - DataValidade).TotalDays;
+    }
+
+    /// <summary>
+    /// Expiring batch information
+    /// </summary>
+    public class ExpiringBatch
+    {
+        public Guid ProductId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public string Lote { get; set; } = string.Empty;
+        public DateTime DataValidade { get; set; }
+        public decimal Quantity { get; set; }
+        public int DaysUntilExpiry => Math.Max(0, (int)(DataValidade - DateTime.Now).TotalDays);
+    }
 }

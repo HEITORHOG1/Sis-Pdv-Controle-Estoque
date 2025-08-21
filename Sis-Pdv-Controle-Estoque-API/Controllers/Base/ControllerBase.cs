@@ -10,7 +10,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
     /// </summary>
     public class ControllerBase : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        protected readonly IUnitOfWork _unitOfWork;
 
         public ControllerBase(IUnitOfWork unitOfWork)
         {

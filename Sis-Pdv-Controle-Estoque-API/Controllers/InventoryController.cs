@@ -21,6 +21,14 @@ using Microsoft.Extensions.Logging;
 using Asp.Versioning;
 using System.ComponentModel.DataAnnotations;
 
+// Use alias to resolve ambiguity
+using DTOCreateStockMovementRequest = Sis_Pdv_Controle_Estoque_API.Models.DTOs.CreateStockMovementRequest;
+using DTOStockValidationRequest = Sis_Pdv_Controle_Estoque_API.Models.DTOs.StockValidationRequest;
+using DTOStockValidationResult = Sis_Pdv_Controle_Estoque_API.Models.DTOs.StockValidationResult;
+using DTOStockAlertType = Sis_Pdv_Controle_Estoque_API.Models.DTOs.StockAlertType;
+using DTOExpiredBatch = Sis_Pdv_Controle_Estoque_API.Models.DTOs.ExpiredBatch;
+using DTOExpiringBatch = Sis_Pdv_Controle_Estoque_API.Models.DTOs.ExpiringBatch;
+
 namespace Controllers
 {
     /// <summary>
@@ -147,7 +155,7 @@ namespace Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status422UnprocessableEntity)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<CreateMovementResponse>>> CreateMovement(
-            [FromBody, Required] CreateStockMovementRequest request,
+            [FromBody, Required] DTOCreateStockMovementRequest request,
             CancellationToken cancellationToken)
         {
             try
@@ -171,12 +179,12 @@ namespace Controllers
                 {
                     ProdutoId = request.ProdutoId,
                     Quantity = request.Quantity,
-                    Type = request.Type,
+                    Type = (StockMovementType)request.Type,
                     Reason = request.Reason,
-                    UnitCost = request.UnitCost,
+                    UnitCost = request.UnitCost ?? 0,
                     Lote = request.Lote,
                     DataValidade = request.DataValidade,
-                    Reference = request.Reference,
+                    ReferenceDocument = request.Reference,
                     UserId = GetCurrentUserId()
                 };
 
@@ -356,15 +364,12 @@ namespace Controllers
                 // Map to existing command (assuming it exists)
                 var command = new GetStockMovementsRequest
                 {
-                    Page = request.Page,
-                    PageSize = request.PageSize,
-                    ProdutoId = request.ProdutoId,
-                    Type = request.Type,
+                    ProductId = request.ProdutoId,
+                    Type = request.Type.HasValue ? (StockMovementType?)request.Type : null,
                     StartDate = request.StartDate,
                     EndDate = request.EndDate,
-                    UserId = request.UserId,
-                    Lote = request.Lote,
-                    Reference = request.Reference
+                    PageNumber = request.Page,
+                    PageSize = request.PageSize
                 };
                 
                 var result = await _mediator.Send(command, cancellationToken);
@@ -415,14 +420,14 @@ namespace Controllers
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ApiResponse<IEnumerable<StockAlertResponse>>>> GetStockAlerts(
-            [FromQuery] StockAlertType? alertType,
+            [FromQuery] DTOStockAlertType? alertType,
             CancellationToken cancellationToken)
         {
             try
             {
                 _appLogger.LogUserAction("GetStockAlerts", GetCurrentUserId(), new { alertType });
                 
-                var request = new GetStockAlertsRequest { AlertType = alertType };
+                var request = new GetStockAlertsRequest { AlertType = alertType.HasValue ? (Interfaces.Services.StockAlertType?)alertType : null };
                 var result = await _mediator.Send(request, cancellationToken);
                 
                 return Ok(ApiResponse<GetStockAlertsResponse>.Ok(result, "Alertas obtidos com sucesso", CorrelationId));
@@ -485,14 +490,14 @@ namespace Controllers
         /// <response code="500">Internal server error</response>
         [HttpPost("validate-stock")]
         [Authorize(Policy = "InventoryView")]
-        [ProducesResponseType(typeof(ApiResponse<StockValidationResult>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<DTOStockValidationResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ApiResponse<StockValidationResult>>> ValidateStock(
-            [FromBody, Required] StockValidationRequest request,
+        public async Task<ActionResult<ApiResponse<DTOStockValidationResult>>> ValidateStock(
+            [FromBody, Required] DTOStockValidationRequest request,
             [FromServices] IStockValidationService stockValidationService,
             CancellationToken cancellationToken)
         {
@@ -508,7 +513,23 @@ namespace Controllers
                     request.RequestedQuantity, 
                     cancellationToken);
                 
-                return Ok(ApiResponse<StockValidationResult>.Ok(result, "Validação realizada com sucesso", CorrelationId));
+                // Convert to DTO result
+                var dtoResult = new DTOStockValidationResult
+                {
+                    IsValid = result.IsValid,
+                    Message = result.Message,
+                    Items = result.Errors.Select(e => new StockValidationItem
+                    {
+                        ProductId = e.ProductId,
+                        ProductName = e.ProductName,
+                        RequestedQuantity = e.RequestedQuantity,
+                        AvailableQuantity = e.AvailableQuantity,
+                        IsAvailable = e.AvailableQuantity >= e.RequestedQuantity,
+                        ShortageQuantity = Math.Max(0, e.RequestedQuantity - e.AvailableQuantity)
+                    })
+                };
+                
+                return Ok(ApiResponse<DTOStockValidationResult>.Ok(dtoResult, "Validação realizada com sucesso", CorrelationId));
             }
             catch (Sis_Pdv_Controle_Estoque_API.Exceptions.ValidationException ex)
             {
@@ -563,13 +584,13 @@ namespace Controllers
         /// <response code="500">Internal server error</response>
         [HttpPost("validate-stock-batch")]
         [Authorize(Policy = "InventoryView")]
-        [ProducesResponseType(typeof(ApiResponse<StockValidationResult>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<DTOStockValidationResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ApiResponse<StockValidationResult>>> ValidateStockBatch(
-            [FromBody, Required] IEnumerable<StockValidationRequest> requests,
+        public async Task<ActionResult<ApiResponse<DTOStockValidationResult>>> ValidateStockBatch(
+            [FromBody, Required] IEnumerable<DTOStockValidationRequest> requests,
             [FromServices] IStockValidationService stockValidationService,
             CancellationToken cancellationToken)
         {
@@ -583,9 +604,43 @@ namespace Controllers
                     _validationService.ValidateModel(request);
                 }
                 
-                var result = await stockValidationService.ValidateStockAvailabilityAsync(requests, cancellationToken);
+                // Process each validation individually and aggregate results
+                var validationItems = new List<StockValidationItem>();
+                bool isAllValid = true;
+                var messages = new List<string>();
+
+                foreach (var request in requests)
+                {
+                    var result = await stockValidationService.ValidateStockAvailabilityAsync(
+                        request.ProductId, 
+                        request.RequestedQuantity, 
+                        cancellationToken);
+                    
+                    if (!result.IsValid)
+                    {
+                        isAllValid = false;
+                        messages.Add(result.Message);
+                    }
+
+                    validationItems.AddRange(result.Errors.Select(e => new StockValidationItem
+                    {
+                        ProductId = e.ProductId,
+                        ProductName = e.ProductName,
+                        RequestedQuantity = e.RequestedQuantity,
+                        AvailableQuantity = e.AvailableQuantity,
+                        IsAvailable = e.AvailableQuantity >= e.RequestedQuantity,
+                        ShortageQuantity = Math.Max(0, e.RequestedQuantity - e.AvailableQuantity)
+                    }));
+                }
+
+                var batchResult = new DTOStockValidationResult
+                {
+                    IsValid = isAllValid,
+                    Message = isAllValid ? "All items validated successfully" : string.Join("; ", messages),
+                    Items = validationItems
+                };
                 
-                return Ok(ApiResponse<StockValidationResult>.Ok(result, "Validação em lote realizada com sucesso", CorrelationId));
+                return Ok(ApiResponse<DTOStockValidationResult>.Ok(batchResult, "Validação em lote realizada com sucesso", CorrelationId));
             }
             catch (Sis_Pdv_Controle_Estoque_API.Exceptions.ValidationException ex)
             {
@@ -597,8 +652,6 @@ namespace Controllers
                 return StatusCode(500, ApiResponse.Error("Erro interno do servidor", correlationId: CorrelationId));
             }
         }
-
-
 
         /// <summary>
         /// Get current inventory balance for a product
@@ -794,11 +847,11 @@ namespace Controllers
         /// <response code="500">Internal server error</response>
         [HttpGet("batches/expired")]
         [Authorize(Policy = "InventoryView")]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<ExpiredBatch>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<DTOExpiredBatch>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ExpiredBatch>>>> GetExpiredBatches(
+        public async Task<ActionResult<ApiResponse<IEnumerable<DTOExpiredBatch>>>> GetExpiredBatches(
             [FromServices] IInventoryBalanceService inventoryBalanceService,
             CancellationToken cancellationToken)
         {
@@ -808,7 +861,17 @@ namespace Controllers
                 
                 var expiredBatches = await inventoryBalanceService.GetExpiredBatchesAsync(cancellationToken);
                 
-                return Ok(ApiResponse<IEnumerable<ExpiredBatch>>.Ok(expiredBatches, "Lotes vencidos obtidos com sucesso", CorrelationId));
+                // Convert to DTO
+                var dtoBatches = expiredBatches.Select(b => new DTOExpiredBatch
+                {
+                    ProductId = b.ProductId,
+                    ProductName = b.ProductName,
+                    Lote = b.Lote,
+                    DataValidade = b.DataValidade,
+                    Quantity = b.Quantity
+                });
+                
+                return Ok(ApiResponse<IEnumerable<DTOExpiredBatch>>.Ok(dtoBatches, "Lotes vencidos obtidos com sucesso", CorrelationId));
             }
             catch (Exception ex)
             {
@@ -862,12 +925,12 @@ namespace Controllers
         /// <response code="500">Internal server error</response>
         [HttpGet("batches/expiring")]
         [Authorize(Policy = "InventoryView")]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<ExpiringBatch>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<DTOExpiringBatch>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ApiResponse<IEnumerable<ExpiringBatch>>>> GetExpiringBatches(
+        public async Task<ActionResult<ApiResponse<IEnumerable<DTOExpiringBatch>>>> GetExpiringBatches(
             [FromServices] IInventoryBalanceService inventoryBalanceService,
             CancellationToken cancellationToken,
             [FromQuery, Range(1, 365, ErrorMessage = "Days threshold must be between 1 and 365")] int daysThreshold = 30)
@@ -878,7 +941,17 @@ namespace Controllers
                 
                 var expiringBatches = await inventoryBalanceService.GetExpiringBatchesAsync(daysThreshold, cancellationToken);
                 
-                return Ok(ApiResponse<IEnumerable<ExpiringBatch>>.Ok(expiringBatches, "Lotes próximos ao vencimento obtidos com sucesso", CorrelationId));
+                // Convert to DTO
+                var dtoBatches = expiringBatches.Select(b => new DTOExpiringBatch
+                {
+                    ProductId = b.ProductId,
+                    ProductName = b.ProductName,
+                    Lote = b.Lote,
+                    DataValidade = b.DataValidade,
+                    Quantity = b.Quantity
+                });
+                
+                return Ok(ApiResponse<IEnumerable<DTOExpiringBatch>>.Ok(dtoBatches, "Lotes próximos ao vencimento obtidos com sucesso", CorrelationId));
             }
             catch (Exception ex)
             {
@@ -1001,6 +1074,8 @@ namespace Controllers
                 return StatusCode(500, ApiResponse.Error("Erro interno do servidor", correlationId: CorrelationId));
             }
         }
+
+        #endregion
     }
 
     /// <summary>

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Repositories.Base;
 using Sis_Pdv_Controle_Estoque_API.Exceptions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services.Validation
@@ -55,7 +56,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Validation
                 _logger.LogWarning("Model validation failed for {ModelType}: {Errors}", 
                     typeof(T).Name, string.Join("; ", result.Errors));
                 
-                throw new ValidationException(result.Errors);
+                throw new Sis_Pdv_Controle_Estoque_API.Exceptions.ValidationException(result.Errors);
             }
         }
 
@@ -89,7 +90,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Validation
             {
                 // Check if barcode already exists
                 using var scope = _serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<Repositories.PdvContext>();
+                var context = scope.ServiceProvider.GetRequiredService<PdvContext>();
 
                 var existingProduct = await context.Produtos
                     .FirstOrDefaultAsync(p => p.CodBarras == codBarras);
@@ -137,7 +138,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Validation
             try
             {
                 using var scope = _serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<Repositories.PdvContext>();
+                var context = scope.ServiceProvider.GetRequiredService<PdvContext>();
 
                 // Check if product exists
                 var product = await context.Produtos.FindAsync(productId);
@@ -194,7 +195,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Validation
             try
             {
                 using var scope = _serviceProvider.CreateScope();
-                var context = scope.ServiceProvider.GetRequiredService<Repositories.PdvContext>();
+                var context = scope.ServiceProvider.GetRequiredService<PdvContext>();
 
                 // Check if product exists
                 var product = await context.Produtos.FindAsync(productId);

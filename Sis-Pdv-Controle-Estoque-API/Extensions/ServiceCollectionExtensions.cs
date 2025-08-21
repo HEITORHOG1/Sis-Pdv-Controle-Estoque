@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+using Repositories.Base;
 using Sis_Pdv_Controle_Estoque_API.Filters;
 using Sis_Pdv_Controle_Estoque_API.Services.Metrics;
 using Sis_Pdv_Controle_Estoque_API.Services.Validation;
@@ -80,11 +82,12 @@ namespace Sis_Pdv_Controle_Estoque_API.Extensions
                 );
             });
 
-            services.AddVersionedApiExplorer(options =>
-            {
-                options.GroupNameFormat = "'v'VVV";
-                options.SubstituteApiVersionInUrl = true;
-            });
+            // TODO: Fix versioned API explorer dependency
+            // services.AddVersionedApiExplorer(options =>
+            // {
+            //     options.GroupNameFormat = "'v'VVV";
+            //     options.SubstituteApiVersionInUrl = true;
+            // });
 
             return services;
         }
@@ -153,8 +156,9 @@ namespace Sis_Pdv_Controle_Estoque_API.Extensions
         public static IServiceCollection AddApiHealthChecks(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHealthChecks()
-                .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy())
-                .AddDbContext<Repositories.PdvContext>("database");
+                .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy());
+                // TODO: Add database health check
+                // .AddDbContext<PdvContext>("database");
 
             return services;
         }

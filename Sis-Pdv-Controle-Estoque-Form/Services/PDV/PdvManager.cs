@@ -11,7 +11,7 @@ using System.Diagnostics;
 namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
 {
     /// <summary>
-    /// Gerenciador centralizado para operações do PDV
+    /// Gerenciador centralizado para operaï¿½ï¿½es do PDV
     /// </summary>
     public class PdvManager
     {
@@ -37,10 +37,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             PdvLogger.LogInicioVenda(Guid.NewGuid(), "PDV Manager inicializado");
         }
         
-        #region Operações de Caixa
+        #region Operaï¿½ï¿½es de Caixa
         
         /// <summary>
-        /// Abre o caixa para operação
+        /// Abre o caixa para operaï¿½ï¿½o
         /// </summary>
         public async Task<bool> AbrirCaixa(string operador, string caixa, decimal valorInicial = 0)
         {
@@ -48,7 +48,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (CaixaAberto)
                 {
-                    throw new InvalidOperationException("Caixa já está aberto");
+                    throw new InvalidOperationException("Caixa jï¿½ estï¿½ aberto");
                 }
                 
                 OperadorAtual = operador;
@@ -74,10 +74,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (!CaixaAberto)
                 {
-                    throw new InvalidOperationException("Caixa não está aberto");
+                    throw new InvalidOperationException("Caixa nï¿½o estï¿½ aberto");
                 }
                 
-                // Verifica se há venda em andamento
+                // Verifica se hï¿½ venda em andamento
                 if (VendaAtual != null && VendaAtual.StatusVenda == "ABERTA")
                 {
                     throw new InvalidOperationException("Existe venda em andamento. Finalize ou cancele antes de fechar o caixa.");
@@ -101,7 +101,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
         
         #endregion
         
-        #region Operações de Venda
+        #region Operaï¿½ï¿½es de Venda
         
         /// <summary>
         /// Inicia uma nova venda
@@ -117,7 +117,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                 
                 if (VendaAtual != null && VendaAtual.StatusVenda == "ABERTA")
                 {
-                    throw new InvalidOperationException("Já existe uma venda em andamento");
+                    throw new InvalidOperationException("Jï¿½ existe uma venda em andamento");
                 }
                 
                 VendaAtual = new VendaDto
@@ -139,7 +139,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
         }
         
         /// <summary>
-        /// Busca produto por código de barras
+        /// Busca produto por cï¿½digo de barras
         /// </summary>
         public async Task<Sis_Pdv_Controle_Estoque_Form.Dto.Produto.Data> BuscarProdutoPorCodigo(string codigoBarras)
         {
@@ -148,7 +148,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (string.IsNullOrWhiteSpace(codigoBarras))
                 {
-                    throw new ArgumentException("Código de barras é obrigatório");
+                    throw new ArgumentException("Cï¿½digo de barras ï¿½ obrigatï¿½rio");
                 }
                 
                 var response = await _produtoService.ListarProdutoPorCodBarras(codigoBarras);
@@ -183,27 +183,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
                 {
-                    throw new InvalidOperationException("Não há venda ativa");
+                    throw new InvalidOperationException("Nï¿½o hï¿½ venda ativa");
                 }
                 
                 var produto = await BuscarProdutoPorCodigo(codigoBarras);
                 if (produto == null)
                 {
-                    throw new ArgumentException($"Produto não encontrado: {codigoBarras}");
+                    throw new ArgumentException($"Produto nï¿½o encontrado: {codigoBarras}");
                 }
                 
                 // Verifica se produto pode ser vendido
                 if (!produto.PodeSerVendido())
                 {
                     var alertas = produto.GetAlertasVenda();
-                    throw new InvalidOperationException($"Produto não pode ser vendido: {string.Join(", ", alertas)}");
+                    throw new InvalidOperationException($"Produto nï¿½o pode ser vendido: {string.Join(", ", alertas)}");
                 }
                 
                 // Verifica estoque
                 if (quantidade > produto.quatidadeEstoqueProduto && !_configuracao.PermitirVendaSemEstoque)
                 {
                     PdvLogger.LogAlertaEstoque(codigoBarras, produto.nomeProduto, produto.quatidadeEstoqueProduto, quantidade);
-                    throw new InvalidOperationException($"Quantidade solicitada ({quantidade}) maior que estoque disponível ({produto.quatidadeEstoqueProduto})");
+                    throw new InvalidOperationException($"Quantidade solicitada ({quantidade}) maior que estoque disponï¿½vel ({produto.quatidadeEstoqueProduto})");
                 }
                 
                 // Verifica vencimento
@@ -213,7 +213,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                     if (diasVencimento <= 0)
                     {
                         PdvLogger.LogAlertaVencimento(codigoBarras, produto.nomeProduto, produto.dataVencimento, diasVencimento);
-                        throw new InvalidOperationException("Produto vencido não pode ser vendido");
+                        throw new InvalidOperationException("Produto vencido nï¿½o pode ser vendido");
                     }
                     else if (diasVencimento <= _configuracao.DiasAlertaVencimento)
                     {
@@ -244,18 +244,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
                 {
-                    throw new InvalidOperationException("Não há venda ativa");
+                    throw new InvalidOperationException("Nï¿½o hï¿½ venda ativa");
                 }
                 
                 var item = VendaAtual.Itens.FirstOrDefault(i => i.Codigo == codigo);
                 if (item == null)
                 {
-                    throw new ArgumentException($"Item não encontrado: {codigo}");
+                    throw new ArgumentException($"Item nï¿½o encontrado: {codigo}");
                 }
                 
                 if (item.Cancelado)
                 {
-                    throw new InvalidOperationException("Item já está cancelado");
+                    throw new InvalidOperationException("Item jï¿½ estï¿½ cancelado");
                 }
                 
                 VendaAtual.CancelarItem(codigo);
@@ -279,23 +279,23 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
                 {
-                    throw new InvalidOperationException("Não há venda ativa");
+                    throw new InvalidOperationException("Nï¿½o hï¿½ venda ativa");
                 }
                 
                 if (!_configuracao.PermitirAlterarQuantidade)
                 {
-                    throw new InvalidOperationException("Alteração de quantidade não permitida");
+                    throw new InvalidOperationException("Alteraï¿½ï¿½o de quantidade nï¿½o permitida");
                 }
                 
                 var item = VendaAtual.Itens.FirstOrDefault(i => i.Codigo == codigo);
                 if (item == null)
                 {
-                    throw new ArgumentException($"Item não encontrado: {codigo}");
+                    throw new ArgumentException($"Item nï¿½o encontrado: {codigo}");
                 }
                 
                 if (item.Cancelado)
                 {
-                    throw new InvalidOperationException("Não é possível alterar quantidade de item cancelado");
+                    throw new InvalidOperationException("Nï¿½o ï¿½ possï¿½vel alterar quantidade de item cancelado");
                 }
                 
                 if (novaQuantidade <= 0)
@@ -306,7 +306,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                 // Verifica estoque novamente
                 if (novaQuantidade > item.EstoqueDisponivel && !_configuracao.PermitirVendaSemEstoque)
                 {
-                    throw new InvalidOperationException($"Quantidade solicitada ({novaQuantidade}) maior que estoque disponível ({item.EstoqueDisponivel})");
+                    throw new InvalidOperationException($"Quantidade solicitada ({novaQuantidade}) maior que estoque disponï¿½vel ({item.EstoqueDisponivel})");
                 }
                 
                 var quantidadeAnterior = item.Quantidade;
@@ -331,12 +331,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
                 {
-                    throw new InvalidOperationException("Não há venda ativa");
+                    throw new InvalidOperationException("Nï¿½o hï¿½ venda ativa");
                 }
                 
                 if (string.IsNullOrWhiteSpace(formaPagamento))
                 {
-                    throw new ArgumentException("Forma de pagamento é obrigatória");
+                    throw new ArgumentException("Forma de pagamento ï¿½ obrigatï¿½ria");
                 }
                 
                 if (valorRecebido < VendaAtual.ValorFinal)
@@ -365,18 +365,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
                 {
-                    throw new InvalidOperationException("Não há venda ativa");
+                    throw new InvalidOperationException("Nï¿½o hï¿½ venda ativa");
                 }
                 
                 if (valorDesconto < 0)
                 {
-                    throw new ArgumentException("Desconto não pode ser negativo");
+                    throw new ArgumentException("Desconto nï¿½o pode ser negativo");
                 }
                 
                 var percentual = VendaAtual.ValorTotal.CalcularPercentualDesconto(valorDesconto);
                 if (percentual > _configuracao.DescontoMaximo)
                 {
-                    throw new InvalidOperationException($"Desconto não pode ser maior que {_configuracao.DescontoMaximo}%");
+                    throw new InvalidOperationException($"Desconto nï¿½o pode ser maior que {_configuracao.DescontoMaximo}%");
                 }
                 
                 VendaAtual.ValorDesconto = valorDesconto;
@@ -399,19 +399,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
                 {
-                    throw new InvalidOperationException("Não há venda ativa");
+                    throw new InvalidOperationException("Nï¿½o hï¿½ venda ativa");
                 }
                 
                 // Valida venda
                 var erros = VendaAtual.Validar();
                 if (erros.Any())
                 {
-                    throw new InvalidOperationException($"Venda inválida: {string.Join(", ", erros)}");
+                    throw new InvalidOperationException($"Venda invï¿½lida: {string.Join(", ", erros)}");
                 }
                 
                 if (!VendaAtual.PodeSerFinalizada())
                 {
-                    throw new InvalidOperationException("Venda não pode ser finalizada");
+                    throw new InvalidOperationException("Venda nï¿½o pode ser finalizada");
                 }
                 
                 // Registra cliente se informado
@@ -419,7 +419,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                 if (!string.IsNullOrWhiteSpace(cpfCnpjCliente) && cpfCnpjCliente.IsValidCpfCnpj())
                 {
                     VendaAtual.CpfCnpjCliente = cpfCnpjCliente;
-                    // Aqui poderia cadastrar o cliente se necessário
+                    // Aqui poderia cadastrar o cliente se necessï¿½rio
                 }
                 
                 // Cria pedido na API
@@ -454,14 +454,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                     
                     await _produtoPedidoService.AdicionarProdutoPedido(produtoPedidoDto);
                     
-                    // Atualiza estoque
-                    var produtoEstoque = new ProdutoDto
-                    {
-                        Id = item.ProdutoId,
-                        quatidadeEstoqueProduto = item.Quantidade
-                    };
-                    
-                    await _produtoService.AtualizarEstoque(produtoEstoque);
+                    // Atualiza estoque - deduz a quantidade vendida
+                    await _produtoService.AtualizarEstoque(item.ProdutoId.ToString(), item.Quantidade);
                 }
                 
                 VendaAtual.StatusVenda = "FINALIZADA";
@@ -490,12 +484,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null)
                 {
-                    throw new InvalidOperationException("Não há venda ativa");
+                    throw new InvalidOperationException("Nï¿½o hï¿½ venda ativa");
                 }
                 
                 if (_configuracao.ExigirAutorizacaoCancelamento)
                 {
-                    // Aqui seria implementada a autorização
+                    // Aqui seria implementada a autorizaï¿½ï¿½o
                     // Por enquanto, apenas registra no log
                 }
                 
@@ -515,20 +509,20 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
         
         #endregion
         
-        #region Métodos Auxiliares
+        #region Mï¿½todos Auxiliares
         
         /// <summary>
-        /// Carrega configurações do PDV
+        /// Carrega configuraï¿½ï¿½es do PDV
         /// </summary>
         private ConfiguracaoPdvDto CarregarConfiguracoes()
         {
-            // Por enquanto retorna configuração padrão
-            // Posteriormente pode ser carregada de arquivo de configuração ou banco
+            // Por enquanto retorna configuraï¿½ï¿½o padrï¿½o
+            // Posteriormente pode ser carregada de arquivo de configuraï¿½ï¿½o ou banco
             return new ConfiguracaoPdvDto();
         }
         
         /// <summary>
-        /// Obtém resumo da venda atual
+        /// Obtï¿½m resumo da venda atual
         /// </summary>
         public string GetResumoVendaAtual()
         {
@@ -539,7 +533,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
         }
         
         /// <summary>
-        /// Obtém estatísticas do caixa
+        /// Obtï¿½m estatï¿½sticas do caixa
         /// </summary>
         public Dictionary<string, object> GetEstatisticasCaixa()
         {
@@ -563,7 +557,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
         }
         
         /// <summary>
-        /// Valida se operação pode ser executada
+        /// Valida se operaï¿½ï¿½o pode ser executada
         /// </summary>
         public bool ValidarOperacao(string operacao)
         {

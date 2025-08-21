@@ -5,12 +5,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
     public static class ProdutoExtensions
     {
         /// <summary>
-        /// Converte uma resposta da API para ProdutoDto
+        /// Converte Data (resposta da API) para ProdutoDto
         /// </summary>
         public static ProdutoDto ToDto(this Data apiResponse)
         {
-            if (apiResponse == null)
-                return new ProdutoDto();
+            if (apiResponse == null) return new ProdutoDto();
 
             return new ProdutoDto
             {
@@ -18,109 +17,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 codBarras = apiResponse.codBarras ?? string.Empty,
                 nomeProduto = apiResponse.nomeProduto ?? string.Empty,
                 descricaoProduto = apiResponse.descricaoProduto ?? string.Empty,
-                precoCusto = apiResponse.precoCusto,
-                precoVenda = apiResponse.precoVenda,
-                margemLucro = apiResponse.margemLucro,
-                dataFabricao = apiResponse.dataFabricao,
-                dataVencimento = apiResponse.dataVencimento,
-                quatidadeEstoqueProduto = apiResponse.quatidadeEstoqueProduto,
-                // Note: API retorna nomes, não IDs, então precisamos mapear diferente
+                isPerecivel = apiResponse.isPerecivel,
+                FornecedorId = apiResponse.FornecedorId,
+                CategoriaId = apiResponse.CategoriaId,
                 statusAtivo = apiResponse.statusAtivo
             };
         }
 
         /// <summary>
-        /// Converte uma lista de respostas da API para lista de ProdutoDto
-        /// </summary>
-        public static List<ProdutoDto> ToDtoList(this IEnumerable<Data> apiResponses)
-        {
-            if (apiResponses == null)
-                return new List<ProdutoDto>();
-
-            return apiResponses.Select(r => r.ToDto()).ToList();
-        }
-
-        /// <summary>
-        /// Valida se uma resposta da API é válida
-        /// </summary>
-        public static bool IsValidResponse(this ProdutoResponse response)
-        {
-            return response != null && response.success && response.data != null;
-        }
-
-        /// <summary>
-        /// Valida se uma lista de respostas da API é válida
-        /// </summary>
-        public static bool IsValidResponse(this ProdutoResponseList response)
-        {
-            return response != null && response.success && response.data != null;
-        }
-
-        /// <summary>
-        /// Obtém as mensagens de erro de uma resposta
-        /// </summary>
-        public static List<string> GetErrorMessages(this ProdutoResponse response)
-        {
-            if (response?.notifications == null)
-                return new List<string> { "Erro desconhecido" };
-
-            return response.notifications
-                .Where(n => n != null)
-                .Select(n => n.ToString())
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .ToList();
-        }
-
-        /// <summary>
-        /// Obtém as mensagens de erro de uma lista de respostas
-        /// </summary>
-        public static List<string> GetErrorMessages(this ProdutoResponseList response)
-        {
-            if (response?.notifications == null)
-                return new List<string> { "Erro desconhecido" };
-
-            return response.notifications
-                .Where(n => n != null)
-                .Select(n => n.ToString())
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .ToList();
-        }
-
-        /// <summary>
-        /// Formata preço para exibição em moeda brasileira
-        /// </summary>
-        public static string FormatPreco(this decimal valor)
-        {
-            return valor.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"));
-        }
-
-        /// <summary>
-        /// Formata código de barras para exibição
-        /// </summary>
-        public static string FormatCodigoBarras(this string codigoBarras)
-        {
-            if (string.IsNullOrWhiteSpace(codigoBarras))
-                return string.Empty;
-
-            // Remove espaços e caracteres especiais
-            var numbersOnly = new string(codigoBarras.Where(char.IsDigit).ToArray());
-
-            // Formata código EAN-13 (13 dígitos)
-            if (numbersOnly.Length == 13)
-            {
-                return $"{numbersOnly.Substring(0, 1)}-{numbersOnly.Substring(1, 6)}-{numbersOnly.Substring(7, 6)}";
-            }
-            // Formata código EAN-8 (8 dígitos)
-            else if (numbersOnly.Length == 8)
-            {
-                return $"{numbersOnly.Substring(0, 4)}-{numbersOnly.Substring(4, 4)}";
-            }
-
-            return codigoBarras; // Retorna original se não for possível formatar
-        }
-
-        /// <summary>
-        /// Verifica se o produto está ativo
+        /// Verifica se o produto estÃ¡ ativo
         /// </summary>
         public static bool EstaAtivo(this ProdutoDto produto)
         {
@@ -128,133 +33,51 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém status formatado
+        /// ObtÃ©m cor de alerta baseada em regras de negÃ³cio
         /// </summary>
-        public static string GetStatusFormatado(this ProdutoDto produto)
+        public static System.Drawing.Color GetCorAlerta(this ProdutoDto produto)
         {
-            return produto?.EstaAtivo() == true ? "Ativo" : "Inativo";
+            if (produto == null || !produto.EstaAtivo())
+                return System.Drawing.Color.Gray;
+
+            // Verde = normal (sem alertas)
+            return System.Drawing.Color.Green;
         }
 
         /// <summary>
-        /// Verifica se o produto está com estoque baixo
+        /// ObtÃ©m lista de alertas do produto
         /// </summary>
-        public static bool EstoqueAbaixoMinimo(this ProdutoDto produto, int estoqueMinimo = 10)
-        {
-            return produto?.quatidadeEstoqueProduto <= estoqueMinimo;
-        }
-
-        /// <summary>
-        /// Obtém informações de alerta do produto
-        /// </summary>
-        public static List<string> GetAlertas(this ProdutoDto produto, int estoqueMinimo = 10, int diasVencimento = 30)
+        public static List<string> GetAlertas(this ProdutoDto produto)
         {
             var alertas = new List<string>();
 
             if (produto == null) return alertas;
 
-            // Alerta de estoque baixo
-            if (produto.EstoqueAbaixoMinimo(estoqueMinimo))
-            {
-                alertas.Add($"Estoque baixo ({produto.quatidadeEstoqueProduto} unidades)");
-            }
-
-            // Alerta de produto próximo ao vencimento
-            if (produto.EhPerecivel && produto.ProximoVencimento(diasVencimento))
-            {
-                alertas.Add($"Vence em {produto.DiasVencimento} dias");
-            }
-
-            // Alerta de produto vencido
-            if (produto.EhPerecivel && produto.DiasVencimento <= 0)
-            {
-                alertas.Add("PRODUTO VENCIDO");
-            }
-
-            // Alerta de margem baixa
-            if (produto.margemLucro < 10)
-            {
-                alertas.Add($"Margem baixa ({produto.margemLucro:F1}%)");
-            }
-
-            // Alerta de preço de venda menor que custo
-            if (produto.precoVenda <= produto.precoCusto)
-            {
-                alertas.Add("Preço de venda menor que custo");
-            }
+            if (!produto.EstaAtivo())
+                alertas.Add("Produto inativo");
 
             return alertas;
         }
 
         /// <summary>
-        /// Obtém cor do alerta baseado na criticidade
+        /// Formatar cÃ³digo de barras para exibiÃ§Ã£o
         /// </summary>
-        public static System.Drawing.Color GetCorAlerta(this ProdutoDto produto)
+        public static string FormatCodigoBarras(this string codigoBarras)
         {
-            var alertas = produto.GetAlertas();
+            if (string.IsNullOrEmpty(codigoBarras)) return string.Empty;
 
-            if (alertas.Any(a => a.Contains("VENCIDO") || a.Contains("menor que custo")))
-                return System.Drawing.Color.Red;
-
-            if (alertas.Any(a => a.Contains("Vence em") || a.Contains("Estoque baixo")))
-                return System.Drawing.Color.Orange;
-
-            if (alertas.Any(a => a.Contains("Margem baixa")))
-                return System.Drawing.Color.Yellow;
-
-            return System.Drawing.Color.Green;
-        }
-
-        /// <summary>
-        /// Calcula lucro bruto do produto
-        /// </summary>
-        public static decimal CalcularLucroBruto(this ProdutoDto produto)
-        {
-            if (produto == null) return 0;
-            return produto.precoVenda - produto.precoCusto;
-        }
-
-        /// <summary>
-        /// Calcula valor total do estoque
-        /// </summary>
-        public static decimal CalcularValorTotalEstoque(this ProdutoDto produto)
-        {
-            if (produto == null) return 0;
-            return produto.precoCusto * produto.quatidadeEstoqueProduto;
-        }
-
-        /// <summary>
-        /// Obtém informações completas de estoque formatadas
-        /// </summary>
-        public static string GetInfoEstoqueCompleta(this ProdutoDto produto)
-        {
-            if (produto == null) return string.Empty;
-
-            var info = $"Qtd: {produto.quatidadeEstoqueProduto} | ";
-            info += $"Valor: {produto.CalcularValorTotalEstoque().FormatPreco()}";
-
-            var alertas = produto.GetAlertas();
-            if (alertas.Any())
+            // Para cÃ³digos EAN-13 (13 dÃ­gitos), formatar como XXX-XXXX-XXXX-X
+            if (codigoBarras.Length == 13)
             {
-                info += $" | ? {string.Join(", ", alertas)}";
+                return $"{codigoBarras.Substring(0, 3)}-{codigoBarras.Substring(3, 4)}-{codigoBarras.Substring(7, 4)}-{codigoBarras.Substring(11, 2)}";
             }
 
-            return info;
+            // Para outros formatos, apenas retornar sem formataÃ§Ã£o
+            return codigoBarras;
         }
 
         /// <summary>
-        /// Verifica se o produto pode ser vendido
-        /// </summary>
-        public static bool PodeSerVendido(this ProdutoDto produto)
-        {
-            if (produto == null) return false;
-
-            return produto.EstaAtivo() && 
-                   produto.quatidadeEstoqueProduto > 0 && 
-                   (!produto.EhPerecivel || produto.DiasVencimento > 0);
-        }
-
-        /// <summary>
-        /// Obtém categoria de produto baseada no código de barras
+        /// ObtÃ©m categoria de produto baseada no cÃ³digo de barras
         /// </summary>
         public static string GetCategoriaPorCodigoBarras(this ProdutoDto produto)
         {
@@ -276,7 +99,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Gera código de barras sugerido baseado na categoria
+        /// Gera cÃ³digo de barras sugerido baseado na categoria
         /// </summary>
         public static string GerarCodigoBarrasSugerido(this ProdutoDto produto, string categoria = "Geral")
         {
@@ -287,11 +110,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 "bebida" => "003",
                 "limpeza" => "004",
                 "higiene" => "005",
-                _ => "789" // Nacional genérico
+                _ => "789" // Nacional genÃ©rico
             };
 
             var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-            var sufixo = timestamp.Substring(timestamp.Length - 9); // Últimos 9 dígitos
+            var sufixo = timestamp.Substring(timestamp.Length - 9); // Ãšltimos 9 dÃ­gitos
 
             var codigoSemDigito = prefixo + sufixo;
             var digitoVerificador = CalcularDigitoVerificadorEAN13(codigoSemDigito);
@@ -300,7 +123,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Calcula dígito verificador para código EAN-13
+        /// Calcula dÃ­gito verificador para cÃ³digo EAN-13
         /// </summary>
         private static string CalcularDigitoVerificadorEAN13(string codigo)
         {
@@ -320,21 +143,20 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém resumo do produto para relatórios
+        /// ObtÃ©m resumo do produto para relatÃ³rios
         /// </summary>
         public static string GetResumo(this ProdutoDto produto)
         {
             if (produto == null) return string.Empty;
 
             return $"{produto.nomeProduto} | " +
-                   $"Cód: {produto.codBarras.FormatCodigoBarras()} | " +
-                   $"Preço: {produto.precoVenda.FormatPreco()} | " +
-                   $"Estoque: {produto.quatidadeEstoqueProduto} | " +
-                   $"Margem: {produto.margemLucro:F1}%";
+                   $"CÃ³d: {produto.codBarras.FormatCodigoBarras()} | " +
+                   $"Tipo: {produto.GetTipoFormatado()} | " +
+                   $"Status: {produto.GetStatusFormatado()}";
         }
 
         /// <summary>
-        /// Verifica se é um produto sazonal baseado na data
+        /// Verifica se Ã© um produto sazonal baseado na data
         /// </summary>
         public static bool EhProdutoSazonal(this ProdutoDto produto)
         {
@@ -347,8 +169,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
             if ((mes == 11 || mes == 12) && (nome.Contains("natal") || nome.Contains("papai noel")))
                 return true;
 
-            // Produtos de páscoa
-            if ((mes == 3 || mes == 4) && (nome.Contains("páscoa") || nome.Contains("chocolate") && nome.Contains("ovo")))
+            // Produtos de pÃ¡scoa
+            if ((mes == 3 || mes == 4) && (nome.Contains("pÃ¡scoa") || nome.Contains("chocolate") && nome.Contains("ovo")))
                 return true;
 
             // Produtos de festa junina
@@ -356,6 +178,52 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 return true;
 
             return false;
+        }
+
+        /// <summary>
+        /// Valida se uma resposta da API Ã© vÃ¡lida
+        /// </summary>
+        public static bool IsValidResponse(this ProdutoResponse response)
+        {
+            return response != null && response.success && response.data != null;
+        }
+
+        /// <summary>
+        /// Valida se uma lista de respostas da API Ã© vÃ¡lida
+        /// </summary>
+        public static bool IsValidResponse(this ProdutoResponseList response)
+        {
+            return response != null && response.success && response.data != null;
+        }
+
+        /// <summary>
+        /// ObtÃ©m as mensagens de erro de uma resposta
+        /// </summary>
+        public static List<string> GetErrorMessages(this ProdutoResponse response)
+        {
+            if (response?.notifications == null)
+                return new List<string> { "Erro desconhecido" };
+
+            return response.notifications
+                .Where(n => n != null)
+                .Select(n => n.ToString() ?? string.Empty)
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToList();
+        }
+
+        /// <summary>
+        /// ObtÃ©m as mensagens de erro de uma lista de respostas
+        /// </summary>
+        public static List<string> GetErrorMessages(this ProdutoResponseList response)
+        {
+            if (response?.notifications == null)
+                return new List<string> { "Erro desconhecido" };
+
+            return response.notifications
+                .Where(n => n != null)
+                .Select(n => n.ToString() ?? string.Empty)
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToList();
         }
     }
 }

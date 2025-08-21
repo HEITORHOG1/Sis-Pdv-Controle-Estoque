@@ -43,17 +43,6 @@
             this.gpCategoria = new System.Windows.Forms.GroupBox();
             this.rbNaoPerecivel = new System.Windows.Forms.RadioButton();
             this.rbPerecivel = new System.Windows.Forms.RadioButton();
-            this.gpValores = new System.Windows.Forms.GroupBox();
-            this.txbMargemDeLucro = new System.Windows.Forms.TextBox();
-            this.lblMargem = new System.Windows.Forms.Label();
-            this.txbPrecoDeVenda = new System.Windows.Forms.TextBox();
-            this.lblQuantidade = new System.Windows.Forms.Label();
-            this.txbQuantidadeEstoque = new System.Windows.Forms.TextBox();
-            this.txbPrecoCusto = new System.Windows.Forms.TextBox();
-            this.lblPrecoCusto = new System.Windows.Forms.Label();
-            this.lblPrecoVenda = new System.Windows.Forms.Label();
-            this.lblDataFabricacao = new System.Windows.Forms.Label();
-            this.lblDataVencimento = new System.Windows.Forms.Label();
             this.btnAlterar = new FontAwesome.Sharp.IconButton();
             this.btnAdicionar = new FontAwesome.Sharp.IconButton();
             this.rbProdutoInativo = new System.Windows.Forms.RadioButton();
@@ -62,15 +51,12 @@
             this.gpAtivo = new System.Windows.Forms.GroupBox();
             this.ckbInativo = new System.Windows.Forms.CheckBox();
             this.btnConsulta = new FontAwesome.Sharp.IconButton();
-            this.msktDataFabricacao = new System.Windows.Forms.MaskedTextBox();
-            this.msktDataVencimento = new System.Windows.Forms.MaskedTextBox();
             this.txbId = new System.Windows.Forms.TextBox();
             this.lblId = new System.Windows.Forms.Label();
             this.cmbCategoria = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.gpDescricaoNome.SuspendLayout();
             this.gpCategoria.SuspendLayout();
-            this.gpValores.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProduto)).BeginInit();
             this.gpAtivo.SuspendLayout();
             this.SuspendLayout();
@@ -202,6 +188,7 @@
             this.gpCategoria.Size = new System.Drawing.Size(146, 80);
             this.gpCategoria.TabIndex = 10;
             this.gpCategoria.TabStop = false;
+            this.gpCategoria.Text = "Tipo de Produto";
             // 
             // rbNaoPerecivel
             // 
@@ -229,141 +216,7 @@
             this.rbPerecivel.UseVisualStyleBackColor = true;
             this.rbPerecivel.CheckedChanged += new System.EventHandler(this.rbPerecivel_CheckedChanged);
             // 
-            // gpValores
-            // 
-            this.gpValores.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.gpValores.Controls.Add(this.txbMargemDeLucro);
-            this.gpValores.Controls.Add(this.lblMargem);
-            this.gpValores.Controls.Add(this.txbPrecoDeVenda);
-            this.gpValores.Controls.Add(this.lblQuantidade);
-            this.gpValores.Controls.Add(this.txbQuantidadeEstoque);
-            this.gpValores.Controls.Add(this.txbPrecoCusto);
-            this.gpValores.Controls.Add(this.lblPrecoCusto);
-            this.gpValores.Controls.Add(this.lblPrecoVenda);
-            this.gpValores.Location = new System.Drawing.Point(677, 91);
-            this.gpValores.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.gpValores.Name = "gpValores";
-            this.gpValores.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.gpValores.Size = new System.Drawing.Size(322, 239);
-            this.gpValores.TabIndex = 11;
-            this.gpValores.TabStop = false;
-            // 
-            // txbMargemDeLucro
-            // 
-            this.txbMargemDeLucro.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbMargemDeLucro.Enabled = false;
-            this.txbMargemDeLucro.Location = new System.Drawing.Point(14, 137);
-            this.txbMargemDeLucro.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.txbMargemDeLucro.Name = "txbMargemDeLucro";
-            this.txbMargemDeLucro.Size = new System.Drawing.Size(282, 23);
-            this.txbMargemDeLucro.TabIndex = 7;
-            // 
-            // lblMargem
-            // 
-            this.lblMargem.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblMargem.AutoSize = true;
-            this.lblMargem.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblMargem.ForeColor = System.Drawing.Color.Black;
-            this.lblMargem.Location = new System.Drawing.Point(10, 117);
-            this.lblMargem.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblMargem.Name = "lblMargem";
-            this.lblMargem.Size = new System.Drawing.Size(120, 15);
-            this.lblMargem.TabIndex = 6;
-            this.lblMargem.Text = "Margem de Lucro";
-            // 
-            // txbPrecoDeVenda
-            // 
-            this.txbPrecoDeVenda.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbPrecoDeVenda.Location = new System.Drawing.Point(14, 196);
-            this.txbPrecoDeVenda.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.txbPrecoDeVenda.Name = "txbPrecoDeVenda";
-            this.txbPrecoDeVenda.Size = new System.Drawing.Size(282, 23);
-            this.txbPrecoDeVenda.TabIndex = 8;
-            this.txbPrecoDeVenda.TextChanged += new System.EventHandler(this.txbPrecoDeVenda_TextChanged);
-            this.txbPrecoDeVenda.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txbPrecoDeVenda_KeyPress);
-            // 
-            // lblQuantidade
-            // 
-            this.lblQuantidade.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblQuantidade.AutoSize = true;
-            this.lblQuantidade.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblQuantidade.ForeColor = System.Drawing.Color.Black;
-            this.lblQuantidade.Location = new System.Drawing.Point(8, 18);
-            this.lblQuantidade.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblQuantidade.Name = "lblQuantidade";
-            this.lblQuantidade.Size = new System.Drawing.Size(82, 15);
-            this.lblQuantidade.TabIndex = 26;
-            this.lblQuantidade.Text = "Quantidade";
-            // 
-            // txbQuantidadeEstoque
-            // 
-            this.txbQuantidadeEstoque.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbQuantidadeEstoque.Location = new System.Drawing.Point(14, 43);
-            this.txbQuantidadeEstoque.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.txbQuantidadeEstoque.Name = "txbQuantidadeEstoque";
-            this.txbQuantidadeEstoque.Size = new System.Drawing.Size(282, 23);
-            this.txbQuantidadeEstoque.TabIndex = 5;
-            // 
-            // txbPrecoCusto
-            // 
-            this.txbPrecoCusto.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.txbPrecoCusto.Location = new System.Drawing.Point(14, 90);
-            this.txbPrecoCusto.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.txbPrecoCusto.Name = "txbPrecoCusto";
-            this.txbPrecoCusto.Size = new System.Drawing.Size(282, 23);
-            this.txbPrecoCusto.TabIndex = 6;
-            this.txbPrecoCusto.TextChanged += new System.EventHandler(this.txbPrecoCusto_TextChanged);
-            this.txbPrecoCusto.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txbPrecoCusto_KeyPress);
-            // 
-            // lblPrecoCusto
-            // 
-            this.lblPrecoCusto.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblPrecoCusto.AutoSize = true;
-            this.lblPrecoCusto.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblPrecoCusto.ForeColor = System.Drawing.Color.Black;
-            this.lblPrecoCusto.Location = new System.Drawing.Point(10, 69);
-            this.lblPrecoCusto.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblPrecoCusto.Name = "lblPrecoCusto";
-            this.lblPrecoCusto.Size = new System.Drawing.Size(106, 15);
-            this.lblPrecoCusto.TabIndex = 2;
-            this.lblPrecoCusto.Text = "Preço de Custo";
-            // 
-            // lblPrecoVenda
-            // 
-            this.lblPrecoVenda.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblPrecoVenda.AutoSize = true;
-            this.lblPrecoVenda.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblPrecoVenda.ForeColor = System.Drawing.Color.Black;
-            this.lblPrecoVenda.Location = new System.Drawing.Point(10, 175);
-            this.lblPrecoVenda.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblPrecoVenda.Name = "lblPrecoVenda";
-            this.lblPrecoVenda.Size = new System.Drawing.Size(109, 15);
-            this.lblPrecoVenda.TabIndex = 4;
-            this.lblPrecoVenda.Text = "Preço de Venda";
-            // 
-            // lblDataFabricacao
-            // 
-            this.lblDataFabricacao.AutoSize = true;
-            this.lblDataFabricacao.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblDataFabricacao.ForeColor = System.Drawing.Color.Black;
-            this.lblDataFabricacao.Location = new System.Drawing.Point(24, 303);
-            this.lblDataFabricacao.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblDataFabricacao.Name = "lblDataFabricacao";
-            this.lblDataFabricacao.Size = new System.Drawing.Size(134, 15);
-            this.lblDataFabricacao.TabIndex = 14;
-            this.lblDataFabricacao.Text = "Data de Fabricação";
-            // 
-            // lblDataVencimento
-            // 
-            this.lblDataVencimento.AutoSize = true;
-            this.lblDataVencimento.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lblDataVencimento.ForeColor = System.Drawing.Color.Black;
-            this.lblDataVencimento.Location = new System.Drawing.Point(216, 303);
-            this.lblDataVencimento.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblDataVencimento.Name = "lblDataVencimento";
-            this.lblDataVencimento.Size = new System.Drawing.Size(138, 15);
-            this.lblDataVencimento.TabIndex = 15;
-            this.lblDataVencimento.Text = "Data de Vencimento";
+            // btnAlterar
             // 
             // btnAlterar
             // 
@@ -537,24 +390,6 @@
             this.btnConsulta.UseVisualStyleBackColor = false;
             this.btnConsulta.Click += new System.EventHandler(this.btnConsulta_Click);
             // 
-            // msktDataFabricacao
-            // 
-            this.msktDataFabricacao.Location = new System.Drawing.Point(28, 324);
-            this.msktDataFabricacao.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.msktDataFabricacao.Mask = "00/00/0000";
-            this.msktDataFabricacao.Name = "msktDataFabricacao";
-            this.msktDataFabricacao.Size = new System.Drawing.Size(98, 23);
-            this.msktDataFabricacao.TabIndex = 9;
-            // 
-            // msktDataVencimento
-            // 
-            this.msktDataVencimento.Location = new System.Drawing.Point(219, 324);
-            this.msktDataVencimento.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.msktDataVencimento.Mask = "00/00/0000";
-            this.msktDataVencimento.Name = "msktDataVencimento";
-            this.msktDataVencimento.Size = new System.Drawing.Size(116, 23);
-            this.msktDataVencimento.TabIndex = 10;
-            // 
             // txbId
             // 
             this.txbId.Enabled = false;
@@ -612,17 +447,12 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txbId);
             this.Controls.Add(this.lblId);
-            this.Controls.Add(this.msktDataVencimento);
-            this.Controls.Add(this.msktDataFabricacao);
             this.Controls.Add(this.btnConsulta);
             this.Controls.Add(this.ckbInativo);
             this.Controls.Add(this.gpAtivo);
             this.Controls.Add(this.dgvProduto);
             this.Controls.Add(this.btnAlterar);
             this.Controls.Add(this.btnAdicionar);
-            this.Controls.Add(this.lblDataVencimento);
-            this.Controls.Add(this.lblDataFabricacao);
-            this.Controls.Add(this.gpValores);
             this.Controls.Add(this.gpCategoria);
             this.Controls.Add(this.gpDescricaoNome);
             this.Controls.Add(this.cmbFornecedor);
@@ -637,8 +467,6 @@
             this.gpDescricaoNome.PerformLayout();
             this.gpCategoria.ResumeLayout(false);
             this.gpCategoria.PerformLayout();
-            this.gpValores.ResumeLayout(false);
-            this.gpValores.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProduto)).EndInit();
             this.gpAtivo.ResumeLayout(false);
             this.gpAtivo.PerformLayout();
@@ -666,17 +494,17 @@
         private System.Windows.Forms.Label lblMargem;
         private System.Windows.Forms.TextBox txbPrecoDeVenda;
         private System.Windows.Forms.Label lblPrecoVenda;
+        private System.Windows.Forms.Label lblQuantidade;
+        private System.Windows.Forms.TextBox txbQuantidadeEstoque;
         private System.Windows.Forms.TextBox txbPrecoCusto;
         private System.Windows.Forms.Label lblPrecoCusto;
         private System.Windows.Forms.Label lblDataFabricacao;
         private System.Windows.Forms.Label lblDataVencimento;
-        private FontAwesome.Sharp.IconButton btnAlterar;
         private FontAwesome.Sharp.IconButton btnAdicionar;
+        private FontAwesome.Sharp.IconButton btnAlterar;
         private System.Windows.Forms.RadioButton rbProdutoInativo;
         private System.Windows.Forms.RadioButton rbProdutoAtivo;
         private System.Windows.Forms.DataGridView dgvProduto;
-        private System.Windows.Forms.TextBox txbQuantidadeEstoque;
-        private System.Windows.Forms.Label lblQuantidade;
         private System.Windows.Forms.GroupBox gpAtivo;
         private System.Windows.Forms.CheckBox ckbInativo;
         private FontAwesome.Sharp.IconButton btnConsulta;
@@ -684,7 +512,7 @@
         private System.Windows.Forms.MaskedTextBox msktDataVencimento;
         private System.Windows.Forms.TextBox txbId;
         private System.Windows.Forms.Label lblId;
-        private ComboBox cmbCategoria;
-        private Label label1;
+        private System.Windows.Forms.ComboBox cmbCategoria;
+        private System.Windows.Forms.Label label1;
     }
 }
