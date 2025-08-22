@@ -148,7 +148,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 {
                     codBarras = request.CodBarras,
                     nomeProduto = request.NomeProduto,
-                    descricaoProduto = request.DescricaoProduto,
+                    descricaoProduto = request.DescricaoProduto ?? string.Empty,
                     isPerecivel = request.IsPerecivel,
                     FornecedorId = request.FornecedorId,
                     CategoriaId = request.CategoriaId,
@@ -239,7 +239,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                     Id = request.Id,
                     codBarras = request.CodBarras,
                     nomeProduto = request.NomeProduto,
-                    descricaoProduto = request.DescricaoProduto,
+                    descricaoProduto = request.DescricaoProduto ?? string.Empty,
                     isPerecivel = request.IsPerecivel,
                     FornecedorId = request.FornecedorId,
                     CategoriaId = request.CategoriaId,
@@ -579,9 +579,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <summary>
         /// Legacy endpoint for listing all products
         /// </summary>
-        [HttpGet("ListarProduto")]
-        [Obsolete("Use GET /api/v1/produto instead")]
-        public async Task<IActionResult> ListarProduto()
+    // Legacy route within versioned controller (kept only as versioned path to avoid route conflicts). Unversioned legacy path is handled by ProdutoLegacyController.
+    [HttpGet("ListarProduto")]
+    [AllowAnonymous]
+    [Obsolete("Use GET /api/v1/produto instead")]
+    public async Task<IActionResult> ListarProduto()
         {
             var request = new ListarProdutoRequest();
             var response = await _mediator.Send(request);
@@ -591,9 +593,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <summary>
         /// Legacy endpoint for getting product by ID
         /// </summary>
-        [HttpGet("ListarProdutoPorId/{id:Guid}")]
-        [Obsolete("Use GET /api/v1/produto/{id} instead")]
-        public async Task<IActionResult> ListarProdutoPorId(Guid id)
+    // Legacy route within versioned controller (kept only as versioned path). Unversioned legacy path is handled by ProdutoLegacyController.
+    [HttpGet("ListarProdutoPorId/{id:Guid}")]
+    [AllowAnonymous]
+    [Obsolete("Use GET /api/v1/produto/{id} instead")]
+    public async Task<IActionResult> ListarProdutoPorId(Guid id)
         {
             var request = new ListarProdutoPorIdRequest(id);
             var response = await _mediator.Send(request);
@@ -603,9 +607,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <summary>
         /// Legacy endpoint for getting product by barcode
         /// </summary>
-        [HttpGet("ListarProdutoPorCodBarras/{codBarras}")]
-        [Obsolete("Use GET /api/v1/produto/barcode/{barcode} instead")]
-        public async Task<IActionResult> ListarProdutoPorCodBarras(string codBarras)
+    // Legacy route within versioned controller (kept only as versioned path). Unversioned legacy path is handled by ProdutoLegacyController.
+    [HttpGet("ListarProdutoPorCodBarras/{codBarras}")]
+    [AllowAnonymous]
+    [Obsolete("Use GET /api/v1/produto/barcode/{barcode} instead")]
+    public async Task<IActionResult> ListarProdutoPorCodBarras(string codBarras)
         {
             var request = new ListarProdutoPorCodBarrasRequest(codBarras);
             var response = await _mediator.Send(request);

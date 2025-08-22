@@ -52,6 +52,7 @@
             // Navigation Buttons
             this.btnHome = new System.Windows.Forms.Button();
             this.btnProdutos = new System.Windows.Forms.Button();
+            this.btnMovimentacaoEstoque = new System.Windows.Forms.Button();
             this.btnColaboradores = new System.Windows.Forms.Button();
             this.btnFornecedores = new System.Windows.Forms.Button();
             this.btnCategorias = new System.Windows.Forms.Button();
@@ -265,6 +266,7 @@
             this.pnMenuContainer.AutoScroll = true;
             this.pnMenuContainer.Controls.Add(this.btnHome);
             this.pnMenuContainer.Controls.Add(this.btnProdutos);
+            this.pnMenuContainer.Controls.Add(this.btnMovimentacaoEstoque);
             this.pnMenuContainer.Controls.Add(this.btnColaboradores);
             this.pnMenuContainer.Controls.Add(this.btnFornecedores);
             this.pnMenuContainer.Controls.Add(this.btnCategorias);
@@ -318,6 +320,25 @@
             this.btnProdutos.Click += new System.EventHandler(this.btnProdutos_Click);
             
             // 
+            // btnMovimentacaoEstoque
+            // 
+            this.btnMovimentacaoEstoque.BackColor = System.Drawing.Color.Transparent;
+            this.btnMovimentacaoEstoque.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnMovimentacaoEstoque.FlatAppearance.BorderSize = 0;
+            this.btnMovimentacaoEstoque.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMovimentacaoEstoque.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnMovimentacaoEstoque.ForeColor = System.Drawing.Color.White;
+            this.btnMovimentacaoEstoque.Location = new System.Drawing.Point(0, 100);
+            this.btnMovimentacaoEstoque.Name = "btnMovimentacaoEstoque";
+            this.btnMovimentacaoEstoque.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnMovimentacaoEstoque.Size = new System.Drawing.Size(260, 50);
+            this.btnMovimentacaoEstoque.TabIndex = 2;
+            this.btnMovimentacaoEstoque.Text = "📦🔄 MOVIMENTAÇÃO";
+            this.btnMovimentacaoEstoque.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnMovimentacaoEstoque.UseVisualStyleBackColor = false;
+            this.btnMovimentacaoEstoque.Click += new System.EventHandler(this.btnMovimentacaoEstoque_Click);
+            
+            // 
             // btnColaboradores
             // 
             this.btnColaboradores.BackColor = System.Drawing.Color.Transparent;
@@ -326,11 +347,11 @@
             this.btnColaboradores.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnColaboradores.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnColaboradores.ForeColor = System.Drawing.Color.White;
-            this.btnColaboradores.Location = new System.Drawing.Point(0, 100);
+            this.btnColaboradores.Location = new System.Drawing.Point(0, 150);
             this.btnColaboradores.Name = "btnColaboradores";
             this.btnColaboradores.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnColaboradores.Size = new System.Drawing.Size(260, 50);
-            this.btnColaboradores.TabIndex = 2;
+            this.btnColaboradores.TabIndex = 3;
             this.btnColaboradores.Text = "👥 COLABORADORES";
             this.btnColaboradores.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnColaboradores.UseVisualStyleBackColor = false;
@@ -345,11 +366,11 @@
             this.btnFornecedores.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnFornecedores.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnFornecedores.ForeColor = System.Drawing.Color.White;
-            this.btnFornecedores.Location = new System.Drawing.Point(0, 150);
+            this.btnFornecedores.Location = new System.Drawing.Point(0, 200);
             this.btnFornecedores.Name = "btnFornecedores";
             this.btnFornecedores.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnFornecedores.Size = new System.Drawing.Size(260, 50);
-            this.btnFornecedores.TabIndex = 3;
+            this.btnFornecedores.TabIndex = 4;
             this.btnFornecedores.Text = "🏭 FORNECEDORES";
             this.btnFornecedores.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnFornecedores.UseVisualStyleBackColor = false;
@@ -364,11 +385,11 @@
             this.btnCategorias.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCategorias.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnCategorias.ForeColor = System.Drawing.Color.White;
-            this.btnCategorias.Location = new System.Drawing.Point(0, 200);
+            this.btnCategorias.Location = new System.Drawing.Point(0, 250);
             this.btnCategorias.Name = "btnCategorias";
             this.btnCategorias.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnCategorias.Size = new System.Drawing.Size(260, 50);
-            this.btnCategorias.TabIndex = 4;
+            this.btnCategorias.TabIndex = 5;
             this.btnCategorias.Text = "🏷️ CATEGORIAS";
             this.btnCategorias.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCategorias.UseVisualStyleBackColor = false;
@@ -383,11 +404,11 @@
             this.btnDepartamentos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnDepartamentos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnDepartamentos.ForeColor = System.Drawing.Color.White;
-            this.btnDepartamentos.Location = new System.Drawing.Point(0, 250);
+            this.btnDepartamentos.Location = new System.Drawing.Point(0, 300);
             this.btnDepartamentos.Name = "btnDepartamentos";
             this.btnDepartamentos.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnDepartamentos.Size = new System.Drawing.Size(260, 50);
-            this.btnDepartamentos.TabIndex = 5;
+            this.btnDepartamentos.TabIndex = 6;
             this.btnDepartamentos.Text = "🏢 DEPARTAMENTOS";
             this.btnDepartamentos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnDepartamentos.UseVisualStyleBackColor = false;
@@ -402,11 +423,11 @@
             this.btnPDV.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnPDV.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnPDV.ForeColor = System.Drawing.Color.LightGreen;
-            this.btnPDV.Location = new System.Drawing.Point(0, 300);
+            this.btnPDV.Location = new System.Drawing.Point(0, 350);
             this.btnPDV.Name = "btnPDV";
             this.btnPDV.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnPDV.Size = new System.Drawing.Size(260, 50);
-            this.btnPDV.TabIndex = 6;
+            this.btnPDV.TabIndex = 7;
             this.btnPDV.Text = "🛒 PONTO DE VENDA";
             this.btnPDV.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnPDV.UseVisualStyleBackColor = false;
@@ -421,11 +442,11 @@
             this.btnRelatorios.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnRelatorios.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnRelatorios.ForeColor = System.Drawing.Color.White;
-            this.btnRelatorios.Location = new System.Drawing.Point(0, 350);
+            this.btnRelatorios.Location = new System.Drawing.Point(0, 400);
             this.btnRelatorios.Name = "btnRelatorios";
             this.btnRelatorios.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnRelatorios.Size = new System.Drawing.Size(260, 50);
-            this.btnRelatorios.TabIndex = 7;
+            this.btnRelatorios.TabIndex = 8;
             this.btnRelatorios.Text = "📊 RELATÓRIOS";
             this.btnRelatorios.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnRelatorios.UseVisualStyleBackColor = false;
@@ -440,11 +461,11 @@
             this.btnConfiguracoes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnConfiguracoes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
             this.btnConfiguracoes.ForeColor = System.Drawing.Color.White;
-            this.btnConfiguracoes.Location = new System.Drawing.Point(0, 400);
+            this.btnConfiguracoes.Location = new System.Drawing.Point(0, 450);
             this.btnConfiguracoes.Name = "btnConfiguracoes";
             this.btnConfiguracoes.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnConfiguracoes.Size = new System.Drawing.Size(260, 50);
-            this.btnConfiguracoes.TabIndex = 8;
+            this.btnConfiguracoes.TabIndex = 9;
             this.btnConfiguracoes.Text = "⚙️ CONFIGURAÇÕES";
             this.btnConfiguracoes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnConfiguracoes.UseVisualStyleBackColor = false;
@@ -463,7 +484,7 @@
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
             this.btnLogout.Size = new System.Drawing.Size(260, 50);
-            this.btnLogout.TabIndex = 9;
+            this.btnLogout.TabIndex = 10;
             this.btnLogout.Text = "🚪 SAIR";
             this.btnLogout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnLogout.UseVisualStyleBackColor = false;
@@ -657,6 +678,7 @@
         private System.Windows.Forms.Panel pnMenuContainer;
         private System.Windows.Forms.Button btnHome;
         private System.Windows.Forms.Button btnProdutos;
+        private System.Windows.Forms.Button btnMovimentacaoEstoque;
         private System.Windows.Forms.Button btnColaboradores;
         private System.Windows.Forms.Button btnFornecedores;
         private System.Windows.Forms.Button btnCategorias;

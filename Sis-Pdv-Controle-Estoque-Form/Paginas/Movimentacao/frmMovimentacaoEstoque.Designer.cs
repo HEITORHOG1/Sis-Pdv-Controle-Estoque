@@ -47,7 +47,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Movimentacao
             this.lblPrecoCompra = new System.Windows.Forms.Label();
             this.nudPrecoCompra = new System.Windows.Forms.NumericUpDown();
             this.lblFornecedor = new System.Windows.Forms.Label();
-            this.txtFornecedor = new System.Windows.Forms.TextBox();
+            this.cmbFornecedor = new System.Windows.Forms.ComboBox();
             this.lblNotaFiscal = new System.Windows.Forms.Label();
             this.txtNotaFiscal = new System.Windows.Forms.TextBox();
             this.lblDataOperacao = new System.Windows.Forms.Label();
@@ -237,7 +237,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Movimentacao
             this.gbDadosComplementares.Controls.Add(this.lblPrecoCompra);
             this.gbDadosComplementares.Controls.Add(this.nudPrecoCompra);
             this.gbDadosComplementares.Controls.Add(this.lblFornecedor);
-            this.gbDadosComplementares.Controls.Add(this.txtFornecedor);
+            this.gbDadosComplementares.Controls.Add(this.cmbFornecedor);
             this.gbDadosComplementares.Controls.Add(this.lblNotaFiscal);
             this.gbDadosComplementares.Controls.Add(this.txtNotaFiscal);
             this.gbDadosComplementares.Controls.Add(this.lblDataOperacao);
@@ -312,12 +312,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Movimentacao
             this.lblFornecedor.TabIndex = 6;
             this.lblFornecedor.Text = "Fornecedor:";
             // 
-            // txtFornecedor
+            // cmbFornecedor
             // 
-            this.txtFornecedor.Location = new System.Drawing.Point(150, 91);
-            this.txtFornecedor.Name = "txtFornecedor";
-            this.txtFornecedor.Size = new System.Drawing.Size(200, 20);
-            this.txtFornecedor.TabIndex = 7;
+            this.cmbFornecedor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFornecedor.FormattingEnabled = true;
+            this.cmbFornecedor.Location = new System.Drawing.Point(150, 91);
+            this.cmbFornecedor.Name = "cmbFornecedor";
+            this.cmbFornecedor.Size = new System.Drawing.Size(200, 21);
+            this.cmbFornecedor.TabIndex = 7;
             // 
             // lblNotaFiscal
             // 
@@ -688,11 +690,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Movimentacao
             this.tpHistoricoMovimentacoes.ResumeLayout(false);
             this.gbFiltros.ResumeLayout(false);
             this.gbFiltros.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvMovimentacoes)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvMovimentacoes)).EndInit();
             this.pnlPaginacao.ResumeLayout(false);
             this.pnlPaginacao.PerformLayout();
             this.tpAlertasEstoque.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvAlertas)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvAlertas)).EndInit();
             this.pnlAlertasBotoes.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -719,7 +721,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Movimentacao
         private System.Windows.Forms.Label lblPrecoCompra;
         private System.Windows.Forms.NumericUpDown nudPrecoCompra;
         private System.Windows.Forms.Label lblFornecedor;
-        private System.Windows.Forms.TextBox txtFornecedor;
+    private System.Windows.Forms.ComboBox cmbFornecedor;
         private System.Windows.Forms.Label lblNotaFiscal;
         private System.Windows.Forms.TextBox txtNotaFiscal;
         private System.Windows.Forms.Label lblDataOperacao;

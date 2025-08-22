@@ -3,6 +3,7 @@ using Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor;
+using Sis_Pdv_Controle_Estoque_Form.Paginas.Movimentacao;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.PDV;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Produto;
 using Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios;
@@ -192,6 +193,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
             // Cores modernas para cada módulo
             if (botao == btnHome) return Color.FromArgb(46, 204, 113);          // Verde
             if (botao == btnProdutos) return Color.FromArgb(52, 152, 219);      // Azul
+            if (botao == btnMovimentacaoEstoque) return Color.FromArgb(26, 188, 156); // Verde água
             if (botao == btnColaboradores) return Color.FromArgb(155, 89, 182);  // Roxo
             if (botao == btnFornecedores) return Color.FromArgb(230, 126, 34);   // Laranja
             if (botao == btnCategorias) return Color.FromArgb(241, 196, 15);     // Amarelo
@@ -241,6 +243,23 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
         {
             AtivarBotao(btnDepartamentos);
             AbrirModulo(new CadDepartamento(), "🏢", "DEPARTAMENTOS", "Estrutura organizacional da empresa");
+        }
+        
+        private void btnMovimentacaoEstoque_Click(object sender, EventArgs e)
+        {
+            AtivarBotao(btnMovimentacaoEstoque);
+            try
+            {
+                var movimentacaoService = new Services.Movimentacao.MovimentacaoEstoqueService();
+                var form = new frmMovimentacaoEstoque(movimentacaoService);
+                AbrirModulo(form, "📦🔄", "MOVIMENTAÇÃO DE ESTOQUE", "Controle de entrada e saída de produtos");
+            }
+            catch (Exception ex)
+            {
+                MenuLogger.LogError($"Erro ao abrir Movimentação de Estoque: {ex.Message}", "Navigation", ex);
+                MessageBox.Show($"Erro ao abrir módulo de Movimentação de Estoque: {ex.Message}", "Erro",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         
         private void btnPDV_Click(object sender, EventArgs e)
@@ -333,6 +352,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
             var botoes = new[] {
                 (btnHome, "🏠"),
                 (btnProdutos, "📦"),
+                (btnMovimentacaoEstoque, "📦🔄"),
                 (btnColaboradores, "👥"),
                 (btnFornecedores, "🏭"),
                 (btnCategorias, "🏷️"),
@@ -356,6 +376,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
             var botoes = new[] {
                 (btnHome, "🏠 INÍCIO"),
                 (btnProdutos, "📦 PRODUTOS"),
+                (btnMovimentacaoEstoque, "📦🔄 MOVIMENTAÇÃO"),
                 (btnColaboradores, "👥 COLABORADORES"),
                 (btnFornecedores, "🏭 FORNECEDORES"),
                 (btnCategorias, "🏷️ CATEGORIAS"),
@@ -488,12 +509,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
                         btnProdutos_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F3:
-                        btnColaboradores_Click(this, EventArgs.Empty);
+                        btnMovimentacaoEstoque_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F4:
-                        btnFornecedores_Click(this, EventArgs.Empty);
+                        btnColaboradores_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F5:
+                        btnFornecedores_Click(this, EventArgs.Empty);
+                        return true;
+                    case Keys.F6:
                         btnPDV_Click(this, EventArgs.Empty);
                         return true;
                     case Keys.F9:

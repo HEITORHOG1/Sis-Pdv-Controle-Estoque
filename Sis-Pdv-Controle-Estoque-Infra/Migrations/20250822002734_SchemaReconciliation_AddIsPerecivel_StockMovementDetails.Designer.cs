@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repositories.Base;
 
@@ -11,9 +12,11 @@ using Repositories.Base;
 namespace SisPdvControleEstoqueInfra.Migrations
 {
     [DbContext(typeof(PdvContext))]
-    partial class PdvContextModelSnapshot : ModelSnapshot
+    [Migration("20250822002734_SchemaReconciliation_AddIsPerecivel_StockMovementDetails")]
+    partial class SchemaReconciliation_AddIsPerecivel_StockMovementDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

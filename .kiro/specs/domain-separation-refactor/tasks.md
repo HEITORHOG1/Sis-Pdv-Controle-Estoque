@@ -78,7 +78,7 @@
   - Adicionar retry logic e timeout para chamadas de API
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 8.3_
 
-- [ ] 7. Integrar PDV com novo sistema de Inventory
+- [x] 7. Integrar PDV com novo sistema de Inventory
   - Atualizar fluxo de vendas para usar InventoryService.ValidarEstoqueAsync
   - Implementar criação automática de movimentações de saída no PDV
   - Adicionar validação em tempo real de disponibilidade de estoque

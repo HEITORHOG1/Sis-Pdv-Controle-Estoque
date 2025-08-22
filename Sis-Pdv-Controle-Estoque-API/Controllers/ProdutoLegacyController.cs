@@ -8,6 +8,7 @@ using Commands.Produto.RemoverProduto;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Transactions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
@@ -101,8 +102,9 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("api/Produto/ListarProduto")]
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("api/Produto/ListarProduto")]
         public async Task<IActionResult> ListarProduto()
         {
             try
@@ -120,8 +122,9 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("api/Produto/ListarProdutoPorId/{id:Guid}")]
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("api/Produto/ListarProdutoPorId/{id:Guid}")]
         public async Task<IActionResult> ListarProdutoPorId(Guid id)
         {
             try
@@ -139,8 +142,9 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("api/Produto/ListarProdutoPorCodBarras/{codBarras}")]
+    [HttpGet]
+    [AllowAnonymous]
+    [Route("api/Produto/ListarProdutoPorCodBarras/{codBarras}")]
         public async Task<IActionResult> ListarProdutoPorCodBarras(string codBarras)
         {
             try

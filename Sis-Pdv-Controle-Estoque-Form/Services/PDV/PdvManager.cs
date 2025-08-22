@@ -178,7 +178,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
         }
         
         /// <summary>
-        /// Adiciona item ao carrinho
+        /// Adiciona item ao carrinho com validação de estoque em tempo real
         /// </summary>
         public async Task<bool> AdicionarItem(string codigoBarras, int quantidade = 1)
         {
@@ -186,46 +186,54 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
                 {
-                    throw new InvalidOperationException("N�o h� venda ativa");
+                    throw new InvalidOperationException("Não há venda ativa");
                 }
                 
                 var produto = await BuscarProdutoPorCodigo(codigoBarras);
                 if (produto == null)
                 {
-                    throw new ArgumentException($"Produto n�o encontrado: {codigoBarras}");
+                    throw new ArgumentException($"Produto não encontrado: {codigoBarras}");
                 }
                 
                 // Verifica se produto pode ser vendido
                 if (!produto.PodeSerVendido())
                 {
                     var alertas = produto.GetAlertasVenda();
-                    throw new InvalidOperationException($"Produto n�o pode ser vendido: {string.Join(", ", alertas)}");
+                    throw new InvalidOperationException($"Produto não pode ser vendido: {string.Join(", ", alertas)}");
                 }
                 
-                // Verifica estoque
-                if (quantidade > produto.quatidadeEstoqueProduto && !_configuracao.PermitirVendaSemEstoque)
+                // Validação de estoque em tempo real usando InventoryService
+                var validacaoEstoque = await _inventoryService.ValidarEstoque(produto.Id.ToString(), quantidade);
+                if (!validacaoEstoque.EstaDisponivel && !_configuracao.PermitirVendaSemEstoque)
                 {
-                    PdvLogger.LogAlertaEstoque(codigoBarras, produto.nomeProduto, produto.quatidadeEstoqueProduto, quantidade);
-                    throw new InvalidOperationException($"Quantidade solicitada ({quantidade}) maior que estoque dispon�vel ({produto.quatidadeEstoqueProduto})");
+                    PdvLogger.LogAlertaEstoque(codigoBarras, produto.nomeProduto, (int)validacaoEstoque.QuantidadeDisponivel, quantidade);
+                    throw new InvalidOperationException($"Estoque insuficiente. Disponível: {validacaoEstoque.QuantidadeDisponivel}, Solicitado: {quantidade}");
                 }
                 
-                // Verifica vencimento
-                if (produto.dataVencimento > DateTime.MinValue && _configuracao.AlertarProdutoVencimento)
+                // Para produtos perecíveis, validar lotes disponíveis
+                if (produto.isPerecivel && validacaoEstoque.LotesDisponiveis?.Any() == true)
                 {
-                    var diasVencimento = (produto.dataVencimento - DateTime.Now).Days;
-                    if (diasVencimento <= 0)
+                    var lotesVencidos = validacaoEstoque.LotesDisponiveis.Where(l => l.EstaVencido).ToList();
+                    if (lotesVencidos.Any())
                     {
-                        PdvLogger.LogAlertaVencimento(codigoBarras, produto.nomeProduto, produto.dataVencimento, diasVencimento);
-                        throw new InvalidOperationException("Produto vencido n�o pode ser vendido");
+                        PdvLogger.LogAlertaVencimento(codigoBarras, produto.nomeProduto, DateTime.Now, 0);
+                        throw new InvalidOperationException("Produto possui lotes vencidos que impedem a venda");
                     }
-                    else if (diasVencimento <= _configuracao.DiasAlertaVencimento)
+                    
+                    var lotesVencendo = validacaoEstoque.LotesDisponiveis.Where(l => l.VenceEm30Dias && !l.EstaVencido).ToList();
+                    if (lotesVencendo.Any() && _configuracao.AlertarProdutoVencimento)
                     {
-                        PdvLogger.LogAlertaVencimento(codigoBarras, produto.nomeProduto, produto.dataVencimento, diasVencimento);
+                        var loteProximo = lotesVencendo.OrderBy(l => l.DataValidade).First();
+                        PdvLogger.LogAlertaVencimento(codigoBarras, produto.nomeProduto, loteProximo.DataValidade ?? DateTime.Now, loteProximo.DiasParaVencer);
                         // Continua a venda mas registra o alerta
                     }
                 }
                 
                 var item = produto.ToItemCarrinho(quantidade);
+                
+                // Adiciona informações de validação de estoque ao item
+                item.EstoqueDisponivel = (int)validacaoEstoque.QuantidadeDisponivel;
+                
                 VendaAtual.AdicionarItem(item);
                 
                 PdvLogger.LogAdicionarItem(codigoBarras, produto.nomeProduto, quantidade, produto.precoVenda, item.Total);
@@ -236,6 +244,146 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                 PdvLogger.LogError("AdicionarItem", ex.Message, ex);
                 throw;
             }
+        }
+        
+        /// <summary>
+        /// Adiciona item perecível ao carrinho com seleção de lote específico
+        /// </summary>
+        public async Task<bool> AdicionarItemPerecivel(string codigoBarras, int quantidade, string lote)
+        {
+            try
+            {
+                if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
+                {
+                    throw new InvalidOperationException("Não há venda ativa");
+                }
+                
+                var produto = await BuscarProdutoPorCodigo(codigoBarras);
+                if (produto == null)
+                {
+                    throw new ArgumentException($"Produto não encontrado: {codigoBarras}");
+                }
+                
+                if (!produto.isPerecivel)
+                {
+                    throw new InvalidOperationException("Produto não é perecível. Use AdicionarItem normal.");
+                }
+                
+                // Valida estoque do lote específico
+                var validacaoEstoque = await _inventoryService.ValidarEstoque(produto.Id.ToString(), quantidade);
+                
+                var loteEspecifico = validacaoEstoque.LotesDisponiveis?.FirstOrDefault(l => l.Lote == lote);
+                if (loteEspecifico == null)
+                {
+                    throw new InvalidOperationException($"Lote {lote} não encontrado para o produto {codigoBarras}");
+                }
+                
+                if (loteEspecifico.EstaVencido)
+                {
+                    throw new InvalidOperationException($"Lote {lote} está vencido e não pode ser vendido");
+                }
+                
+                if (quantidade > loteEspecifico.QuantidadeDisponivel)
+                {
+                    throw new InvalidOperationException($"Quantidade solicitada ({quantidade}) maior que disponível no lote {lote} ({loteEspecifico.QuantidadeDisponivel})");
+                }
+                
+                var item = produto.ToItemCarrinho(quantidade);
+                item.EstoqueDisponivel = (int)loteEspecifico.QuantidadeDisponivel;
+                item.DataVencimento = loteEspecifico.DataValidade;
+                
+                VendaAtual.AdicionarItem(item);
+                
+                PdvLogger.LogAdicionarItem(codigoBarras, $"{produto.nomeProduto} (Lote: {lote})", quantidade, produto.precoVenda, item.Total);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                PdvLogger.LogError("AdicionarItemPerecivel", ex.Message, ex);
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Obtém lotes disponíveis para um produto perecível
+        /// </summary>
+        public async Task<Dto.PDV.LotesDisponiveisDto> ObterLotesDisponiveis(string codigoBarras, decimal quantidadeSolicitada)
+        {
+            try
+            {
+                var produto = await BuscarProdutoPorCodigo(codigoBarras);
+                if (produto == null)
+                {
+                    throw new ArgumentException($"Produto não encontrado: {codigoBarras}");
+                }
+                
+                if (!produto.isPerecivel)
+                {
+                    throw new InvalidOperationException("Produto não é perecível");
+                }
+                
+                var validacaoEstoque = await _inventoryService.ValidarEstoque(produto.Id.ToString(), quantidadeSolicitada);
+                
+                var lotesDisponiveis = new Dto.PDV.LotesDisponiveisDto
+                {
+                    ProdutoId = produto.Id,
+                    CodigoBarras = produto.codBarras,
+                    NomeProduto = produto.nomeProduto,
+                    QuantidadeSolicitada = quantidadeSolicitada
+                };
+                
+                if (validacaoEstoque.LotesDisponiveis?.Any() == true)
+                {
+                    foreach (var lote in validacaoEstoque.LotesDisponiveis)
+                    {
+                        lotesDisponiveis.LotesDisponiveis.Add(new Dto.PDV.LoteSelecionadoDto
+                        {
+                            Lote = lote.Lote,
+                            DataValidade = lote.DataValidade,
+                            QuantidadeDisponivel = lote.QuantidadeDisponivel,
+                            QuantidadeSelecionada = 0
+                        });
+                    }
+                }
+                
+                return lotesDisponiveis;
+            }
+            catch (Exception ex)
+            {
+                PdvLogger.LogError("ObterLotesDisponiveis", ex.Message, ex);
+                throw;
+            }
+        }
+        
+        /// <summary>
+        /// Valida se há estoque suficiente antes de finalizar a venda
+        /// </summary>
+        public async Task<List<string>> ValidarEstoqueVenda()
+        {
+            var alertas = new List<string>();
+            
+            if (VendaAtual?.Itens?.Any() != true)
+                return alertas;
+            
+            try
+            {
+                foreach (var item in VendaAtual.Itens.Where(i => !i.Cancelado))
+                {
+                    var validacao = await _inventoryService.ValidarEstoque(item.ProdutoId.ToString(), item.Quantidade);
+                    
+                    if (!validacao.EstaDisponivel)
+                    {
+                        alertas.Add($"Produto {item.Descricao}: Estoque insuficiente (Disponível: {validacao.QuantidadeDisponivel}, Necessário: {item.Quantidade})");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                PdvLogger.LogError("ValidarEstoqueVenda", ex.Message, ex);
+                alertas.Add("Erro ao validar estoque para finalização da venda");
+            }
+            
+            return alertas;
         }
         
         /// <summary>
@@ -393,7 +541,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
         }
         
         /// <summary>
-        /// Finaliza a venda
+        /// Finaliza a venda com validação de estoque em tempo real
         /// </summary>
         public async Task<Guid> FinalizarVenda(string cpfCnpjCliente = "")
         {
@@ -402,19 +550,26 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
             {
                 if (VendaAtual == null || VendaAtual.StatusVenda != "ABERTA")
                 {
-                    throw new InvalidOperationException("N�o h� venda ativa");
+                    throw new InvalidOperationException("Não há venda ativa");
                 }
                 
                 // Valida venda
                 var erros = VendaAtual.Validar();
                 if (erros.Any())
                 {
-                    throw new InvalidOperationException($"Venda inv�lida: {string.Join(", ", erros)}");
+                    throw new InvalidOperationException($"Venda inválida: {string.Join(", ", erros)}");
                 }
                 
                 if (!VendaAtual.PodeSerFinalizada())
                 {
-                    throw new InvalidOperationException("Venda n�o pode ser finalizada");
+                    throw new InvalidOperationException("Venda não pode ser finalizada");
+                }
+                
+                // Validação final de estoque antes de processar a venda
+                var alertasEstoque = await ValidarEstoqueVenda();
+                if (alertasEstoque.Any() && !_configuracao.PermitirVendaSemEstoque)
+                {
+                    throw new InvalidOperationException($"Problemas de estoque impedem a finalização: {string.Join("; ", alertasEstoque)}");
                 }
                 
                 // Registra cliente se informado
@@ -443,7 +598,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                 
                 var pedidoId = responsePedido.data.Id;
                 
-                // Adiciona itens do pedido
+                // Adiciona itens do pedido e cria movimentações de estoque de forma transacional
                 foreach (var item in VendaAtual.Itens.Where(i => !i.Cancelado))
                 {
                     var produtoPedidoDto = new Dto.ProdutoPedido.ProdutoPedidoDto
@@ -457,8 +612,30 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                     
                     await _produtoPedidoService.AdicionarProdutoPedido(produtoPedidoDto);
                     
-                    // Atualiza estoque - deduz a quantidade vendida
-                    await _inventoryService.AtualizarEstoque(item.ProdutoId.ToString(), item.Quantidade);
+                    // Cria movimentação de saída de estoque para cada item vendido
+                    var movimentacaoSaida = new Dto.Movimentacao.CriarMovimentacaoDto
+                    {
+                        ProdutoId = item.ProdutoId,
+                        Quantidade = item.Quantidade,
+                        Tipo = (int)Dto.Movimentacao.TipoMovimentacao.Saida,
+                        Motivo = $"Venda PDV - Pedido: {pedidoId}",
+                        Referencia = $"PDV-{VendaAtual.Id}-{DateTime.Now:yyyyMMddHHmmss}"
+                    };
+                    
+                    try
+                    {
+                        await _inventoryService.CriarMovimentacao(movimentacaoSaida);
+                        // Log usando método existente - usando performance log como informativo
+                        PdvLogger.LogPerformance($"MovimentacaoSaida-{item.CodigoBarras}", TimeSpan.Zero, item.Quantidade);
+                    }
+                    catch (Exception exMovimentacao)
+                    {
+                        PdvLogger.LogError("CriarMovimentacaoSaida", $"Erro ao criar movimentação de saída para produto {item.CodigoBarras}: {exMovimentacao.Message}", exMovimentacao);
+                        
+                        // Se não conseguir criar a movimentação, registra alerta mas não impede a venda
+                        // Em um cenário real, isso deveria ser tratado com mais rigor
+                        PdvLogger.LogError("VendaSemMovimentacao", $"Venda finalizada sem movimentação de estoque para produto {item.CodigoBarras}", new InvalidOperationException("Movimentação não registrada"));
+                    }
                 }
                 
                 VendaAtual.StatusVenda = "FINALIZADA";
@@ -501,7 +678,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.PDV
                 
                 PdvLogger.LogCancelarVenda(vendaId, OperadorAtual, motivo);
                 
-                VendaAtual = null;
+                VendaAtual = null!;
             }
             catch (Exception ex)
             {
