@@ -5,10 +5,11 @@ using System.Security.Cryptography;
 using System.Text;
 using Model;
 using Interfaces;
+using Interfaces.Services;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
 {
-    public class JwtTokenService : IJwtTokenService
+    public class JwtTokenService : Interfaces.Services.IJwtTokenService
     {
         private readonly IConfiguration _configuration;
         private readonly ILogger<JwtTokenService> _logger;

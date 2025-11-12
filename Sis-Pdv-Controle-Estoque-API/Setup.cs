@@ -131,8 +131,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddHttpContextAccessor();
             
             // Authentication services
-            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IJwtTokenService, Sis_Pdv_Controle_Estoque_API.Services.Auth.JwtTokenService>();
-            services.AddScoped<Interfaces.Services.IJwtTokenService>(provider => provider.GetRequiredService<Sis_Pdv_Controle_Estoque_API.Services.Auth.IJwtTokenService>());
+            services.AddScoped<Interfaces.Services.IJwtTokenService, Sis_Pdv_Controle_Estoque_API.Services.Auth.JwtTokenService>();
             
             // Inventory services
             services.AddScoped<IStockValidationService, StockValidationService>();

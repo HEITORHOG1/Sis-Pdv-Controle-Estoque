@@ -1,4 +1,5 @@
 using Model;
+using System.Security.Claims;
 
 namespace Interfaces.Services
 {
@@ -8,5 +9,8 @@ namespace Interfaces.Services
         string GenerateRefreshToken();
         bool ValidateToken(string token);
         Task<Usuario?> GetUserFromTokenAsync(string token);
+        string GenerateAccessToken(IEnumerable<Claim> claims);
+        ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+        DateTime GetTokenExpiration(string token);
     }
 }

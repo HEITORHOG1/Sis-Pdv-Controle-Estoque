@@ -309,14 +309,12 @@ namespace Repositories.Base
         public async Task<TEntidade> AddAsync(TEntidade entity, CancellationToken cancellationToken = default)
         {
             var result = await _context.Set<TEntidade>().AddAsync(entity, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
             return result.Entity;
         }
 
         public async Task<TEntidade> UpdateAsync(TEntidade entity, CancellationToken cancellationToken = default)
         {
             _context.Set<TEntidade>().Update(entity);
-            await _context.SaveChangesAsync(cancellationToken);
             return entity;
         }
 

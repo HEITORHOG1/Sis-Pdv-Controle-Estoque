@@ -5,6 +5,7 @@ using Model.Base;
 using Model;
 using System.Text.Json;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace Repositories.Interceptors
 {
@@ -171,10 +172,31 @@ namespace Repositories.Interceptors
 
         private Guid? GetCurrentUserId()
         {
-            // For now, return null - this will be enhanced later when we have proper user context
-            // In a real implementation, this would get the current user from the authentication context
-            // This could be done through a service that provides the current user context
-            return null;
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var httpContextAccessor = scope.ServiceProvider.GetService<IHttpContextAccessor>();
+                
+                if (httpContextAccessor?.HttpContext?.User?.Identity?.IsAuthenticated == true)
+                {
+                    var userIdClaim = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                    ?? httpContextAccessor.HttpContext.User.FindFirst("sub")?.Value
+                                    ?? httpContextAccessor.HttpContext.User.FindFirst("userId")?.Value;
+                    
+                    if (!string.IsNullOrEmpty(userIdClaim) && Guid.TryParse(userIdClaim, out var userId))
+                    {
+                        return userId;
+                    }
+                }
+                
+                return null;
+            }
+            catch
+            {
+                // If we can't get the current user ID, return null
+                // This can happen during migrations or background tasks
+                return null;
+            }
         }
     }
 }

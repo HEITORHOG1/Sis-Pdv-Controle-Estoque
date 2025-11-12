@@ -1,13 +1,14 @@
 using Sis_Pdv_Controle_Estoque_API.Models.Auth;
 using System.Security.Claims;
 using Interfaces;
+using Interfaces.Services;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
 {
     public class AuthenticationService : IAuthenticationService
     {
         private readonly IRepositoryUsuario _userRepository;
-        private readonly IJwtTokenService _jwtTokenService;
+        private readonly Interfaces.Services.IJwtTokenService _jwtTokenService;
         private readonly IPasswordService _passwordService;
         private readonly IPermissionService _permissionService;
         private readonly ILogger<AuthenticationService> _logger;
