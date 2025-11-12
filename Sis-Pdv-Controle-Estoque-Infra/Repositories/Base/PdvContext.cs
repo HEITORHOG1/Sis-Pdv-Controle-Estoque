@@ -50,10 +50,23 @@ namespace Repositories.Base
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 29));
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql(connectionString, serverVersion)
-                    .EnableSensitiveDataLogging()
-                    .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
-                    .AddInterceptors(_auditInterceptor);
+                optionsBuilder.UseMySql(connectionString, serverVersion, mysqlOptions =>
+                {
+                    // Enable automatic retry on transient failures
+                    mysqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 3,
+                        maxRetryDelay: TimeSpan.FromSeconds(5),
+                        errorNumbersToAdd: null);
+                    
+                    // Set command timeout (30 seconds)
+                    mysqlOptions.CommandTimeout(30);
+                    
+                    // Set migrations assembly
+                    mysqlOptions.MigrationsAssembly("Sis-Pdv-Controle-Estoque-Infra");
+                })
+                .EnableSensitiveDataLogging(IsDevelopmentEnvironment()) // Only in development
+                .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()))
+                .AddInterceptors(_auditInterceptor);
             }
         }
 
@@ -86,6 +99,12 @@ namespace Repositories.Base
             modelBuilder.ApplyConfiguration(new MapPaymentItem());
             modelBuilder.ApplyConfiguration(new MapFiscalReceipt());
             modelBuilder.ApplyConfiguration(new MapPaymentAudit());
+        }
+
+        private bool IsDevelopmentEnvironment()
+        {
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            return string.Equals(environment, "Development", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

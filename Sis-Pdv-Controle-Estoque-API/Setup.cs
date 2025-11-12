@@ -143,8 +143,8 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddScoped<AuthSeederService>();
             
             // Backup configuration
-            services.Configure<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupConfiguration>(configuration.GetSection("Backup"));
-            services.Configure<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupScheduleConfiguration>(configuration.GetSection("BackupSchedule"));
+            services.Configure<Sis_Pdv_Controle_Estoque_API.Configuration.BackupOptions>(configuration.GetSection("Backup"));
+            services.Configure<Sis_Pdv_Controle_Estoque_API.Configuration.BackupScheduleConfiguration>(configuration.GetSection("BackupSchedule"));
             
             // Report services
             services.AddScoped<Interfaces.Services.IReportDataService, Sis_Pdv_Controle_Estoque_API.Services.Reports.ReportDataService>();
@@ -156,7 +156,7 @@ namespace Sis_Pdv_Controle_Estoque_API
             services.AddScoped<Sis_Pdv_Controle_Estoque.Interfaces.Services.IBackupService, Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupService>();
             
             // Background services
-            services.AddHostedService<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackgroundBackupService>();
+            services.AddHostedService<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupSchedulerService>();
             
             // Health check services
             services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.IMetricsCollectionService, Sis_Pdv_Controle_Estoque_API.Services.Health.MetricsCollectionService>();

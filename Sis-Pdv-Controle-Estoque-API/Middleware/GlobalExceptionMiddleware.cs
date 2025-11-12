@@ -2,6 +2,8 @@ using Sis_Pdv_Controle_Estoque_API.Exceptions;
 using Sis_Pdv_Controle_Estoque_API.Models;
 using System.Net;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 
 namespace Sis_Pdv_Controle_Estoque_API.Middleware
 {
@@ -83,10 +85,39 @@ namespace Sis_Pdv_Controle_Estoque_API.Middleware
                     businessEx.Message, 
                     correlationId: correlationId),
 
+                DbUpdateConcurrencyException concurrencyEx => ApiResponse.Error(
+                    "The record you attempted to update was modified by another user. Please refresh and try again.",
+                    correlationId: correlationId),
+
+                DbUpdateException dbUpdateEx => ApiResponse.Error(
+                    "A database error occurred while saving your changes. Please try again.",
+                    correlationId: correlationId),
+
+                MySqlException mySqlEx when IsTransientError(mySqlEx) => ApiResponse.Error(
+                    "The database is temporarily unavailable. Please try again in a few moments.",
+                    correlationId: correlationId),
+
+                MySqlException mySqlEx => ApiResponse.Error(
+                    "A database error occurred. Please contact support if the problem persists.",
+                    correlationId: correlationId),
+
                 _ => ApiResponse.Error(
                     "An internal server error occurred. Please contact support if the problem persists.", 
                     correlationId: correlationId)
             };
+        }
+
+        private static bool IsTransientError(MySqlException exception)
+        {
+            // MySQL transient error codes
+            var errorCode = (int)exception.ErrorCode;
+            
+            return errorCode == 1205 || // Lock wait timeout
+                   errorCode == 1213 || // Deadlock found
+                   errorCode == 2002 || // Can't connect to MySQL server
+                   errorCode == 2003 || // Can't connect to MySQL server on host
+                   errorCode == 2006 || // MySQL server has gone away
+                   errorCode == 2013;   // Lost connection to MySQL server during query
         }
 
         private static int GetStatusCode(Exception exception)
@@ -99,6 +130,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Middleware
                 BusinessRuleException => (int)HttpStatusCode.BadRequest,
                 UnauthorizedException => (int)HttpStatusCode.Unauthorized,
                 BusinessException => (int)HttpStatusCode.BadRequest,
+                DbUpdateConcurrencyException => (int)HttpStatusCode.Conflict,
+                DbUpdateException => (int)HttpStatusCode.InternalServerError,
+                MySqlException mySqlEx when IsTransientError(mySqlEx) => (int)HttpStatusCode.ServiceUnavailable,
+                MySqlException => (int)HttpStatusCode.InternalServerError,
                 _ => (int)HttpStatusCode.InternalServerError
             };
         }
