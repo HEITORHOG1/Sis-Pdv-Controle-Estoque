@@ -19,27 +19,30 @@ namespace Commands.Categoria.RemoverCategoria
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
-                return new Commands.Response(this);
+                AddNotification("Request", "Request não pode ser nulo");
+                return new Response(this);
             }
 
-            Model.Categoria categoria = _repositoryCategoria.ObterPorId(request.Id);
+            var categoria = _repositoryCategoria.ObterPorId(request.Id);
 
             if (categoria == null)
             {
-                AddNotification("Request", "");
-                return new Commands.Response(this);
+                AddNotification("Categoria", "CATEGORIA NÃO ENCONTRADA");
+                return new Response(this);
             }
 
+            // Verifica se a categoria já foi deletada
+            if (categoria.IsDeleted)
+            {
+                AddNotification("Categoria", "CATEGORIA JÁ FOI REMOVIDA");
+                return new Response(this);
+            }
+
+            // Realiza o soft delete
             _repositoryCategoria.Remover(categoria);
 
-            var result = new { Id = categoria.Id };
-
-            //Cria objeto de resposta
-            var response = new Commands.Response(this, result);
-
-
-            Console.WriteLine($"Response created with Id: {categoria.Id}");
+            //Criar meu objeto de resposta
+            var response = new Response(this, categoria);
 
             ////Retorna o resultado
             return await Task.FromResult(response);

@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  pdv-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    container_name: pdv-api-dev
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DB_SERVER=mysql-dev
+      - DB_NAME=PDV_DEV
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - RABBITMQ_HOST=rabbitmq-dev
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASSWORD=guest
+      - JWT_SECRET=PDV-Development-Secret-Key-For-JWT-Token-Generation-2024
+    volumes:
+      - .:/src
+      - pdv-logs-dev:/app/logs
+      - pdv-backups-dev:/app/backups
+    depends_on:
+      mysql-dev:
+        condition: service_healthy
+      rabbitmq-dev:
+        condition: service_healthy
+    networks:
+      - pdv-dev-network
+    restart: unless-stopped
+
+  mysql-dev:
+    image: mysql:8.0
+    container_name: pdv-mysql-dev
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=PDV_DEV
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-dev-data:/var/lib/mysql
+    networks:
+      - pdv-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  rabbitmq-dev:
+    image: rabbitmq:3.12-management
+    container_name: pdv-rabbitmq-dev
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5674:5672"
+      - "15674:15672"
+    volumes:
+      - rabbitmq-dev-data:/var/lib/rabbitmq
+    networks:
+      - pdv-dev-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mysql-dev-data:
+    driver: local
+  rabbitmq-dev-data:
+    driver: local
+  pdv-logs-dev:
+    driver: local
+  pdv-backups-dev:
+    driver: local
+
+networks:
+  pdv-dev-network:
+    driver: bridge

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sis-Pdv-Controle-Estoque-In
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sis-Pdv-Controle-Estoque-API", "Sis-Pdv-Controle-Estoque-API\Sis-Pdv-Controle-Estoque-API.csproj", "{D5C94FCE-3FA5-4C3F-AB9A-3E46E145FA7A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBus", "ClassLibrary1\MessageBus.csproj", "{D8F91911-06C6-485F-A43D-F24D5DAAC50B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBus", "MessageBus\MessageBus.csproj", "{D8F91911-06C6-485F-A43D-F24D5DAAC50B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sis-Pdv-Controle-Estoque-Form", "Sis-Pdv-Controle-Estoque-Form\Sis-Pdv-Controle-Estoque-Form.csproj", "{C60EA593-FBB4-4B87-947D-6253A1DD204A}"
 EndProject

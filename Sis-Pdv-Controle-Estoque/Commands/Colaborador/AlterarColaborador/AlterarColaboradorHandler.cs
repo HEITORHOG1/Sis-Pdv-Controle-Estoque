@@ -55,7 +55,7 @@ namespace Commands.Colaborador.AlterarColaborador
                     Id = request.Usuario.Id,
                     Login = request.Usuario.Login,
                     Senha = request.Usuario.Senha,
-                    statusAtivo = request.Usuario.statusAtivo
+                    StatusAtivo = request.Usuario.StatusAtivo
                 }
             };
             Colaborador.AlterarColaborador(request.Id,

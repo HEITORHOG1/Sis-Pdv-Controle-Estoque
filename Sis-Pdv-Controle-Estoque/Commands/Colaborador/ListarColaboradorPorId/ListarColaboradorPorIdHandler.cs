@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Interfaces;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Colaborador.ListarColaboradorPorId

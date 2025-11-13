@@ -19,18 +19,17 @@ namespace Commands.Fornecedor.ListarFornecedor
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "Request não pode ser nulo");
                 return new Commands.Response(this);
             }
 
-            var grupoCollection = _repositoryFornecedor.Listar().ToList();
-
+            var grupoCollection = await _repositoryFornecedor.ListarAsync();
 
             //Cria objeto de resposta
             var response = new Commands.Response(this, grupoCollection);
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }

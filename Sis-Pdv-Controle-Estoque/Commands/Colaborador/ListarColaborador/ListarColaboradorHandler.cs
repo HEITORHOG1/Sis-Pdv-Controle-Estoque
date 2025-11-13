@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Interfaces;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using prmToolkit.NotificationPattern;
 

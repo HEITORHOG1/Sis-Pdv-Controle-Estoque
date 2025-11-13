@@ -7,9 +7,12 @@ using Commands.Departamento.RemoverDepartamento;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Transactions;
+using Asp.Versioning;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
+    [ApiController]
+    [ApiVersion("1.0")]
     public class DepartamentoController : Base.ControllerBase
     {
         private readonly IMediator _mediator;

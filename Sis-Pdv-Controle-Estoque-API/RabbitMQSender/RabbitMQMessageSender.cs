@@ -2,6 +2,8 @@
 using Model;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using System.Text;
 using System.Text.Json;
 
@@ -14,11 +16,13 @@ namespace Sis_Pdv_Controle_Estoque_API.RabbitMQSender
         private readonly string? _userName;
         private readonly ILogger<RabbitMQMessageSender>? _logger;
 
-        public RabbitMQMessageSender(ILogger<RabbitMQMessageSender> logger)
+        public RabbitMQMessageSender(IOptions<RabbitMQSettings> options,
+            ILogger<RabbitMQMessageSender> logger)
         {
-            _hostName = "localhost";
-            _password = "guest";
-            _userName = "guest";
+            var settings = options.Value;
+            _hostName = settings.HostName;
+            _password = settings.Password;
+            _userName = settings.UserName;
             _logger = logger;
         }
 
@@ -28,7 +32,8 @@ namespace Sis_Pdv_Controle_Estoque_API.RabbitMQSender
             _password = "guest";
             _userName = "guest";
         }
-        public async void SendMessage(BaseMessage message, string queueName)
+
+        public async Task SendMessageAsync(BaseMessage message, string queueName)
         {
             try
             {

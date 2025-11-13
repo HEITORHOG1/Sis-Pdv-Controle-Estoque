@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  pdv-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pdv-api-staging
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - DB_SERVER=mysql-staging
+      - DB_NAME=PDV_STAGING
+      - DB_USER=pdvuser
+      - DB_PASSWORD=${DB_PASSWORD}
+      - RABBITMQ_HOST=rabbitmq-staging
+      - RABBITMQ_USER=pdvuser
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - PDV_ENCRYPTION_KEY=${PDV_ENCRYPTION_KEY}
+    volumes:
+      - pdv-logs-staging:/app/logs
+      - pdv-backups-staging:/app/backups
+    depends_on:
+      mysql-staging:
+        condition: service_healthy
+      rabbitmq-staging:
+        condition: service_healthy
+    networks:
+      - pdv-staging-network
+    restart: unless-stopped
+
+  mysql-staging:
+    image: mysql:8.0
+    container_name: pdv-mysql-staging
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=PDV_STAGING
+      - MYSQL_USER=pdvuser
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-staging-data:/var/lib/mysql
+    networks:
+      - pdv-staging-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  rabbitmq-staging:
+    image: rabbitmq:3.12-management
+    container_name: pdv-rabbitmq-staging
+    environment:
+      - RABBITMQ_DEFAULT_USER=pdvuser
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    volumes:
+      - rabbitmq-staging-data:/var/lib/rabbitmq
+    networks:
+      - pdv-staging-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mysql-staging-data:
+    driver: local
+  rabbitmq-staging-data:
+    driver: local
+  pdv-logs-staging:
+    driver: local
+  pdv-backups-staging:
+    driver: local
+
+networks:
+  pdv-staging-network:
+    driver: bridge

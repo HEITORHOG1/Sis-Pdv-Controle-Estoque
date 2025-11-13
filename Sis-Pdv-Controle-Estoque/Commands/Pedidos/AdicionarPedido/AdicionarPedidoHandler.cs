@@ -16,22 +16,7 @@ namespace Commands.Pedidos.AdicionarPedido
 
         public async Task<Response> Handle(AdicionarPedidoRequest request, CancellationToken cancellationToken)
         {
-            // Instancia o validador
-            var validator = new AdicionarPedidoRequestValidator();
-
-            // Valida a requisição
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-            // Se não passou na validação, adiciona as falhas como notificações
-            if (!validationResult.IsValid)
-            {
-                foreach (var error in validationResult.Errors)
-                {
-                    AddNotification(error.PropertyName, error.ErrorMessage);
-                }
-
-                return new Response(this);
-            }
+            // Validation is now handled by the ValidationBehavior pipeline
 
             Model.Pedido Pedido = new(
                                         request.ColaboradorId,

@@ -1,313 +1,727 @@
 ﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Services.Fornecedor;
-using System.Net;
+using Sis_Pdv_Controle_Estoque_Form.Extensions;
+using Sis_Pdv_Controle_Estoque_Form.Utils;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
 {
     public partial class CadFornecedor : Form
     {
-        FornecedorService fornecedorService;
-        string _ativo;
+        private FornecedorService fornecedorService;
+        private BindingList<FornecedorDto> fornecedoresList;
+        private bool isLoading = false;
+
         public CadFornecedor()
         {
             InitializeComponent();
+            fornecedorService = new FornecedorService();
+            fornecedoresList = new BindingList<FornecedorDto>();
+            
+            FornecedorLogger.LogInfo("Formulário de cadastro de fornecedor inicializado", "FormLoad");
         }
 
-        private async void btnLocalizar_Click(object sender, EventArgs e)
-        {
-            await BuscarCep();
-        }
-        private async void btnAdicionar_Click(object sender, EventArgs e)
-        {
-            await CadastrarFornecedor();
-            await Consultar();
-        }
-        private async void btnAlterar_Click(object sender, EventArgs e)
-        {
-            await AlterarFornecedor();
-            await LimpaCampos();
-            btnAdicionar.Enabled = true;
-        }
-        private async void btnConsulta_Click(object sender, EventArgs e)
-        {
-            await ConsultarPorCnpj(mskTxbCnpj.Text);
-        }
-        private async void txbInscricaoEstadual_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if ((Char.IsLetter(e.KeyChar)))
-                e.Handled = true;
-        }
-        private async void txbCep_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if ((Char.IsLetter(e.KeyChar)))
-                e.Handled = true;
-        }
-        private async void dgvFornecedor_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            string _temp;
-            //"Id",
-            //"Insc. Estadual" ,
-            //"Nome",
-            //"Estado",
-            //"Numero",
-            //"Complemnto" ,
-            //"Bairro",
-            //"Cidade",
-            //"CEP",
-            //"Ativo",
-            //"CNPJ",
-            //"Rua"
-
-
-            txbId.Text = this.dgvFornecedor.CurrentRow.Cells[0].Value.ToString();
-            txbInscricaoEstadual.Text = this.dgvFornecedor.CurrentRow.Cells[1].Value.ToString();
-            txbNomeFantasia.Text = this.dgvFornecedor.CurrentRow.Cells[2].Value.ToString();
-            txbEstado.Text = this.dgvFornecedor.CurrentRow.Cells[3].Value.ToString();
-            txbNumero.Text = this.dgvFornecedor.CurrentRow.Cells[4].Value.ToString();
-            txbComplemento.Text = this.dgvFornecedor.CurrentRow.Cells[5].Value.ToString();
-            txbBairro.Text = this.dgvFornecedor.CurrentRow.Cells[6].Value.ToString();
-            txbCidade.Text = this.dgvFornecedor.CurrentRow.Cells[7].Value.ToString();
-            txbCep.Text = this.dgvFornecedor.CurrentRow.Cells[8].Value.ToString();
-            _temp = this.dgvFornecedor.CurrentRow.Cells[9].Value.ToString();
-            int _temp2 = int.Parse(_temp);
-            if (_temp2 == 1)
-                rbFornecedorAtivo.Checked = true;
-            else
-                rbFornecedorInativo.Checked = true;
-            mskTxbCnpj.Text = this.dgvFornecedor.CurrentRow.Cells[10].Value.ToString();
-            txbRua.Text = this.dgvFornecedor.CurrentRow.Cells[11].Value.ToString();
-            btnAdicionar.Enabled = false;
-        }
         private async void CadFornecedor_Load(object sender, EventArgs e)
         {
+            FornecedorLogger.LogOperation("CarregamentoFormulario");
             await Consultar();
+        }
 
-        }
-        private async Task AtribuirValorRb()
+        private async void btnAdicionar_Click(object sender, EventArgs e)
         {
-            if (rbFornecedorAtivo.Checked == true)
-            {
-                _ativo = "1";
-            }
-            else
-            {
-                _ativo = "0";
-            }
+            if (isLoading) return;
+            await CadastrarFornecedor();
         }
-        private async Task DefinirCabecalhos(List<String> ListaCabecalhos)
-        {
-            int _index = 0;
 
-            foreach (DataGridViewColumn coluna in dgvFornecedor.Columns)
-            {
-                if (coluna.Visible)
-                {
-                    coluna.HeaderText = ListaCabecalhos[_index];
-                    _index++;
-                }
-            }
-        }
-        private async Task BuscarCep()
+        private async void btnAlterar_Click(object sender, EventArgs e)
         {
+            if (isLoading) return;
+            await AlterarFornecedor();
+        }
+
+        private async void btnConsulta_Click(object sender, EventArgs e)
+        {
+            if (isLoading) return;
+
             try
             {
-                string temp = "";
-                temp = txbCep.Text.Replace(".", "").Replace("-", "");
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://viacep.com.br/ws/" + temp + "/json/");
-                request.AllowAutoRedirect = false;
-                HttpWebResponse ChecaServidor = (HttpWebResponse)request.GetResponse();
-                if (ChecaServidor.StatusCode != HttpStatusCode.OK)
+                var pesquisa = mskTxbCnpj.Text?.Trim();
+                
+                if (!string.IsNullOrEmpty(pesquisa))
                 {
-                    MessageBox.Show("Servidor indisponível");
-                    return; // Sai da rotina
+                    await ConsultarPorCnpj(pesquisa);
                 }
-                using (Stream webStream = ChecaServidor.GetResponseStream())
+                else
                 {
-                    if (webStream != null)
-                    {
-                        using (StreamReader responseReader = new StreamReader(webStream))
-                        {
-                            string response = responseReader.ReadToEnd();
-                            response = Regex.Replace(response, "[{},]", string.Empty);
-                            response = response.Replace("\"", "");
-
-                            String[] substrings = response.Split('\n');
-
-                            int cont = 0;
-                            foreach (var substring in substrings)
-                            {
-                                if (cont == 1)
-                                {
-                                    string[] valor = substring.Split(":".ToCharArray());
-                                    if (valor[0] == "  erro")
-                                    {
-                                        MessageBox.Show("CEP não encontrado");
-                                        txbCep.Focus();
-                                        return;
-                                    }
-                                }
-
-                                //Logradouro
-                                if (cont == 2)
-                                {
-                                    string[] valor = substring.Split(":".ToCharArray());
-                                    txbRua.Text = valor[1];
-                                }
-
-                                //Complemento
-                                if (cont == 3)
-                                {
-                                    string[] valor = substring.Split(":".ToCharArray());
-                                    txbComplemento.Text = valor[1];
-                                }
-
-                                //Bairro
-                                if (cont == 4)
-                                {
-                                    string[] valor = substring.Split(":".ToCharArray());
-                                    txbBairro.Text = valor[1];
-                                }
-
-                                //Localidade (Cidade)
-                                if (cont == 5)
-                                {
-                                    string[] valor = substring.Split(":".ToCharArray());
-                                    txbCidade.Text = valor[1];
-                                }
-
-                                //Estado (UF)
-                                if (cont == 6)
-                                {
-                                    string[] valor = substring.Split(":".ToCharArray());
-                                    txbEstado.Text = valor[1];
-                                }
-
-                                cont++;
-                            }
-                        }
-                    }
-
+                    await Consultar();
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                FornecedorLogger.LogError("Erro ao consultar fornecedores", "Consulta", ex);
+                MessageBox.Show($"Erro ao consultar fornecedores: {ex.Message}", "Erro", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private async Task ConsultarPorCnpj(string cnpj)
+
+        private async void btnLocalizar_Click(object sender, EventArgs e)
         {
-            fornecedorService = new FornecedorService();
-            if (txbNomeFantasia.Text != "")
+            if (isLoading) return;
+            await BuscarCep();
+        }
+
+        private async void dgvFornecedor_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.RowIndex < fornecedoresList.Count)
             {
-                dgvFornecedor.DataSource = await fornecedorService.ListarFornecedorPorNomeFornecedor(cnpj);
-                await DefinirCabecalhos(new List<string>() { "Id", "Insc. Estadual", "Nome", "Estado", "Numero", "Complemnto", "Bairro", "Cidade", "CEP", "CNPJ", "Rua" });
+                var fornecedor = fornecedoresList[e.RowIndex];
+                PreencherCamposEdicao(fornecedor);
+                
+                FornecedorLogger.LogOperation("FornecedorSelecionado", fornecedor.Id, fornecedor.nomeFantasia);
             }
-            //else
-            //{
-            //    if (ckbInativo.Checked)
-            //    {
-            //        dgvFornecedor.DataSource = controllerFornecedor.ListarTodosFornecedores();
-            //        DefinirCabecalhos(new List<string>() { "Id", "CNPJ", "Nome", "Insc. Estadual", "CEP", "Rua", "Estado", "Numero", "Complemnto", "Bairro", "Cidade", "Ativo" });
-
-
-            //    }
-            //    else
-            //    {
-            //        Listar();
-            //    }
-            //}
         }
-        private async Task Consultar()
-        {
-            fornecedorService = new FornecedorService();
-            var request = await fornecedorService.ListarFornecedor();
 
-            dgvFornecedor.DataSource = request.data;
-            await DefinirCabecalhos(new List<string>() { "Id", "Insc. Estadual", "Nome", "Estado", "Numero", "Complemnto", "Bairro", "Cidade", "CEP", "Ativo", "CNPJ", "Rua" });
-        }
         private async Task CadastrarFornecedor()
         {
-            fornecedorService = new FornecedorService();
-            FornecedorDto dto = new FornecedorDto()
+            var sw = Stopwatch.StartNew();
+            try
             {
-                inscricaoEstadual = txbInscricaoEstadual.Text,
-                nomeFantasia = txbNomeFantasia.Text,
-                Uf = txbEstado.Text,
-                Numero = txbNumero.Text,
-                Complemento = txbComplemento.Text,
-                Bairro = txbBairro.Text,
-                Cidade = txbCidade.Text,
-                cepFornecedor = Convert.ToInt32(txbCep.Text),
-                statusAtivo = 1,
-                Cnpj = mskTxbCnpj.Text,
-                Rua = txbRua.Text
-            };
+                if (!ValidarCamposCadastro()) return;
 
-            var response = await fornecedorService.AdicionarFornecedor(dto);
+                isLoading = true;
+                SetLoadingState(true);
 
-            if (response.success == true)
-            {
-                await LimpaCampos();
-                MessageBox.Show(String.Format($"Fornecedor {response.data.nomeFantasia} Inserido com sucesso"));
+                var dto = new FornecedorDto()
+                {
+                    nomeFantasia = txbNomeFantasia.Text.Trim(),
+                    Cnpj = mskTxbCnpj.Text.Trim(),
+                    inscricaoEstadual = txbInscricaoEstadual.Text.Trim(),
+                    cepFornecedor = int.Parse(txbCep.Text.Replace("-", "").Replace(".", "")),
+                    Rua = txbRua.Text.Trim(),
+                    Numero = txbNumero.Text.Trim(),
+                    Complemento = txbComplemento.Text.Trim(),
+                    Bairro = txbBairro.Text.Trim(),
+                    Cidade = txbCidade.Text.Trim(),
+                    Uf = txbEstado.Text.Trim(),
+                    statusAtivo = rbFornecedorAtivo.Checked ? 1 : 0
+                };
+
+                // Normaliza os dados
+                dto.NormalizarDados();
+
+                // Valida o DTO
+                var errosValidacao = dto.Validar();
+                if (errosValidacao.Any())
+                {
+                    var mensagem = $"Erros de validação:\n• {string.Join("\n• ", errosValidacao)}";
+                    FornecedorLogger.LogValidationError("Fornecedor", mensagem, dto.nomeFantasia);
+                    MessageBox.Show(mensagem, "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                FornecedorLogger.LogOperation("CadastroIniciado", value: dto.nomeFantasia);
+
+                // Verifica se já existe um fornecedor com o mesmo CNPJ
+                if (await FornecedorJaExiste(dto.Cnpj))
+                {
+                    FornecedorLogger.LogWarning($"Tentativa de cadastro de fornecedor duplicado: {dto.Cnpj}", "Cadastro");
+                    MessageBox.Show("Já existe um fornecedor com este CNPJ.", "Fornecedor Duplicado", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var response = await fornecedorService.AdicionarFornecedor(dto);
+
+                sw.Stop();
+                FornecedorLogger.LogApiCall("AdicionarFornecedor", "POST", sw.Elapsed, response.IsValidResponse());
+
+                if (response.IsValidResponse())
+                {
+                    await LimpaCampos();
+                    var mensagem = $"Fornecedor '{response.data.nomeFantasia}' inserido com sucesso!";
+                    
+                    FornecedorLogger.LogOperation("CadastroRealizado", response.data.id, response.data.nomeFantasia);
+                    MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await Consultar();
+                }
+                else
+                {
+                    var erros = response.GetErrorMessages().FormatErrorMessages();
+                    FornecedorLogger.LogError($"Erro no cadastro: {erros}", "Cadastro");
+                    MessageBox.Show($"Erro ao cadastrar fornecedor:\n• {erros}", "Erro", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                var resp = response.notifications.FirstOrDefault();
-
-                MessageBox.Show(resp.ToString());
+                sw.Stop();
+                FornecedorLogger.LogError("Erro inesperado ao cadastrar fornecedor", "Cadastro", ex);
+                MessageBox.Show($"Erro inesperado ao cadastrar fornecedor: {ex.Message}", "Erro", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                isLoading = false;
+                SetLoadingState(false);
             }
         }
+
         private async Task AlterarFornecedor()
         {
-            await AtribuirValorRb();
-            fornecedorService = new FornecedorService();
-            FornecedorDto dto = new FornecedorDto()
+            var sw = Stopwatch.StartNew();
+            try
             {
-                Id = txbId.Text,
-                inscricaoEstadual = txbInscricaoEstadual.Text,
-                nomeFantasia = txbNomeFantasia.Text,
-                Uf = txbEstado.Text,
-                Numero = txbNumero.Text,
-                Complemento = txbComplemento.Text,
-                Bairro = txbBairro.Text,
-                Cidade = txbCidade.Text,
-                cepFornecedor = Convert.ToInt32(txbCep.Text),
-                statusAtivo = Convert.ToInt32(_ativo),
-                Cnpj = mskTxbCnpj.Text,
-                Rua = txbRua.Text
-            };
+                if (!ValidarSelecao("alterar")) return;
+                if (!ValidarCamposCadastro()) return;
 
-            var response = await fornecedorService.AlterarFornecedor(dto);
+                isLoading = true;
+                SetLoadingState(true);
 
-            if (response.success == true)
+                var dto = new FornecedorDto()
+                {
+                    Id = txbId.Text,
+                    nomeFantasia = txbNomeFantasia.Text.Trim(),
+                    Cnpj = mskTxbCnpj.Text.Trim(),
+                    inscricaoEstadual = txbInscricaoEstadual.Text.Trim(),
+                    cepFornecedor = int.Parse(txbCep.Text.Replace("-", "").Replace(".", "")),
+                    Rua = txbRua.Text.Trim(),
+                    Numero = txbNumero.Text.Trim(),
+                    Complemento = txbComplemento.Text.Trim(),
+                    Bairro = txbBairro.Text.Trim(),
+                    Cidade = txbCidade.Text.Trim(),
+                    Uf = txbEstado.Text.Trim(),
+                    statusAtivo = rbFornecedorAtivo.Checked ? 1 : 0
+                };
+
+                // Normaliza os dados
+                dto.NormalizarDados();
+
+                // Valida o DTO
+                var errosValidacao = dto.Validar();
+                if (errosValidacao.Any())
+                {
+                    var mensagem = $"Erros de validação:\n• {string.Join("\n• ", errosValidacao)}";
+                    FornecedorLogger.LogValidationError("Fornecedor", mensagem, dto.nomeFantasia);
+                    MessageBox.Show(mensagem, "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                FornecedorLogger.LogOperation("AlteracaoIniciada", dto.Id, dto.nomeFantasia);
+
+                var response = await fornecedorService.AlterarFornecedor(dto);
+
+                sw.Stop();
+                FornecedorLogger.LogApiCall("AlterarFornecedor", "PUT", sw.Elapsed, response.IsValidResponse());
+
+                if (response.IsValidResponse())
+                {
+                    await LimpaCampos();
+                    var mensagem = $"Fornecedor '{response.data.nomeFantasia}' alterado com sucesso!";
+                    
+                    FornecedorLogger.LogOperation("AlteracaoRealizada", response.data.id, response.data.nomeFantasia);
+                    MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await Consultar();
+                    btnAdicionar.Enabled = true;
+                }
+                else
+                {
+                    var erros = response.GetErrorMessages().FormatErrorMessages();
+                    FornecedorLogger.LogError($"Erro na alteração: {erros}", "Alteracao");
+                    MessageBox.Show($"Erro ao alterar fornecedor:\n• {erros}", "Erro", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
             {
-                await LimpaCampos();
+                sw.Stop();
+                FornecedorLogger.LogError("Erro inesperado ao alterar fornecedor", "Alteracao", ex);
+                MessageBox.Show($"Erro inesperado ao alterar fornecedor: {ex.Message}", "Erro", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                isLoading = false;
+                SetLoadingState(false);
+            }
+        }
+
+        private async Task Consultar()
+        {
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                isLoading = true;
+                SetLoadingState(true);
+
+                FornecedorLogger.LogOperation("ListagemIniciada");
+
+                var response = await fornecedorService.ListarFornecedor();
+                
+                sw.Stop();
+                FornecedorLogger.LogApiCall("ListarFornecedor", "GET", sw.Elapsed, response.IsValidResponse());
+
+                if (response.IsValidResponse())
+                {
+                    fornecedoresList.Clear();
+                    foreach (var forn in response.data)
+                    {
+                        fornecedoresList.Add(forn.ToDto());
+                    }
+
+                    dgvFornecedor.DataSource = null;
+                    dgvFornecedor.DataSource = fornecedoresList;
+                    await DefinirCabecalhos(new List<string>() { 
+                        "Id", "Insc. Estadual", "Nome", "Estado", "Numero", "Complemento", 
+                        "Bairro", "Cidade", "CEP", "Ativo", "CNPJ", "Rua" 
+                    });
+                    
+                    // Oculta a coluna Id
+                    if (dgvFornecedor.Columns["Id"] != null)
+                        dgvFornecedor.Columns["Id"].Visible = false;
+
+                    dgvFornecedor.Refresh();
+                    
+                    FornecedorLogger.LogInfo($"Listagem concluída com {fornecedoresList.Count} fornecedores", "Listagem");
+                }
+                else
+                {
+                    var erros = response.GetErrorMessages().FormatErrorMessages();
+                    FornecedorLogger.LogError($"Erro na listagem: {erros}", "Listagem");
+                    MessageBox.Show($"Erro ao consultar fornecedores:\n• {erros}", "Erro", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                FornecedorLogger.LogError("Erro inesperado ao consultar fornecedores", "Listagem", ex);
+                MessageBox.Show($"Erro inesperado ao consultar fornecedores: {ex.Message}", "Erro", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                isLoading = false;
+                SetLoadingState(false);
+            }
+        }
+
+        private async Task ConsultarPorCnpj(string cnpj)
+        {
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                isLoading = true;
+                SetLoadingState(true);
+
+                FornecedorLogger.LogOperation("PesquisaIniciada", value: cnpj);
+
+                var response = await fornecedorService.ListarFornecedorPorNomeFornecedor(cnpj);
+                
+                sw.Stop();
+                FornecedorLogger.LogApiCall("ListarFornecedorPorCnpj", "GET", sw.Elapsed, response.IsValidResponse());
+
+                if (response.IsValidResponse())
+                {
+                    fornecedoresList.Clear();
+                    foreach (var forn in response.data)
+                    {
+                        fornecedoresList.Add(forn.ToDto());
+                    }
+
+                    dgvFornecedor.DataSource = null;
+                    dgvFornecedor.DataSource = fornecedoresList;
+                    await DefinirCabecalhos(new List<string>() { 
+                        "Id", "Insc. Estadual", "Nome", "Estado", "Numero", "Complemento", 
+                        "Bairro", "Cidade", "CEP", "Ativo", "CNPJ", "Rua" 
+                    });
+
+                    if (dgvFornecedor.Columns["Id"] != null)
+                        dgvFornecedor.Columns["Id"].Visible = false;
+
+                    if (fornecedoresList.Count == 0)
+                    {
+                        FornecedorLogger.LogInfo($"Nenhum fornecedor encontrado para: {cnpj}", "Pesquisa");
+                        MessageBox.Show("Nenhum fornecedor encontrado com o CNPJ especificado.", "Pesquisa", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        FornecedorLogger.LogInfo($"Pesquisa concluída com {fornecedoresList.Count} resultados para: {cnpj}", "Pesquisa");
+                    }
+                }
+                else
+                {
+                    var erros = response.GetErrorMessages().FormatErrorMessages();
+                    FornecedorLogger.LogWarning($"Pesquisa sem resultados: {erros}", "Pesquisa");
+                    MessageBox.Show($"Erro na pesquisa:\n• {erros}", "Pesquisa", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    await Consultar();
+                }
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                FornecedorLogger.LogError("Erro inesperado na pesquisa", "Pesquisa", ex);
+                MessageBox.Show($"Erro inesperado na pesquisa: {ex.Message}", "Erro", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 await Consultar();
-                MessageBox.Show(String.Format($"Fornecedor {response.data.nomeFantasia} Alterado com sucesso"));
+            }
+            finally
+            {
+                isLoading = false;
+                SetLoadingState(false);
+            }
+        }
+
+        private async Task BuscarCep()
+        {
+            var sw = Stopwatch.StartNew();
+            try
+            {
+                string cep = txbCep.Text.Replace(".", "").Replace("-", "").Trim();
+                
+                if (string.IsNullOrEmpty(cep) || cep.Length != 8)
+                {
+                    MessageBox.Show("Informe um CEP válido com 8 dígitos.", "CEP Inválido", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                isLoading = true;
+                SetLoadingState(true);
+
+                FornecedorLogger.LogOperation("ConsultaCepIniciada", value: cep);
+
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.Timeout = TimeSpan.FromSeconds(10);
+                    
+                    var response = await httpClient.GetAsync($"https://viacep.com.br/ws/{cep}/json/");
+                    
+                    sw.Stop();
+                    
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var cepData = JsonSerializer.Deserialize<ViaCepResponse>(content, new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                        if (cepData?.erro == true)
+                        {
+                            FornecedorLogger.LogCepLookup(cep, false, "CEP não encontrado");
+                            MessageBox.Show("CEP não encontrado.", "CEP Inválido", 
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            txbCep.Focus();
+                            return;
+                        }
+
+                        // Preenche os campos com os dados do CEP
+                        txbRua.Text = cepData?.logradouro ?? "";
+                        txbComplemento.Text = cepData?.complemento ?? "";
+                        txbBairro.Text = cepData?.bairro ?? "";
+                        txbCidade.Text = cepData?.localidade ?? "";
+                        txbEstado.Text = cepData?.uf ?? "";
+
+                        FornecedorLogger.LogCepLookup(cep, true, $"{cepData?.localidade}, {cepData?.uf}");
+                        
+                        // Move o foco para o próximo campo
+                        txbNumero.Focus();
+                    }
+                    else
+                    {
+                        FornecedorLogger.LogCepLookup(cep, false, "Servidor indisponível");
+                        MessageBox.Show("Serviço de CEP temporariamente indisponível. Tente novamente.", "Erro", 
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                sw.Stop();
+                FornecedorLogger.LogError($"Erro de rede ao consultar CEP: {ex.Message}", "ConsultaCep");
+                MessageBox.Show("Erro de conexão ao consultar CEP. Verifique sua internet.", "Erro de Conexão", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (TaskCanceledException)
+            {
+                sw.Stop();
+                FornecedorLogger.LogError("Timeout ao consultar CEP", "ConsultaCep");
+                MessageBox.Show("Timeout ao consultar CEP. Tente novamente.", "Timeout", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+                FornecedorLogger.LogError($"Erro inesperado ao consultar CEP: {ex.Message}", "ConsultaCep", ex);
+                MessageBox.Show($"Erro inesperado ao consultar CEP: {ex.Message}", "Erro", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                isLoading = false;
+                SetLoadingState(false);
+            }
+        }
+
+        private bool ValidarCamposCadastro()
+        {
+            // Validação Nome Fantasia
+            if (string.IsNullOrWhiteSpace(txbNomeFantasia.Text))
+            {
+                MessageBox.Show("Informe o nome fantasia do fornecedor.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbNomeFantasia.Focus();
+                return false;
+            }
+
+            // Validação CNPJ
+            if (string.IsNullOrWhiteSpace(mskTxbCnpj.Text) || mskTxbCnpj.Text.Replace(".", "").Replace("/", "").Replace("-", "").Length != 14)
+            {
+                MessageBox.Show("Informe um CNPJ válido.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                mskTxbCnpj.Focus();
+                return false;
+            }
+
+            // Validação Inscrição Estadual - OBRIGATÓRIA conforme validação do backend
+            if (string.IsNullOrWhiteSpace(txbInscricaoEstadual.Text))
+            {
+                MessageBox.Show("Informe a inscrição estadual.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbInscricaoEstadual.Focus();
+                return false;
+            }
+
+            if (txbInscricaoEstadual.Text.Length < 8 || txbInscricaoEstadual.Text.Length > 15)
+            {
+                MessageBox.Show("A inscrição estadual deve ter entre 8 e 15 dígitos.", "Validação", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbInscricaoEstadual.Focus();
+                return false;
+            }
+
+            // Validação CEP
+            if (string.IsNullOrWhiteSpace(txbCep.Text) || txbCep.Text.Replace("-", "").Length != 8)
+            {
+                MessageBox.Show("Informe um CEP válido com 8 dígitos.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbCep.Focus();
+                return false;
+            }
+
+            // Validação Rua
+            if (string.IsNullOrWhiteSpace(txbRua.Text))
+            {
+                MessageBox.Show("Informe o logradouro.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbRua.Focus();
+                return false;
+            }
+
+            // Validação Número - OBRIGATÓRIO conforme validação do backend
+            if (string.IsNullOrWhiteSpace(txbNumero.Text))
+            {
+                MessageBox.Show("Informe o número do endereço.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbNumero.Focus();
+                return false;
+            }
+
+            // Validação Bairro
+            if (string.IsNullOrWhiteSpace(txbBairro.Text))
+            {
+                MessageBox.Show("Informe o bairro.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbBairro.Focus();
+                return false;
+            }
+
+            // Validação Cidade
+            if (string.IsNullOrWhiteSpace(txbCidade.Text))
+            {
+                MessageBox.Show("Informe a cidade.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbCidade.Focus();
+                return false;
+            }
+
+            // Validação UF
+            if (string.IsNullOrWhiteSpace(txbEstado.Text) || txbEstado.Text.Length != 2)
+            {
+                MessageBox.Show("Informe a UF com 2 caracteres.", "Campo Obrigatório", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txbEstado.Focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidarSelecao(string acao)
+        {
+            if (string.IsNullOrEmpty(txbId.Text))
+            {
+                FornecedorLogger.LogWarning($"Tentativa de {acao} sem seleção", "Validacao");
+                MessageBox.Show($"Selecione um fornecedor para {acao}.", "Seleção Necessária", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<bool> FornecedorJaExiste(string cnpj)
+        {
+            try
+            {
+                var response = await fornecedorService.ListarFornecedorPorNomeFornecedor(cnpj);
+                return response.IsValidResponse() && response.data != null && response.data.Any();
+            }
+            catch (Exception ex)
+            {
+                FornecedorLogger.LogWarning($"Erro ao verificar duplicação: {ex.Message}", "VerificacaoDuplicacao");
+                return false;
+            }
+        }
+
+        private void PreencherCamposEdicao(FornecedorDto fornecedor)
+        {
+            txbId.Text = fornecedor.Id;
+            txbNomeFantasia.Text = fornecedor.nomeFantasia;
+            mskTxbCnpj.Text = fornecedor.Cnpj;
+            txbInscricaoEstadual.Text = fornecedor.inscricaoEstadual;
+            txbCep.Text = fornecedor.cepFornecedor.ToString("D8").Insert(5, "-");
+            txbRua.Text = fornecedor.Rua;
+            txbNumero.Text = fornecedor.Numero;
+            txbComplemento.Text = fornecedor.Complemento;
+            txbBairro.Text = fornecedor.Bairro;
+            txbCidade.Text = fornecedor.Cidade;
+            txbEstado.Text = fornecedor.Uf;
+            
+            if (fornecedor.statusAtivo == 1)
+                rbFornecedorAtivo.Checked = true;
+            else
+                rbFornecedorInativo.Checked = true;
+
+            btnAdicionar.Enabled = false;
+        }
+
+        private async Task LimpaCampos()
+        {
+            txbId.Clear();
+            txbNomeFantasia.Clear();
+            mskTxbCnpj.Text = "";
+            txbInscricaoEstadual.Clear();
+            txbCep.Clear();
+            txbRua.Clear();
+            txbNumero.Clear();
+            txbComplemento.Clear();
+            txbBairro.Clear();
+            txbCidade.Clear();
+            txbEstado.Clear();
+            rbFornecedorAtivo.Checked = true;
+            btnAdicionar.Enabled = true;
+        }
+
+        private async Task DefinirCabecalhos(List<string> listaCabecalhos)
+        {
+            int index = 0;
+
+            foreach (DataGridViewColumn coluna in dgvFornecedor.Columns)
+            {
+                if (coluna.Visible && index < listaCabecalhos.Count)
+                {
+                    coluna.HeaderText = listaCabecalhos[index];
+                    index++;
+                }
+            }
+        }
+
+        private void SetLoadingState(bool loading)
+        {
+            btnAdicionar.Enabled = !loading;
+            btnAlterar.Enabled = !loading;
+            btnConsulta.Enabled = !loading;
+            btnLocalizar.Enabled = !loading;
+            dgvFornecedor.Enabled = !loading;
+
+            // Desabilita campos durante carregamento
+            txbNomeFantasia.Enabled = !loading;
+            mskTxbCnpj.Enabled = !loading;
+            txbInscricaoEstadual.Enabled = !loading;
+            txbCep.Enabled = !loading;
+            txbRua.Enabled = !loading;
+            txbNumero.Enabled = !loading;
+            txbComplemento.Enabled = !loading;
+            txbBairro.Enabled = !loading;
+            txbCidade.Enabled = !loading;
+            txbEstado.Enabled = !loading;
+            rbFornecedorAtivo.Enabled = !loading;
+            rbFornecedorInativo.Enabled = !loading;
+
+            if (loading)
+            {
+                this.Cursor = Cursors.WaitCursor;
             }
             else
             {
-                var resp = response.notifications.FirstOrDefault();
-
-                MessageBox.Show(resp.ToString());
+                this.Cursor = Cursors.Default;
             }
         }
-        private async Task LimpaCampos()
-        {
-            rbFornecedorAtivo.Checked = true;
-            txbBairro.Clear();
-            txbCep.Clear();
-            txbCidade.Clear();
-            txbComplemento.Clear();
-            txbEstado.Clear();
-            txbId.Clear();
-            txbInscricaoEstadual.Clear();
 
-            txbNomeFantasia.Clear();
-            txbNumero.Clear();
-            txbRua.Clear();
-            mskTxbCnpj.Text = "";
+        // Event handlers para validação de entrada
+        private void txbInscricaoEstadual_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Permite apenas números
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
+
+        private void txbCep_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Permite apenas números
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void txbNumero_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Permite números e algumas letras para complementos como "123A"
+            if (!char.IsControl(e.KeyChar) && !char.IsLetterOrDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void CadFornecedor_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            FornecedorLogger.LogOperation("FormularioFechado");
+        }
+    }
+
+    // Classe para deserialização da resposta do ViaCEP
+    public class ViaCepResponse
+    {
+        public string cep { get; set; }
+        public string logradouro { get; set; }
+        public string complemento { get; set; }
+        public string bairro { get; set; }
+        public string localidade { get; set; }
+        public string uf { get; set; }
+        public string ibge { get; set; }
+        public string gia { get; set; }
+        public string ddd { get; set; }
+        public string siafi { get; set; }
+        public bool erro { get; set; }
     }
 }
