@@ -28,471 +28,659 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pnMenuVertical = new System.Windows.Forms.Panel();
-            this.btnLogOut = new FontAwesome.Sharp.IconButton();
-            this.btnRelatorios = new FontAwesome.Sharp.IconButton();
-            this.iconButton2 = new FontAwesome.Sharp.IconButton();
-            this.imgDepartamento = new FontAwesome.Sharp.IconButton();
-            this.iconButton1 = new FontAwesome.Sharp.IconButton();
-            this.btnFornecedor = new FontAwesome.Sharp.IconButton();
-            this.btnColaborador = new FontAwesome.Sharp.IconButton();
-            this.btnProduto = new FontAwesome.Sharp.IconButton();
-            this.btnLogo = new System.Windows.Forms.PictureBox();
-            this.btnHome = new FontAwesome.Sharp.IconButton();
-            this.pictBoxLogo = new System.Windows.Forms.PictureBox();
-            this.pnHorizontal = new System.Windows.Forms.Panel();
-            this.btnMax = new FontAwesome.Sharp.IconButton();
-            this.btnMin = new FontAwesome.Sharp.IconButton();
+            this.components = new System.ComponentModel.Container();
+            
+            // Header Panel
+            this.pnHeader = new System.Windows.Forms.Panel();
+            this.lblTituloSistema = new System.Windows.Forms.Label();
+            this.lblUsuarioLogado = new System.Windows.Forms.Label();
+            this.lblDataHora = new System.Windows.Forms.Label();
+            this.btnMinimizar = new System.Windows.Forms.Button();
+            this.btnMaximizar = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
-            this.lblNomeForms = new System.Windows.Forms.Label();
-            this.iconMenu = new FontAwesome.Sharp.IconPictureBox();
-            this.iconFilho = new FontAwesome.Sharp.IconPictureBox();
+            
+            // Sidebar Navigation
+            this.pnMenuVertical = new System.Windows.Forms.Panel();
+            this.pnMenuContainer = new System.Windows.Forms.Panel();
+            
+            // Logo Section
+            this.pnLogo = new System.Windows.Forms.Panel();
+            this.lblNomeEmpresa = new System.Windows.Forms.Label();
+            this.pictBoxLogo = new System.Windows.Forms.PictureBox();
+            this.btnToggleMenu = new System.Windows.Forms.Button();
+            
+            // Navigation Buttons
+            this.btnHome = new System.Windows.Forms.Button();
+            this.btnProdutos = new System.Windows.Forms.Button();
+            this.btnColaboradores = new System.Windows.Forms.Button();
+            this.btnFornecedores = new System.Windows.Forms.Button();
+            this.btnCategorias = new System.Windows.Forms.Button();
+            this.btnDepartamentos = new System.Windows.Forms.Button();
+            this.btnPDV = new System.Windows.Forms.Button();
+            this.btnRelatorios = new System.Windows.Forms.Button();
+            this.btnConfiguracoes = new System.Windows.Forms.Button();
+            this.btnLogout = new System.Windows.Forms.Button();
+            
+            // Content Area
+            this.pnTopInfo = new System.Windows.Forms.Panel();
+            this.lblModuloAtivo = new System.Windows.Forms.Label();
+            this.lblDescricaoModulo = new System.Windows.Forms.Label();
+            this.iconModuloAtivo = new System.Windows.Forms.Label();
+            
             this.pnForm = new System.Windows.Forms.Panel();
+            
+            // Status Bar
+            this.pnStatus = new System.Windows.Forms.Panel();
+            this.lblStatusSistema = new System.Windows.Forms.Label();
+            this.lblVersaoSistema = new System.Windows.Forms.Label();
+            this.lblAutor = new System.Windows.Forms.LinkLabel();
+            this.progressStatus = new System.Windows.Forms.ProgressBar();
+            
+            // Timer
+            this.timerRelogio = new System.Windows.Forms.Timer(this.components);
+            
+            // Suspension of layout
+            this.pnHeader.SuspendLayout();
             this.pnMenuVertical.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.btnLogo)).BeginInit();
+            this.pnMenuContainer.SuspendLayout();
+            this.pnLogo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictBoxLogo)).BeginInit();
-            this.pnHorizontal.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.iconMenu)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.iconFilho)).BeginInit();
+            this.pnTopInfo.SuspendLayout();
+            this.pnStatus.SuspendLayout();
             this.SuspendLayout();
+            
             // 
-            // pnMenuVertical
+            // pnHeader
             // 
-            this.pnMenuVertical.AutoScroll = true;
-            this.pnMenuVertical.BackColor = System.Drawing.Color.Black;
-            this.pnMenuVertical.Controls.Add(this.btnLogOut);
-            this.pnMenuVertical.Controls.Add(this.btnRelatorios);
-            this.pnMenuVertical.Controls.Add(this.iconButton2);
-            this.pnMenuVertical.Controls.Add(this.imgDepartamento);
-            this.pnMenuVertical.Controls.Add(this.iconButton1);
-            this.pnMenuVertical.Controls.Add(this.btnFornecedor);
-            this.pnMenuVertical.Controls.Add(this.btnColaborador);
-            this.pnMenuVertical.Controls.Add(this.btnProduto);
-            this.pnMenuVertical.Controls.Add(this.btnLogo);
-            this.pnMenuVertical.Controls.Add(this.btnHome);
-            this.pnMenuVertical.Controls.Add(this.pictBoxLogo);
-            this.pnMenuVertical.Dock = System.Windows.Forms.DockStyle.Left;
-            this.pnMenuVertical.Location = new System.Drawing.Point(0, 0);
-            this.pnMenuVertical.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.pnMenuVertical.Name = "pnMenuVertical";
-            this.pnMenuVertical.Size = new System.Drawing.Size(233, 705);
-            this.pnMenuVertical.TabIndex = 0;
+            this.pnHeader.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(44)))), ((int)(((byte)(51)))));
+            this.pnHeader.Controls.Add(this.lblTituloSistema);
+            this.pnHeader.Controls.Add(this.lblUsuarioLogado);
+            this.pnHeader.Controls.Add(this.lblDataHora);
+            this.pnHeader.Controls.Add(this.btnMinimizar);
+            this.pnHeader.Controls.Add(this.btnMaximizar);
+            this.pnHeader.Controls.Add(this.btnClose);
+            this.pnHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnHeader.Location = new System.Drawing.Point(0, 0);
+            this.pnHeader.Name = "pnHeader";
+            this.pnHeader.Size = new System.Drawing.Size(1400, 60);
+            this.pnHeader.TabIndex = 0;
+            this.pnHeader.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pnHeader_MouseDown);
+            
             // 
-            // btnLogOut
+            // lblTituloSistema
             // 
-            this.btnLogOut.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnLogOut.FlatAppearance.BorderSize = 0;
-            this.btnLogOut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLogOut.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnLogOut.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnLogOut.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnLogOut.IconChar = FontAwesome.Sharp.IconChar.DoorClosed;
-            this.btnLogOut.IconColor = System.Drawing.Color.White;
-            this.btnLogOut.IconSize = 40;
-            this.btnLogOut.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLogOut.Location = new System.Drawing.Point(0, 610);
-            this.btnLogOut.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnLogOut.Name = "btnLogOut";
-            this.btnLogOut.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.btnLogOut.Rotation = 0D;
-            this.btnLogOut.Size = new System.Drawing.Size(233, 69);
-            this.btnLogOut.TabIndex = 23;
-            this.btnLogOut.Text = "LogOut";
-            this.btnLogOut.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLogOut.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnLogOut.UseVisualStyleBackColor = true;
+            this.lblTituloSistema.AutoSize = true;
+            this.lblTituloSistema.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
+            this.lblTituloSistema.ForeColor = System.Drawing.Color.White;
+            this.lblTituloSistema.Location = new System.Drawing.Point(280, 15);
+            this.lblTituloSistema.Name = "lblTituloSistema";
+            this.lblTituloSistema.Size = new System.Drawing.Size(420, 32);
+            this.lblTituloSistema.TabIndex = 0;
+            this.lblTituloSistema.Text = "🏪 SISTEMA PDV - MENU PRINCIPAL";
+            
             // 
-            // btnRelatorios
+            // lblUsuarioLogado
             // 
-            this.btnRelatorios.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnRelatorios.FlatAppearance.BorderSize = 0;
-            this.btnRelatorios.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnRelatorios.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnRelatorios.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnRelatorios.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnRelatorios.IconChar = FontAwesome.Sharp.IconChar.ChartBar;
-            this.btnRelatorios.IconColor = System.Drawing.Color.White;
-            this.btnRelatorios.IconSize = 40;
-            this.btnRelatorios.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnRelatorios.Location = new System.Drawing.Point(0, 541);
-            this.btnRelatorios.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnRelatorios.Name = "btnRelatorios";
-            this.btnRelatorios.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.btnRelatorios.Rotation = 0D;
-            this.btnRelatorios.Size = new System.Drawing.Size(233, 69);
-            this.btnRelatorios.TabIndex = 22;
-            this.btnRelatorios.Text = "Relatório";
-            this.btnRelatorios.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnRelatorios.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnRelatorios.UseVisualStyleBackColor = true;
-            this.btnRelatorios.Click += new System.EventHandler(this.btnRelatorios_Click_1);
+            this.lblUsuarioLogado.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblUsuarioLogado.AutoSize = true;
+            this.lblUsuarioLogado.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.lblUsuarioLogado.ForeColor = System.Drawing.Color.LightBlue;
+            this.lblUsuarioLogado.Location = new System.Drawing.Point(900, 8);
+            this.lblUsuarioLogado.Name = "lblUsuarioLogado";
+            this.lblUsuarioLogado.Size = new System.Drawing.Size(150, 21);
+            this.lblUsuarioLogado.TabIndex = 1;
+            this.lblUsuarioLogado.Text = "👤 Usuário Logado";
+            
             // 
-            // iconButton2
+            // lblDataHora
             // 
-            this.iconButton2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.iconButton2.FlatAppearance.BorderSize = 0;
-            this.iconButton2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.iconButton2.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.iconButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.iconButton2.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.iconButton2.IconChar = FontAwesome.Sharp.IconChar.Shopify;
-            this.iconButton2.IconColor = System.Drawing.Color.White;
-            this.iconButton2.IconSize = 40;
-            this.iconButton2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.iconButton2.Location = new System.Drawing.Point(0, 472);
-            this.iconButton2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.iconButton2.Name = "iconButton2";
-            this.iconButton2.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.iconButton2.Rotation = 0D;
-            this.iconButton2.Size = new System.Drawing.Size(233, 69);
-            this.iconButton2.TabIndex = 20;
-            this.iconButton2.Text = "PDV";
-            this.iconButton2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.iconButton2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.iconButton2.UseVisualStyleBackColor = true;
-            this.iconButton2.Click += new System.EventHandler(this.iconButton2_Click);
+            this.lblDataHora.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblDataHora.AutoSize = true;
+            this.lblDataHora.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblDataHora.ForeColor = System.Drawing.Color.LightGray;
+            this.lblDataHora.Location = new System.Drawing.Point(900, 32);
+            this.lblDataHora.Name = "lblDataHora";
+            this.lblDataHora.Size = new System.Drawing.Size(160, 19);
+            this.lblDataHora.TabIndex = 2;
+            this.lblDataHora.Text = "📅 00/00/0000 - 00:00:00";
+            
             // 
-            // imgDepartamento
+            // btnMinimizar
             // 
-            this.imgDepartamento.Dock = System.Windows.Forms.DockStyle.Top;
-            this.imgDepartamento.FlatAppearance.BorderSize = 0;
-            this.imgDepartamento.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.imgDepartamento.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.imgDepartamento.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.imgDepartamento.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.imgDepartamento.IconChar = FontAwesome.Sharp.IconChar.Stop;
-            this.imgDepartamento.IconColor = System.Drawing.Color.White;
-            this.imgDepartamento.IconSize = 40;
-            this.imgDepartamento.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.imgDepartamento.Location = new System.Drawing.Point(0, 403);
-            this.imgDepartamento.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.imgDepartamento.Name = "imgDepartamento";
-            this.imgDepartamento.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.imgDepartamento.Rotation = 0D;
-            this.imgDepartamento.Size = new System.Drawing.Size(233, 69);
-            this.imgDepartamento.TabIndex = 19;
-            this.imgDepartamento.Text = "Departamento";
-            this.imgDepartamento.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.imgDepartamento.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.imgDepartamento.UseVisualStyleBackColor = true;
-            this.imgDepartamento.Click += new System.EventHandler(this.imgDepartamento_Click);
+            this.btnMinimizar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMinimizar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnMinimizar.FlatAppearance.BorderSize = 0;
+            this.btnMinimizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMinimizar.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.btnMinimizar.ForeColor = System.Drawing.Color.White;
+            this.btnMinimizar.Location = new System.Drawing.Point(1280, 15);
+            this.btnMinimizar.Name = "btnMinimizar";
+            this.btnMinimizar.Size = new System.Drawing.Size(35, 30);
+            this.btnMinimizar.TabIndex = 3;
+            this.btnMinimizar.Text = "─";
+            this.btnMinimizar.UseVisualStyleBackColor = false;
+            this.btnMinimizar.Click += new System.EventHandler(this.btnMin_Click);
+            
             // 
-            // iconButton1
+            // btnMaximizar
             // 
-            this.iconButton1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.iconButton1.FlatAppearance.BorderSize = 0;
-            this.iconButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.iconButton1.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.iconButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.iconButton1.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.iconButton1.IconChar = FontAwesome.Sharp.IconChar.Th;
-            this.iconButton1.IconColor = System.Drawing.Color.White;
-            this.iconButton1.IconSize = 40;
-            this.iconButton1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.iconButton1.Location = new System.Drawing.Point(0, 334);
-            this.iconButton1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.iconButton1.Name = "iconButton1";
-            this.iconButton1.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.iconButton1.Rotation = 0D;
-            this.iconButton1.Size = new System.Drawing.Size(233, 69);
-            this.iconButton1.TabIndex = 18;
-            this.iconButton1.Text = "Categoria";
-            this.iconButton1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.iconButton1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.iconButton1.UseVisualStyleBackColor = true;
-            this.iconButton1.Click += new System.EventHandler(this.iconButton1_Click);
-            // 
-            // btnFornecedor
-            // 
-            this.btnFornecedor.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnFornecedor.FlatAppearance.BorderSize = 0;
-            this.btnFornecedor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnFornecedor.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnFornecedor.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnFornecedor.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnFornecedor.IconChar = FontAwesome.Sharp.IconChar.BoxOpen;
-            this.btnFornecedor.IconColor = System.Drawing.Color.White;
-            this.btnFornecedor.IconSize = 40;
-            this.btnFornecedor.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnFornecedor.Location = new System.Drawing.Point(0, 265);
-            this.btnFornecedor.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnFornecedor.Name = "btnFornecedor";
-            this.btnFornecedor.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.btnFornecedor.Rotation = 0D;
-            this.btnFornecedor.Size = new System.Drawing.Size(233, 69);
-            this.btnFornecedor.TabIndex = 14;
-            this.btnFornecedor.Text = "Fornecedor";
-            this.btnFornecedor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnFornecedor.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnFornecedor.UseVisualStyleBackColor = true;
-            this.btnFornecedor.Click += new System.EventHandler(this.btnFornecedor_Click);
-            // 
-            // btnColaborador
-            // 
-            this.btnColaborador.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnColaborador.FlatAppearance.BorderSize = 0;
-            this.btnColaborador.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnColaborador.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnColaborador.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnColaborador.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnColaborador.IconChar = FontAwesome.Sharp.IconChar.UserCircle;
-            this.btnColaborador.IconColor = System.Drawing.Color.White;
-            this.btnColaborador.IconSize = 40;
-            this.btnColaborador.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnColaborador.Location = new System.Drawing.Point(0, 196);
-            this.btnColaborador.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnColaborador.Name = "btnColaborador";
-            this.btnColaborador.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.btnColaborador.Rotation = 0D;
-            this.btnColaborador.Size = new System.Drawing.Size(233, 69);
-            this.btnColaborador.TabIndex = 11;
-            this.btnColaborador.Text = "Colaborador";
-            this.btnColaborador.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnColaborador.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnColaborador.UseVisualStyleBackColor = true;
-            this.btnColaborador.Click += new System.EventHandler(this.btnColaborador_Click);
-            // 
-            // btnProduto
-            // 
-            this.btnProduto.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnProduto.FlatAppearance.BorderSize = 0;
-            this.btnProduto.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnProduto.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnProduto.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnProduto.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnProduto.IconChar = FontAwesome.Sharp.IconChar.Parking;
-            this.btnProduto.IconColor = System.Drawing.Color.White;
-            this.btnProduto.IconSize = 40;
-            this.btnProduto.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnProduto.Location = new System.Drawing.Point(0, 127);
-            this.btnProduto.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnProduto.Name = "btnProduto";
-            this.btnProduto.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.btnProduto.Rotation = 0D;
-            this.btnProduto.Size = new System.Drawing.Size(233, 69);
-            this.btnProduto.TabIndex = 3;
-            this.btnProduto.Text = "Produto";
-            this.btnProduto.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnProduto.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnProduto.UseVisualStyleBackColor = true;
-            this.btnProduto.Click += new System.EventHandler(this.btnProduto_Click_1);
-            // 
-            // btnLogo
-            // 
-            this.btnLogo.Location = new System.Drawing.Point(4, 3);
-            this.btnLogo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnLogo.Name = "btnLogo";
-            this.btnLogo.Size = new System.Drawing.Size(82, 51);
-            this.btnLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.btnLogo.TabIndex = 0;
-            this.btnLogo.TabStop = false;
-            this.btnLogo.Click += new System.EventHandler(this.btnLogo_Click);
-            // 
-            // btnHome
-            // 
-            this.btnHome.Dock = System.Windows.Forms.DockStyle.Top;
-            this.btnHome.FlatAppearance.BorderSize = 0;
-            this.btnHome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnHome.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnHome.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btnHome.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.btnHome.IconChar = FontAwesome.Sharp.IconChar.HouseUser;
-            this.btnHome.IconColor = System.Drawing.Color.White;
-            this.btnHome.IconSize = 40;
-            this.btnHome.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnHome.Location = new System.Drawing.Point(0, 58);
-            this.btnHome.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnHome.Name = "btnHome";
-            this.btnHome.Padding = new System.Windows.Forms.Padding(12, 0, 23, 0);
-            this.btnHome.Rotation = 0D;
-            this.btnHome.Size = new System.Drawing.Size(233, 69);
-            this.btnHome.TabIndex = 0;
-            this.btnHome.Text = "Home";
-            this.btnHome.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnHome.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnHome.UseVisualStyleBackColor = true;
-            this.btnHome.Click += new System.EventHandler(this.btnDashbord_Click);
-            // 
-            // pictBoxLogo
-            // 
-            this.pictBoxLogo.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pictBoxLogo.Location = new System.Drawing.Point(0, 0);
-            this.pictBoxLogo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.pictBoxLogo.Name = "pictBoxLogo";
-            this.pictBoxLogo.Size = new System.Drawing.Size(233, 58);
-            this.pictBoxLogo.TabIndex = 0;
-            this.pictBoxLogo.TabStop = false;
-            // 
-            // pnHorizontal
-            // 
-            this.pnHorizontal.BackColor = System.Drawing.Color.Black;
-            this.pnHorizontal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pnHorizontal.Controls.Add(this.btnMax);
-            this.pnHorizontal.Controls.Add(this.btnMin);
-            this.pnHorizontal.Controls.Add(this.btnClose);
-            this.pnHorizontal.Controls.Add(this.lblNomeForms);
-            this.pnHorizontal.Controls.Add(this.iconMenu);
-            this.pnHorizontal.Controls.Add(this.iconFilho);
-            this.pnHorizontal.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnHorizontal.Location = new System.Drawing.Point(233, 0);
-            this.pnHorizontal.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.pnHorizontal.Name = "pnHorizontal";
-            this.pnHorizontal.Size = new System.Drawing.Size(1032, 57);
-            this.pnHorizontal.TabIndex = 1;
-            this.pnHorizontal.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pnHorizontal_MouseDown);
-            // 
-            // btnMax
-            // 
-            this.btnMax.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMax.FlatAppearance.BorderSize = 0;
-            this.btnMax.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMax.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnMax.IconChar = FontAwesome.Sharp.IconChar.Square;
-            this.btnMax.IconColor = System.Drawing.Color.White;
-            this.btnMax.IconSize = 16;
-            this.btnMax.Location = new System.Drawing.Point(952, 18);
-            this.btnMax.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnMax.Name = "btnMax";
-            this.btnMax.Rotation = 0D;
-            this.btnMax.Size = new System.Drawing.Size(30, 27);
-            this.btnMax.TabIndex = 6;
-            this.btnMax.UseVisualStyleBackColor = true;
-            this.btnMax.Click += new System.EventHandler(this.btnMax_Click);
-            // 
-            // btnMin
-            // 
-            this.btnMin.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnMin.FlatAppearance.BorderSize = 0;
-            this.btnMin.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMin.Flip = FontAwesome.Sharp.FlipOrientation.Normal;
-            this.btnMin.IconChar = FontAwesome.Sharp.IconChar.Minus;
-            this.btnMin.IconColor = System.Drawing.Color.White;
-            this.btnMin.IconSize = 16;
-            this.btnMin.Location = new System.Drawing.Point(926, 18);
-            this.btnMin.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnMin.Name = "btnMin";
-            this.btnMin.Rotation = 0D;
-            this.btnMin.Size = new System.Drawing.Size(19, 27);
-            this.btnMin.TabIndex = 5;
-            this.btnMin.UseVisualStyleBackColor = true;
-            this.btnMin.Click += new System.EventHandler(this.btnMin_Click);
+            this.btnMaximizar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnMaximizar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnMaximizar.FlatAppearance.BorderSize = 0;
+            this.btnMaximizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMaximizar.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnMaximizar.ForeColor = System.Drawing.Color.White;
+            this.btnMaximizar.Location = new System.Drawing.Point(1320, 15);
+            this.btnMaximizar.Name = "btnMaximizar";
+            this.btnMaximizar.Size = new System.Drawing.Size(35, 30);
+            this.btnMaximizar.TabIndex = 4;
+            this.btnMaximizar.Text = "⬜";
+            this.btnMaximizar.UseVisualStyleBackColor = false;
+            this.btnMaximizar.Click += new System.EventHandler(this.btnMax_Click);
+            
             // 
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
             this.btnClose.FlatAppearance.BorderSize = 0;
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btnClose.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
             this.btnClose.ForeColor = System.Drawing.Color.White;
-            this.btnClose.Location = new System.Drawing.Point(988, 14);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.btnClose.Location = new System.Drawing.Point(1360, 15);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(28, 27);
-            this.btnClose.TabIndex = 3;
-            this.btnClose.Text = "X";
-            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Size = new System.Drawing.Size(35, 30);
+            this.btnClose.TabIndex = 5;
+            this.btnClose.Text = "✕";
+            this.btnClose.UseVisualStyleBackColor = false;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            
             // 
-            // lblNomeForms
+            // pnMenuVertical
             // 
-            this.lblNomeForms.AutoSize = true;
-            this.lblNomeForms.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.lblNomeForms.ForeColor = System.Drawing.Color.White;
-            this.lblNomeForms.Location = new System.Drawing.Point(110, 10);
-            this.lblNomeForms.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblNomeForms.Name = "lblNomeForms";
-            this.lblNomeForms.Size = new System.Drawing.Size(54, 19);
-            this.lblNomeForms.TabIndex = 2;
-            this.lblNomeForms.Text = "Home";
+            this.pnMenuVertical.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.pnMenuVertical.Controls.Add(this.pnMenuContainer);
+            this.pnMenuVertical.Controls.Add(this.pnLogo);
+            this.pnMenuVertical.Dock = System.Windows.Forms.DockStyle.Left;
+            this.pnMenuVertical.Location = new System.Drawing.Point(0, 60);
+            this.pnMenuVertical.Name = "pnMenuVertical";
+            this.pnMenuVertical.Size = new System.Drawing.Size(260, 700);
+            this.pnMenuVertical.TabIndex = 1;
+            
             // 
-            // iconMenu
+            // pnLogo
             // 
-            this.iconMenu.IconChar = FontAwesome.Sharp.IconChar.List;
-            this.iconMenu.IconColor = System.Drawing.Color.White;
-            this.iconMenu.IconSize = 37;
-            this.iconMenu.Location = new System.Drawing.Point(7, 3);
-            this.iconMenu.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.iconMenu.Name = "iconMenu";
-            this.iconMenu.Size = new System.Drawing.Size(37, 37);
-            this.iconMenu.TabIndex = 2;
-            this.iconMenu.TabStop = false;
-            this.iconMenu.Click += new System.EventHandler(this.iconMenu_Click);
+            this.pnLogo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.pnLogo.Controls.Add(this.lblNomeEmpresa);
+            this.pnLogo.Controls.Add(this.pictBoxLogo);
+            this.pnLogo.Controls.Add(this.btnToggleMenu);
+            this.pnLogo.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnLogo.Location = new System.Drawing.Point(0, 0);
+            this.pnLogo.Name = "pnLogo";
+            this.pnLogo.Size = new System.Drawing.Size(260, 80);
+            this.pnLogo.TabIndex = 0;
+            
             // 
-            // iconFilho
+            // lblNomeEmpresa
             // 
-            this.iconFilho.IconChar = FontAwesome.Sharp.IconChar.Home;
-            this.iconFilho.IconColor = System.Drawing.Color.White;
-            this.iconFilho.IconSize = 37;
-            this.iconFilho.Location = new System.Drawing.Point(65, 3);
-            this.iconFilho.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.iconFilho.Name = "iconFilho";
-            this.iconFilho.Size = new System.Drawing.Size(37, 37);
-            this.iconFilho.TabIndex = 2;
-            this.iconFilho.TabStop = false;
+            this.lblNomeEmpresa.AutoSize = true;
+            this.lblNomeEmpresa.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.lblNomeEmpresa.ForeColor = System.Drawing.Color.White;
+            this.lblNomeEmpresa.Location = new System.Drawing.Point(60, 25);
+            this.lblNomeEmpresa.Name = "lblNomeEmpresa";
+            this.lblNomeEmpresa.Size = new System.Drawing.Size(150, 25);
+            this.lblNomeEmpresa.TabIndex = 0;
+            this.lblNomeEmpresa.Text = "🏪 SISTEMA PDV";
+            
+            // 
+            // pictBoxLogo
+            // 
+            this.pictBoxLogo.Location = new System.Drawing.Point(15, 15);
+            this.pictBoxLogo.Name = "pictBoxLogo";
+            this.pictBoxLogo.Size = new System.Drawing.Size(40, 40);
+            this.pictBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictBoxLogo.TabIndex = 1;
+            this.pictBoxLogo.TabStop = false;
+            
+            // 
+            // btnToggleMenu
+            // 
+            this.btnToggleMenu.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnToggleMenu.BackColor = System.Drawing.Color.Transparent;
+            this.btnToggleMenu.FlatAppearance.BorderSize = 0;
+            this.btnToggleMenu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnToggleMenu.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.btnToggleMenu.ForeColor = System.Drawing.Color.White;
+            this.btnToggleMenu.Location = new System.Drawing.Point(220, 25);
+            this.btnToggleMenu.Name = "btnToggleMenu";
+            this.btnToggleMenu.Size = new System.Drawing.Size(35, 30);
+            this.btnToggleMenu.TabIndex = 2;
+            this.btnToggleMenu.Text = "☰";
+            this.btnToggleMenu.UseVisualStyleBackColor = false;
+            this.btnToggleMenu.Click += new System.EventHandler(this.btnToggleMenu_Click);
+            
+            // 
+            // pnMenuContainer
+            // 
+            this.pnMenuContainer.AutoScroll = true;
+            this.pnMenuContainer.Controls.Add(this.btnHome);
+            this.pnMenuContainer.Controls.Add(this.btnProdutos);
+            this.pnMenuContainer.Controls.Add(this.btnColaboradores);
+            this.pnMenuContainer.Controls.Add(this.btnFornecedores);
+            this.pnMenuContainer.Controls.Add(this.btnCategorias);
+            this.pnMenuContainer.Controls.Add(this.btnDepartamentos);
+            this.pnMenuContainer.Controls.Add(this.btnPDV);
+            this.pnMenuContainer.Controls.Add(this.btnRelatorios);
+            this.pnMenuContainer.Controls.Add(this.btnConfiguracoes);
+            this.pnMenuContainer.Controls.Add(this.btnLogout);
+            this.pnMenuContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnMenuContainer.Location = new System.Drawing.Point(0, 80);
+            this.pnMenuContainer.Name = "pnMenuContainer";
+            this.pnMenuContainer.Size = new System.Drawing.Size(260, 620);
+            this.pnMenuContainer.TabIndex = 1;
+            
+            // 
+            // btnHome
+            // 
+            this.btnHome.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnHome.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnHome.FlatAppearance.BorderSize = 0;
+            this.btnHome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHome.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnHome.ForeColor = System.Drawing.Color.White;
+            this.btnHome.Location = new System.Drawing.Point(0, 0);
+            this.btnHome.Name = "btnHome";
+            this.btnHome.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnHome.Size = new System.Drawing.Size(260, 50);
+            this.btnHome.TabIndex = 0;
+            this.btnHome.Text = "🏠 INÍCIO";
+            this.btnHome.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnHome.UseVisualStyleBackColor = false;
+            this.btnHome.Click += new System.EventHandler(this.btnHome_Click);
+            
+            // 
+            // btnProdutos
+            // 
+            this.btnProdutos.BackColor = System.Drawing.Color.Transparent;
+            this.btnProdutos.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnProdutos.FlatAppearance.BorderSize = 0;
+            this.btnProdutos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnProdutos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnProdutos.ForeColor = System.Drawing.Color.White;
+            this.btnProdutos.Location = new System.Drawing.Point(0, 50);
+            this.btnProdutos.Name = "btnProdutos";
+            this.btnProdutos.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnProdutos.Size = new System.Drawing.Size(260, 50);
+            this.btnProdutos.TabIndex = 1;
+            this.btnProdutos.Text = "📦 PRODUTOS";
+            this.btnProdutos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnProdutos.UseVisualStyleBackColor = false;
+            this.btnProdutos.Click += new System.EventHandler(this.btnProdutos_Click);
+            
+            // 
+            // btnColaboradores
+            // 
+            this.btnColaboradores.BackColor = System.Drawing.Color.Transparent;
+            this.btnColaboradores.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnColaboradores.FlatAppearance.BorderSize = 0;
+            this.btnColaboradores.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnColaboradores.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnColaboradores.ForeColor = System.Drawing.Color.White;
+            this.btnColaboradores.Location = new System.Drawing.Point(0, 100);
+            this.btnColaboradores.Name = "btnColaboradores";
+            this.btnColaboradores.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnColaboradores.Size = new System.Drawing.Size(260, 50);
+            this.btnColaboradores.TabIndex = 2;
+            this.btnColaboradores.Text = "👥 COLABORADORES";
+            this.btnColaboradores.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnColaboradores.UseVisualStyleBackColor = false;
+            this.btnColaboradores.Click += new System.EventHandler(this.btnColaboradores_Click);
+            
+            // 
+            // btnFornecedores
+            // 
+            this.btnFornecedores.BackColor = System.Drawing.Color.Transparent;
+            this.btnFornecedores.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnFornecedores.FlatAppearance.BorderSize = 0;
+            this.btnFornecedores.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnFornecedores.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnFornecedores.ForeColor = System.Drawing.Color.White;
+            this.btnFornecedores.Location = new System.Drawing.Point(0, 150);
+            this.btnFornecedores.Name = "btnFornecedores";
+            this.btnFornecedores.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnFornecedores.Size = new System.Drawing.Size(260, 50);
+            this.btnFornecedores.TabIndex = 3;
+            this.btnFornecedores.Text = "🏭 FORNECEDORES";
+            this.btnFornecedores.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnFornecedores.UseVisualStyleBackColor = false;
+            this.btnFornecedores.Click += new System.EventHandler(this.btnFornecedores_Click);
+            
+            // 
+            // btnCategorias
+            // 
+            this.btnCategorias.BackColor = System.Drawing.Color.Transparent;
+            this.btnCategorias.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnCategorias.FlatAppearance.BorderSize = 0;
+            this.btnCategorias.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCategorias.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnCategorias.ForeColor = System.Drawing.Color.White;
+            this.btnCategorias.Location = new System.Drawing.Point(0, 200);
+            this.btnCategorias.Name = "btnCategorias";
+            this.btnCategorias.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnCategorias.Size = new System.Drawing.Size(260, 50);
+            this.btnCategorias.TabIndex = 4;
+            this.btnCategorias.Text = "🏷️ CATEGORIAS";
+            this.btnCategorias.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnCategorias.UseVisualStyleBackColor = false;
+            this.btnCategorias.Click += new System.EventHandler(this.btnCategorias_Click);
+            
+            // 
+            // btnDepartamentos
+            // 
+            this.btnDepartamentos.BackColor = System.Drawing.Color.Transparent;
+            this.btnDepartamentos.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnDepartamentos.FlatAppearance.BorderSize = 0;
+            this.btnDepartamentos.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDepartamentos.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnDepartamentos.ForeColor = System.Drawing.Color.White;
+            this.btnDepartamentos.Location = new System.Drawing.Point(0, 250);
+            this.btnDepartamentos.Name = "btnDepartamentos";
+            this.btnDepartamentos.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnDepartamentos.Size = new System.Drawing.Size(260, 50);
+            this.btnDepartamentos.TabIndex = 5;
+            this.btnDepartamentos.Text = "🏢 DEPARTAMENTOS";
+            this.btnDepartamentos.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnDepartamentos.UseVisualStyleBackColor = false;
+            this.btnDepartamentos.Click += new System.EventHandler(this.btnDepartamentos_Click);
+            
+            // 
+            // btnPDV
+            // 
+            this.btnPDV.BackColor = System.Drawing.Color.Transparent;
+            this.btnPDV.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnPDV.FlatAppearance.BorderSize = 0;
+            this.btnPDV.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPDV.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnPDV.ForeColor = System.Drawing.Color.LightGreen;
+            this.btnPDV.Location = new System.Drawing.Point(0, 300);
+            this.btnPDV.Name = "btnPDV";
+            this.btnPDV.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnPDV.Size = new System.Drawing.Size(260, 50);
+            this.btnPDV.TabIndex = 6;
+            this.btnPDV.Text = "🛒 PONTO DE VENDA";
+            this.btnPDV.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPDV.UseVisualStyleBackColor = false;
+            this.btnPDV.Click += new System.EventHandler(this.btnPDV_Click);
+            
+            // 
+            // btnRelatorios
+            // 
+            this.btnRelatorios.BackColor = System.Drawing.Color.Transparent;
+            this.btnRelatorios.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnRelatorios.FlatAppearance.BorderSize = 0;
+            this.btnRelatorios.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnRelatorios.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnRelatorios.ForeColor = System.Drawing.Color.White;
+            this.btnRelatorios.Location = new System.Drawing.Point(0, 350);
+            this.btnRelatorios.Name = "btnRelatorios";
+            this.btnRelatorios.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnRelatorios.Size = new System.Drawing.Size(260, 50);
+            this.btnRelatorios.TabIndex = 7;
+            this.btnRelatorios.Text = "📊 RELATÓRIOS";
+            this.btnRelatorios.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnRelatorios.UseVisualStyleBackColor = false;
+            this.btnRelatorios.Click += new System.EventHandler(this.btnRelatorios_Click);
+            
+            // 
+            // btnConfiguracoes
+            // 
+            this.btnConfiguracoes.BackColor = System.Drawing.Color.Transparent;
+            this.btnConfiguracoes.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnConfiguracoes.FlatAppearance.BorderSize = 0;
+            this.btnConfiguracoes.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConfiguracoes.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnConfiguracoes.ForeColor = System.Drawing.Color.White;
+            this.btnConfiguracoes.Location = new System.Drawing.Point(0, 400);
+            this.btnConfiguracoes.Name = "btnConfiguracoes";
+            this.btnConfiguracoes.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnConfiguracoes.Size = new System.Drawing.Size(260, 50);
+            this.btnConfiguracoes.TabIndex = 8;
+            this.btnConfiguracoes.Text = "⚙️ CONFIGURAÇÕES";
+            this.btnConfiguracoes.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnConfiguracoes.UseVisualStyleBackColor = false;
+            this.btnConfiguracoes.Click += new System.EventHandler(this.btnConfiguracoes_Click);
+            
+            // 
+            // btnLogout
+            // 
+            this.btnLogout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btnLogout.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.btnLogout.FlatAppearance.BorderSize = 0;
+            this.btnLogout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLogout.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold);
+            this.btnLogout.ForeColor = System.Drawing.Color.White;
+            this.btnLogout.Location = new System.Drawing.Point(0, 570);
+            this.btnLogout.Name = "btnLogout";
+            this.btnLogout.Padding = new System.Windows.Forms.Padding(15, 0, 0, 0);
+            this.btnLogout.Size = new System.Drawing.Size(260, 50);
+            this.btnLogout.TabIndex = 9;
+            this.btnLogout.Text = "🚪 SAIR";
+            this.btnLogout.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnLogout.UseVisualStyleBackColor = false;
+            this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
+            
+            // 
+            // pnTopInfo
+            // 
+            this.pnTopInfo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
+            this.pnTopInfo.Controls.Add(this.iconModuloAtivo);
+            this.pnTopInfo.Controls.Add(this.lblModuloAtivo);
+            this.pnTopInfo.Controls.Add(this.lblDescricaoModulo);
+            this.pnTopInfo.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnTopInfo.Location = new System.Drawing.Point(260, 60);
+            this.pnTopInfo.Name = "pnTopInfo";
+            this.pnTopInfo.Size = new System.Drawing.Size(1140, 50);
+            this.pnTopInfo.TabIndex = 2;
+            
+            // 
+            // iconModuloAtivo
+            // 
+            this.iconModuloAtivo.AutoSize = true;
+            this.iconModuloAtivo.Font = new System.Drawing.Font("Segoe UI", 24F);
+            this.iconModuloAtivo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.iconModuloAtivo.Location = new System.Drawing.Point(20, 8);
+            this.iconModuloAtivo.Name = "iconModuloAtivo";
+            this.iconModuloAtivo.Size = new System.Drawing.Size(53, 45);
+            this.iconModuloAtivo.TabIndex = 0;
+            this.iconModuloAtivo.Text = "🏠";
+            
+            // 
+            // lblModuloAtivo
+            // 
+            this.lblModuloAtivo.AutoSize = true;
+            this.lblModuloAtivo.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.lblModuloAtivo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblModuloAtivo.Location = new System.Drawing.Point(80, 8);
+            this.lblModuloAtivo.Name = "lblModuloAtivo";
+            this.lblModuloAtivo.Size = new System.Drawing.Size(80, 30);
+            this.lblModuloAtivo.TabIndex = 1;
+            this.lblModuloAtivo.Text = "INÍCIO";
+            
+            // 
+            // lblDescricaoModulo
+            // 
+            this.lblDescricaoModulo.AutoSize = true;
+            this.lblDescricaoModulo.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblDescricaoModulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(127)))), ((int)(((byte)(140)))), ((int)(((byte)(141)))));
+            this.lblDescricaoModulo.Location = new System.Drawing.Point(80, 30);
+            this.lblDescricaoModulo.Name = "lblDescricaoModulo";
+            this.lblDescricaoModulo.Size = new System.Drawing.Size(300, 19);
+            this.lblDescricaoModulo.TabIndex = 2;
+            this.lblDescricaoModulo.Text = "Página inicial com resumo do sistema";
+            
             // 
             // pnForm
             // 
-            this.pnForm.BackColor = System.Drawing.Color.Black;
-            this.pnForm.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.pnForm.BackColor = System.Drawing.Color.White;
             this.pnForm.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnForm.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.pnForm.Location = new System.Drawing.Point(233, 57);
-            this.pnForm.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.pnForm.Location = new System.Drawing.Point(260, 110);
             this.pnForm.Name = "pnForm";
-            this.pnForm.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.pnForm.Size = new System.Drawing.Size(1032, 648);
-            this.pnForm.TabIndex = 8;
-            this.pnForm.Paint += new System.Windows.Forms.PaintEventHandler(this.pnForm_Paint);
+            this.pnForm.Padding = new System.Windows.Forms.Padding(10);
+            this.pnForm.Size = new System.Drawing.Size(1140, 620);
+            this.pnForm.TabIndex = 3;
+            
+            // 
+            // pnStatus
+            // 
+            this.pnStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.pnStatus.Controls.Add(this.lblStatusSistema);
+            this.pnStatus.Controls.Add(this.lblVersaoSistema);
+            this.pnStatus.Controls.Add(this.lblAutor);
+            this.pnStatus.Controls.Add(this.progressStatus);
+            this.pnStatus.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnStatus.Location = new System.Drawing.Point(0, 730);
+            this.pnStatus.Name = "pnStatus";
+            this.pnStatus.Size = new System.Drawing.Size(1400, 30);
+            this.pnStatus.TabIndex = 4;
+            
+            // 
+            // lblStatusSistema
+            // 
+            this.lblStatusSistema.AutoSize = true;
+            this.lblStatusSistema.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblStatusSistema.ForeColor = System.Drawing.Color.White;
+            this.lblStatusSistema.Location = new System.Drawing.Point(15, 6);
+            this.lblStatusSistema.Name = "lblStatusSistema";
+            this.lblStatusSistema.Size = new System.Drawing.Size(150, 19);
+            this.lblStatusSistema.TabIndex = 0;
+            this.lblStatusSistema.Text = "🟢 Sistema operacional";
+            
+            // 
+            // lblVersaoSistema
+            // 
+            this.lblVersaoSistema.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblVersaoSistema.AutoSize = true;
+            this.lblVersaoSistema.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblVersaoSistema.ForeColor = System.Drawing.Color.LightGray;
+            this.lblVersaoSistema.Location = new System.Drawing.Point(1250, 8);
+            this.lblVersaoSistema.Name = "lblVersaoSistema";
+            this.lblVersaoSistema.Size = new System.Drawing.Size(140, 15);
+            this.lblVersaoSistema.TabIndex = 1;
+            this.lblVersaoSistema.Text = "📍 v2.0.0 - Build 2024.08";
+            // 
+            // lblAutor
+            // 
+            this.lblAutor.ActiveLinkColor = System.Drawing.Color.LightSkyBlue;
+            this.lblAutor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblAutor.AutoSize = true;
+            this.lblAutor.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblAutor.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.lblAutor.LinkColor = System.Drawing.Color.LightGray;
+            this.lblAutor.Location = new System.Drawing.Point(980, 8);
+            this.lblAutor.Name = "lblAutor";
+            this.lblAutor.Size = new System.Drawing.Size(252, 15);
+            this.lblAutor.TabIndex = 3;
+            this.lblAutor.TabStop = true;
+            this.lblAutor.Text = "Feito por Heitor Gonçalves · LinkedIn (clique)";
+            this.lblAutor.VisitedLinkColor = System.Drawing.Color.Silver;
+            this.lblAutor.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lblAutor_LinkClicked);
+            
+            // 
+            // progressStatus
+            // 
+            this.progressStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressStatus.Location = new System.Drawing.Point(1080, 8);
+            this.progressStatus.Name = "progressStatus";
+            this.progressStatus.Size = new System.Drawing.Size(150, 15);
+            this.progressStatus.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressStatus.TabIndex = 2;
+            this.progressStatus.Visible = false;
+            
+            // 
+            // timerRelogio
+            // 
+            this.timerRelogio.Enabled = true;
+            this.timerRelogio.Interval = 1000;
+            this.timerRelogio.Tick += new System.EventHandler(this.timerRelogio_Tick);
+            
             // 
             // frmMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackColor = System.Drawing.Color.Black;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(1265, 705);
+            this.ClientSize = new System.Drawing.Size(1400, 760);
             this.Controls.Add(this.pnForm);
-            this.Controls.Add(this.pnHorizontal);
+            this.Controls.Add(this.pnTopInfo);
             this.Controls.Add(this.pnMenuVertical);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Controls.Add(this.pnHeader);
+            this.Controls.Add(this.pnStatus);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.IsMdiContainer = true;
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.KeyPreview = true;
             this.Name = "frmMenu";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.TransparencyKey = System.Drawing.Color.Transparent;
+            this.Text = "Sistema PDV - Menu Principal";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.pnHeader.ResumeLayout(false);
+            this.pnHeader.PerformLayout();
             this.pnMenuVertical.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.btnLogo)).EndInit();
+            this.pnMenuContainer.ResumeLayout(false);
+            this.pnLogo.ResumeLayout(false);
+            this.pnLogo.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictBoxLogo)).EndInit();
-            this.pnHorizontal.ResumeLayout(false);
-            this.pnHorizontal.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.iconMenu)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.iconFilho)).EndInit();
+            this.pnTopInfo.ResumeLayout(false);
+            this.pnTopInfo.PerformLayout();
+            this.pnStatus.ResumeLayout(false);
+            this.pnStatus.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Panel pnMenuVertical;
-        private System.Windows.Forms.Panel pnHorizontal;
-        private FontAwesome.Sharp.IconButton btnHome;
-        private System.Windows.Forms.PictureBox pictBoxLogo;
-        private System.Windows.Forms.PictureBox btnLogo;
-        private FontAwesome.Sharp.IconPictureBox iconFilho;
-        private FontAwesome.Sharp.IconPictureBox iconMenu;
-        private System.Windows.Forms.Label lblNomeForms;
-        private FontAwesome.Sharp.IconButton btnMin;
+        // Header Components
+        private System.Windows.Forms.Panel pnHeader;
+        private System.Windows.Forms.Label lblTituloSistema;
+        private System.Windows.Forms.Label lblUsuarioLogado;
+        private System.Windows.Forms.Label lblDataHora;
+        private System.Windows.Forms.Button btnMinimizar;
+        private System.Windows.Forms.Button btnMaximizar;
         private System.Windows.Forms.Button btnClose;
-        private FontAwesome.Sharp.IconButton btnMax;
-        private FontAwesome.Sharp.IconButton btnColaborador;
-        private FontAwesome.Sharp.IconButton btnProduto;
-        private FontAwesome.Sharp.IconButton btnFornecedor;
+        
+        // Sidebar Components
+        private System.Windows.Forms.Panel pnMenuVertical;
+        private System.Windows.Forms.Panel pnLogo;
+        private System.Windows.Forms.Label lblNomeEmpresa;
+        private System.Windows.Forms.PictureBox pictBoxLogo;
+        private System.Windows.Forms.Button btnToggleMenu;
+        
+        private System.Windows.Forms.Panel pnMenuContainer;
+        private System.Windows.Forms.Button btnHome;
+        private System.Windows.Forms.Button btnProdutos;
+        private System.Windows.Forms.Button btnColaboradores;
+        private System.Windows.Forms.Button btnFornecedores;
+        private System.Windows.Forms.Button btnCategorias;
+        private System.Windows.Forms.Button btnDepartamentos;
+        private System.Windows.Forms.Button btnPDV;
+        private System.Windows.Forms.Button btnRelatorios;
+        private System.Windows.Forms.Button btnConfiguracoes;
+        private System.Windows.Forms.Button btnLogout;
+        
+        // Content Area Components
+        private System.Windows.Forms.Panel pnTopInfo;
+        private System.Windows.Forms.Label iconModuloAtivo;
+        private System.Windows.Forms.Label lblModuloAtivo;
+        private System.Windows.Forms.Label lblDescricaoModulo;
         private System.Windows.Forms.Panel pnForm;
-        private FontAwesome.Sharp.IconButton iconButton1;
-        private FontAwesome.Sharp.IconButton imgDepartamento;
-        private FontAwesome.Sharp.IconButton iconButton2;
-        private FontAwesome.Sharp.IconButton btnLogOut;
-        private FontAwesome.Sharp.IconButton btnRelatorios;
+        
+        // Status Components
+        private System.Windows.Forms.Panel pnStatus;
+        private System.Windows.Forms.Label lblStatusSistema;
+        private System.Windows.Forms.Label lblVersaoSistema;
+    private System.Windows.Forms.LinkLabel lblAutor;
+        private System.Windows.Forms.ProgressBar progressStatus;
+        
+        // Timer
+        private System.Windows.Forms.Timer timerRelogio;
     }
 }

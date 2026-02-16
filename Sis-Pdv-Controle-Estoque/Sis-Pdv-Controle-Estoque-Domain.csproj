@@ -12,21 +12,24 @@
     <None Remove="Commands\Produto\Fornecedor\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <!-- 
+      NOTA ARQUITETURAL: Microsoft.EntityFrameworkCore está aqui temporariamente porque os Handlers 
+      usam .Include() diretamente. IDEALMENTE, deveria ser removido e os Handlers deveriam:
+      1. Ser movidos para uma camada Application separada, OU
+      2. Usar apenas interfaces de repositório sem conhecimento de EF Core
+      TODO: Refatorar para seguir Clean Architecture corretamente
+    -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.17" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.17">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.17" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageReference Include="prmToolkit.NotificationPattern" Version="1.1.5" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\MessageBus.csproj" />
+    <ProjectReference Include="..\MessageBus\MessageBus.csproj" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,6 @@
 ﻿using Commands.ProdutoPedido.ListarProdutoPedidoPorId;
-using Dapper;
-using MySql.Data.MySqlClient;
 using Repositories.Base;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repositories
 {
@@ -15,30 +14,17 @@ namespace Repositories
 
         public async Task<IList<ListarProdutosPorPedidoIdResponse>> ListarProdutosPorPedidoId(Guid Id)
         {
-            var sql = @"select 
-                            pp.quantidadeItemPedido, 
-                            p.nomeProduto, 
-                            p.precoVenda,  
-                            pp.totalProdutoPedido 
-                            from 
-                            ProdutoPedido pp 
-                            join Produto p on pp.ProdutoId = p.Id 
-                            join Pedido pe  on pe.Id = pp.PedidoId  " +
-                            $"where pe.id = '{Id}';";
-
-            using (var connection = new MySqlConnection("Server=localhost;Database=PDV_02;Uid=root;Pwd=q1w2e3r4;"))
-            {
-                connection.Open();
-                return connection.Query(sql)
-                            .Select(row => new ListarProdutosPorPedidoIdResponse
-                            {
-                                quantidadeItemPedido = (int)row.quantidadeItemPedido,
-                                nomeProduto = (string)row.nomeProduto,
-                                precoVenda = (decimal)row.precoVenda,
-                                totalProdutoPedido = (decimal)row.totalProdutoPedido
-                            }
-                            ).ToList();
-            }
+            return await _context.Set<ProdutoPedido>()
+                .Where(pp => !pp.IsDeleted && pp.PedidoId == Id)
+                .Include(pp => pp.Produto)
+                .Select(pp => new ListarProdutosPorPedidoIdResponse
+                {
+                    quantidadeItemPedido = pp.QuantidadeItemPedido ?? 0,
+                    nomeProduto = pp.Produto != null ? pp.Produto.NomeProduto : string.Empty,
+                    precoVenda = pp.Produto != null ? pp.Produto.PrecoVenda : 0,
+                    totalProdutoPedido = pp.TotalProdutoPedido ?? 0
+                })
+                .ToListAsync();
         }
     }
 }

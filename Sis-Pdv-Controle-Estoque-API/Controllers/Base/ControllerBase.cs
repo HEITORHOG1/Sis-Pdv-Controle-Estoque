@@ -1,9 +1,13 @@
 ﻿using Commands;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Transactions;
+using Sis_Pdv_Controle_Estoque_API.Models;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
 {
+    /// <summary>
+    /// Enhanced base controller with standardized response handling
+    /// </summary>
     public class ControllerBase : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -13,30 +17,100 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Gets the correlation ID from the current request
+        /// </summary>
+        protected string CorrelationId => HttpContext.TraceIdentifier;
+
+        /// <summary>
+        /// Gets the current user ID from claims
+        /// </summary>
+        protected Guid GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
+        }
+
+        /// <summary>
+        /// Legacy method for backward compatibility with existing Response class
+        /// </summary>
+        [NonAction]
         public async Task<IActionResult> ResponseAsync(Response response)
         {
             if (!response.Notifications.Any())
             {
                 try
                 {
-                    _unitOfWork.SaveChanges();
-
-                    return Ok(response);
+                    await _unitOfWork.SaveChangesAsync();
+                    
+                    // Convert legacy response to new standardized format
+                    return Ok(ApiResponse<object>.Ok(response.Data, "Operation completed successfully", CorrelationId));
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest($"Houve um problema interno com o servidor. Entre em contato com o Administrador do sistema caso o problema persista. Erro interno: {ex.Message}");
+                    return BadRequest(ApiResponse.Error(
+                        "An internal server error occurred. Please contact support if the problem persists.",
+                        ex.Message,
+                        CorrelationId));
                 }
             }
             else
             {
-                return Ok(response);
+                var errors = response.Notifications.Select(n => n.Message);
+                return BadRequest(ApiResponse.Error("Validation failed", errors, CorrelationId));
             }
         }
 
+        /// <summary>
+        /// Creates a successful response with data
+        /// </summary>
+        protected IActionResult Success<T>(T data, string? message = null)
+        {
+            return Ok(ApiResponse<T>.Ok(data, message, CorrelationId));
+        }
+
+        /// <summary>
+        /// Creates a successful response without data
+        /// </summary>
+        protected IActionResult Success(string? message = null)
+        {
+            return Ok(ApiResponse.Ok(message, CorrelationId));
+        }
+
+        /// <summary>
+        /// Creates an error response
+        /// </summary>
+        protected IActionResult Error(string message, IEnumerable<string>? errors = null)
+        {
+            return BadRequest(ApiResponse.Error(message, errors, CorrelationId));
+        }
+
+        /// <summary>
+        /// Creates an error response with single error
+        /// </summary>
+        protected IActionResult Error(string message, string error)
+        {
+            return BadRequest(ApiResponse.Error(message, error, CorrelationId));
+        }
+
+        /// <summary>
+        /// Creates a not found response
+        /// </summary>
+        protected IActionResult NotFoundError(string message)
+        {
+            return NotFound(ApiResponse.Error(message, correlationId: CorrelationId));
+        }
+
+        /// <summary>
+        /// Legacy method for backward compatibility
+        /// </summary>
+        [NonAction]
         public async Task<IActionResult> ResponseExceptionAsync(Exception ex)
         {
-            return BadRequest(new { errors = ex.Message, exception = ex.ToString() });
+            return BadRequest(ApiResponse.Error(
+                "An error occurred while processing your request",
+                ex.Message,
+                CorrelationId));
         }
 
         protected override void Dispose(bool disposing)

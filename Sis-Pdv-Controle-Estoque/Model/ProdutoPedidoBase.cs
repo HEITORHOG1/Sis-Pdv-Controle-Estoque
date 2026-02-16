@@ -1,25 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
 namespace Model
 {
-    [Table("ProdutoPedido")]
     public class ProdutoPedidoBase
     {
-        public string codItem { get; set; }
-        public string codigoBarras { get; set; }
-        public string quantidade { get; set; }
-        public string valorUnitario { get; set; }
-        public string total { get; set; }
+        public string CodItem { get; set; }
+        public string CodigoBarras { get; set; }
+        public string Quantidade { get; set; }
+        public string ValorUnitario { get; set; }
+        public string Total { get; set; }
         public string NomeProduto { get; set; }
         public string StatusAtivo { get; set; }
         public ProdutoPedidoBase(string codItem, string codigoBarras, string novaDescricao, string quantidade, string valorUnitario, string total, string status)
         {
-            this.codItem = codItem;
-            this.codigoBarras = codigoBarras;
+            CodItem = codItem;
+            CodigoBarras = codigoBarras;
             NomeProduto = novaDescricao;
-            this.quantidade = quantidade;
-            this.valorUnitario = valorUnitario;
-            this.total = total;
+            Quantidade = quantidade;
+            ValorUnitario = valorUnitario;
+            Total = total;
             StatusAtivo = status;
         }
 

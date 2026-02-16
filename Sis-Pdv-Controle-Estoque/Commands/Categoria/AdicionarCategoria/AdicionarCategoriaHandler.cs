@@ -37,7 +37,7 @@ namespace Commands.Categoria.AdicionarCategoria
             }
 
             Model.Categoria categoria = new(request.NomeCategoria);
-            categoria = _repositoryCategoria.Adicionar(categoria);
+            categoria = await _repositoryCategoria.AdicionarAsync(categoria);
 
             //Criar meu objeto de resposta
             var result = new { categoria.Id, categoria.NomeCategoria };

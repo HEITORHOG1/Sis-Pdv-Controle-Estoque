@@ -18,8 +18,22 @@ using MediatR;
 using Repositories;
 using Repositories.Base;
 using Repositories.Transactions;
+using Services.Stock;
+using Interfaces.Services;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
+using Sis_Pdv_Controle_Estoque_API.Services;
+using Sis_Pdv_Controle_Estoque_API.Services.Auth;
+using Sis_Pdv_Controle_Estoque_API.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 using System.Reflection;
+using System.Text;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using Repositories.Interceptors;
+using Sis_Pdv_Controle_Estoque_API.Configuration;
 
 namespace Sis_Pdv_Controle_Estoque_API
 {
@@ -45,14 +59,33 @@ namespace Sis_Pdv_Controle_Estoque_API
                 cfg.RegisterServicesFromAssembly(typeof(ListarFornecedorPorIdRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(ListarFornecedorPorNomeFornecedorRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(ListarProdutoPorCodBarrasRequest).GetTypeInfo().Assembly);
+                
+                // Register new paginated handlers
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Produto.ListarProdutosPaginado.ListarProdutosPaginadoRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Cliente.ListarClientesPaginado.ListarClientesPaginadoRequest).GetTypeInfo().Assembly);
+                
+                // Register user management handlers
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Usuarios.RegistrarUsuario.RegistrarUsuarioRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Roles.CriarRole.CriarRoleRequest).GetTypeInfo().Assembly);
+                
+                // Register payment handlers
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.ProcessPayment.ProcessPaymentRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.RefundPayment.RefundPaymentRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.CancelPayment.CancelPaymentRequest).GetTypeInfo().Assembly);
 
                 cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
             });
+
+            // Add pipeline behaviors
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Sis_Pdv_Controle_Estoque_API.Behaviors.ValidationBehavior<,>));
         }
 
-        public static void ConfigureRepositories(this IServiceCollection services)
+        public static void ConfigureRepositories(this IServiceCollection services, IConfiguration configuration)
         {
+            // Register audit interceptor
+            services.AddScoped<AuditInterceptor>();
+            
             services.AddScoped<PdvContext, PdvContext>();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -75,7 +108,168 @@ namespace Sis_Pdv_Controle_Estoque_API
 
             services.AddTransient<IRepositoryProdutoPedido, RepositoryProdutoPedido>();
 
+            // Payment repositories
+            services.AddTransient<Interfaces.Repositories.IRepositoryPayment, Sis_Pdv_Controle_Estoque_Infra.Repositories.RepositoryPayment>();
+            services.AddTransient<Interfaces.Repositories.IRepositoryPaymentAudit, Sis_Pdv_Controle_Estoque_Infra.Repositories.RepositoryPaymentAudit>();
+            services.AddTransient<Interfaces.Repositories.IRepositoryFiscalReceipt, Sis_Pdv_Controle_Estoque_Infra.Repositories.RepositoryFiscalReceipt>();
+
+            // Authentication repositories
+            services.AddTransient<IRepositoryRole, RepositoryRole>();
+            services.AddTransient<IRepositoryPermission, RepositoryPermission>();
+            services.AddTransient<IRepositoryUserRole, RepositoryUserRole>();
+            services.AddTransient<IRepositoryRolePermission, RepositoryRolePermission>();
+            services.AddTransient<IRepositoryAuditLog, RepositoryAuditLog>();
+            services.AddTransient<IRepositoryUserSession, RepositoryUserSession>();
+            services.AddTransient<Interfaces.Repositories.IRepositoryStockMovement, RepositoryStockMovement>();
+
+            services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
             services.AddTransient<IRabbitMQMessageSender, RabbitMQMessageSender>();
+            
+            // Register application services
+            // ApplicationLogger is stateless and used by middleware; register as Singleton to avoid scoped resolution from root provider
+            services.AddSingleton<IApplicationLogger, ApplicationLogger>();
+            services.AddHttpContextAccessor();
+            
+            // Authentication services
+            services.AddScoped<Interfaces.Services.IJwtTokenService, Sis_Pdv_Controle_Estoque_API.Services.Auth.JwtTokenService>();
+            
+            // Inventory services
+            services.AddScoped<IStockValidationService, StockValidationService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IPasswordService, PasswordService>();
+            services.AddScoped<Interfaces.Services.IPasswordService, PasswordService>();
+            services.AddScoped<IPermissionService, PermissionService>();
+            services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<AuthSeederService>();
+            
+            // Backup configuration
+            services.Configure<Sis_Pdv_Controle_Estoque_API.Configuration.BackupOptions>(configuration.GetSection("Backup"));
+            services.Configure<Sis_Pdv_Controle_Estoque_API.Configuration.BackupScheduleConfiguration>(configuration.GetSection("BackupSchedule"));
+            
+            // Report services
+            services.AddScoped<Interfaces.Services.IReportDataService, Sis_Pdv_Controle_Estoque_API.Services.Reports.ReportDataService>();
+            services.AddScoped<Interfaces.Services.IReportService, Sis_Pdv_Controle_Estoque_API.Services.Reports.ReportService>();
+            
+            // Backup services
+            services.AddScoped<Sis_Pdv_Controle_Estoque.Interfaces.Services.IDatabaseBackupService, Sis_Pdv_Controle_Estoque_API.Services.Backup.DatabaseBackupService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque.Interfaces.Services.IFileBackupService, Sis_Pdv_Controle_Estoque_API.Services.Backup.FileBackupService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque.Interfaces.Services.IBackupService, Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupService>();
+            
+            // Background services
+            services.AddHostedService<Sis_Pdv_Controle_Estoque_API.Services.Backup.BackupSchedulerService>();
+            
+            // Health check services
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.IMetricsCollectionService, Sis_Pdv_Controle_Estoque_API.Services.Health.MetricsCollectionService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.BusinessHealthCheck>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Health.SystemMetricsHealthCheck>();
+            
+            // Payment services
+            services.Configure<PaymentConfiguration>(configuration.GetSection(PaymentConfiguration.SectionName));
+            services.Configure<SefazConfiguration>(configuration.GetSection(SefazConfiguration.SectionName));
+            services.AddScoped<IPaymentService, Sis_Pdv_Controle_Estoque_API.Services.Payment.PaymentService>();
+            services.AddScoped<IFiscalService, Sis_Pdv_Controle_Estoque_API.Services.Payment.EnhancedFiscalService>();
+            services.AddScoped<IPaymentProcessorService, Sis_Pdv_Controle_Estoque_API.Services.Payment.EnhancedPaymentProcessorService>();
+            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Payment.IPaymentReconciliationService, Sis_Pdv_Controle_Estoque_API.Services.Payment.PaymentReconciliationService>();
+        }
+
+        public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtSecret = configuration["Authentication:JwtSecret"] ?? throw new InvalidOperationException("JWT Secret not configured");
+            var key = Encoding.UTF8.GetBytes(jwtSecret);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false; // Set to true in production
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["Authentication:Issuer"],
+                    ValidAudience = configuration["Authentication:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                        logger.LogError(context.Exception, "Authentication failed");
+                        return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                        var userId = context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                        logger.LogDebug("Token validated for user {UserId}", userId);
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+        }
+
+        public static void ConfigureAuthorization(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                // Add default policy
+                options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                // Add specific permission policies
+                options.AddPolicy("RequireUserManagementPermission", policy =>
+                    policy.RequireClaim("permission", "user.manage"));
+                    
+                options.AddPolicy("RequireRoleManagementPermission", policy =>
+                    policy.RequireClaim("permission", "role.manage"));
+                    
+                // Inventory management policies
+                options.AddPolicy("InventoryManagement", policy =>
+                    policy.RequireClaim("permission", "inventory.manage"));
+                    
+                options.AddPolicy("InventoryView", policy =>
+                    policy.RequireClaim("permission", "inventory.view"));
+
+                // Backup and restore policies
+                options.AddPolicy("RequireBackupPermission", policy =>
+                    policy.RequireClaim("permission", "backup.create"));
+                    
+                options.AddPolicy("RequireRestorePermission", policy =>
+                    policy.RequireClaim("permission", "backup.restore"));
+
+                // Add permission-based policies dynamically
+                // This will be handled by the PermissionAuthorizationHandler
+            });
+
+            services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        }
+
+        public static void ConfigureValidation(this IServiceCollection services)
+        {
+            // Register all validators from the domain assembly
+            services.AddValidatorsFromAssembly(typeof(AdicionarClienteRequest).Assembly);
+            
+            // Configure FluentValidation to work with ASP.NET Core
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                // Disable automatic model state validation since we're handling it in the pipeline
+                options.SuppressModelStateInvalidFilter = true;
+            });
+        }
+
+        public static void ConfigureHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHealthCheckServices(configuration);
         }
     }
 }

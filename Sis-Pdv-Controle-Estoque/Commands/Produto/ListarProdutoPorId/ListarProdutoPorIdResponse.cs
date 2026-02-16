@@ -20,18 +20,18 @@
         {
             return new ListarProdutoPorIdResponse()
             {
-                codBarras = request.codBarras,
-                nomeProduto = request.nomeProduto,
-                descricaoProduto = request.descricaoProduto,
-                precoCusto = request.precoCusto,
-                precoVenda = request.precoVenda,
-                margemLucro = request.margemLucro,
-                dataFabricao = request.dataFabricao,
-                dataVencimento = request.dataVencimento,
-                quatidadeEstoqueProduto = request.quatidadeEstoqueProduto,
+                codBarras = request.CodBarras,
+                nomeProduto = request.NomeProduto,
+                descricaoProduto = request.DescricaoProduto,
+                precoCusto = request.PrecoCusto,
+                precoVenda = request.PrecoVenda,
+                margemLucro = request.MargemLucro,
+                dataFabricao = request.DataFabricao,
+                dataVencimento = request.DataVencimento,
+                quatidadeEstoqueProduto = request.QuatidadeEstoqueProduto,
                 Fornecedor = new Model.Fornecedor { Id = request.Id },
                 Categoria = new Model.Categoria { Id = request.Id },
-                statusAtivo = request.statusAtivo
+                statusAtivo = request.StatusAtivo
             };
         }
     }

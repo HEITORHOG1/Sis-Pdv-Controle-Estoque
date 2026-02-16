@@ -11,9 +11,9 @@ namespace Repositories.Map
             ////Propriedades
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Status).HasMaxLength(50).IsRequired();
-            builder.Property(x => x.dataDoPedido).IsRequired();
-            builder.Property(x => x.formaPagamento).HasMaxLength(150).IsRequired();
-            builder.Property(x => x.totalPedido).IsRequired();
+            builder.Property(x => x.DataDoPedido).IsRequired();
+            builder.Property(x => x.FormaPagamento).HasMaxLength(150).IsRequired();
+            builder.Property(x => x.TotalPedido).IsRequired();
             builder.Property(x => x.ColaboradorId).IsRequired();
             builder.Property(x => x.ClienteId).IsRequired();
         }

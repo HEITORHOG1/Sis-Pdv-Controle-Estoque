@@ -44,7 +44,7 @@ namespace Commands.Colaborador.ValidarColaboradorLogin
                 AddNotification("Atenção", "Login não encontrado");
                 return new Response(this);
             }
-            if (result.Usuario.statusAtivo == false)
+            if (result.Usuario.StatusAtivo == false)
             {
                 AddNotification("Atenção", "Usuario Inativo no Sistema");
                 return new Response(this);

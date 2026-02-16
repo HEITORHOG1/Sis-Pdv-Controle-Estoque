@@ -12,6 +12,9 @@ namespace Repositories.Map
             ////Propriedades
             builder.HasKey(x => x.Id);
             builder.Property(x => x.NomeCategoria).HasMaxLength(150).IsRequired();
+            
+            // Configuração para soft delete
+            builder.Property(x => x.IsDeleted).HasDefaultValue(false);
         }
     }
 }
