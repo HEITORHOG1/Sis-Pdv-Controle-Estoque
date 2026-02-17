@@ -5,7 +5,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration;
 
 public interface IConfigurationValidator
 {
-    Task<ValidationResult> ValidateAsync();
+    Task<ValidationResult> ValidateAsync(CancellationToken cancellationToken = default);
     ValidationResult ValidateOptions<T>(T options, string sectionName) where T : class;
 }
 
@@ -25,7 +25,7 @@ public class ConfigurationValidator : IConfigurationValidator
         _secureConfigurationService = secureConfigurationService;
     }
 
-    public async Task<ValidationResult> ValidateAsync()
+    public async Task<ValidationResult> ValidateAsync(CancellationToken cancellationToken = default)
     {
         var result = new ValidationResult();
         
@@ -48,7 +48,7 @@ public class ConfigurationValidator : IConfigurationValidator
             ValidateSection<HealthCheckOptions>(result, HealthCheckOptions.SectionName);
 
             // Validate connectivity
-            await ValidateConnectivityAsync(result);
+            await ValidateConnectivityAsync(result, cancellationToken);
 
             if (result.IsValid)
             {
@@ -116,15 +116,15 @@ public class ConfigurationValidator : IConfigurationValidator
         }
     }
 
-    private async Task ValidateConnectivityAsync(ValidationResult result)
+    private async Task ValidateConnectivityAsync(ValidationResult result, CancellationToken cancellationToken)
     {
         try
         {
             // Validate database connectivity
-            await ValidateDatabaseConnectivityAsync(result);
+            await ValidateDatabaseConnectivityAsync(result, cancellationToken);
             
             // Validate RabbitMQ connectivity
-            await ValidateRabbitMQConnectivityAsync(result);
+            await ValidateRabbitMQConnectivityAsync(result, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -132,7 +132,7 @@ public class ConfigurationValidator : IConfigurationValidator
         }
     }
 
-    private Task ValidateDatabaseConnectivityAsync(ValidationResult result)
+    private Task ValidateDatabaseConnectivityAsync(ValidationResult result, CancellationToken cancellationToken)
     {
         try
         {
@@ -161,7 +161,7 @@ public class ConfigurationValidator : IConfigurationValidator
         return Task.CompletedTask;
     }
 
-    private Task ValidateRabbitMQConnectivityAsync(ValidationResult result)
+    private Task ValidateRabbitMQConnectivityAsync(ValidationResult result, CancellationToken cancellationToken)
     {
         try
         {

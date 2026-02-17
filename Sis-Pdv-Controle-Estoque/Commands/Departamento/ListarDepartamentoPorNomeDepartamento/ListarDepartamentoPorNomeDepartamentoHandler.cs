@@ -1,33 +1,31 @@
-Ôªøusing MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Departamento.ListarDepartamentoPorNomeDepartamento
 {
     public class ListarDepartamentoPorNomeDepartamentoHandler : Notifiable, IRequestHandler<ListarDepartamentoPorNomeDepartamentoRequest, ListarDepartamentoPorNomeDepartamentoResponse>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryDepartamento _repositoryDepartamento;
 
-        public ListarDepartamentoPorNomeDepartamentoHandler(IMediator mediator, IRepositoryDepartamento repositoryDepartamento)
+        public ListarDepartamentoPorNomeDepartamentoHandler(IRepositoryDepartamento repositoryDepartamento)
         {
-            _mediator = mediator;
             _repositoryDepartamento = repositoryDepartamento;
         }
 
-        public async Task<ListarDepartamentoPorNomeDepartamentoResponse> Handle(ListarDepartamentoPorNomeDepartamentoRequest request, CancellationToken cancellationToken)
+        public Task<ListarDepartamentoPorNomeDepartamentoResponse> Handle(ListarDepartamentoPorNomeDepartamentoRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new ListarDepartamentoPorNomeDepartamentoResponse(this);
+                return Task.FromResult(new ListarDepartamentoPorNomeDepartamentoResponse(this));
             }
 
             var Collection = _repositoryDepartamento.Listar().Where(x => x.NomeDepartamento == request.NomeDepartamento);
             if (!Collection.Any())
             {
-                AddNotification("ATEN√á√ÉO", "Departamento N√ÉO ENCONTRADA");
-                return new ListarDepartamentoPorNomeDepartamentoResponse(this);
+                AddNotification("ATEN«√O", "Departamento N√O ENCONTRADA");
+                return Task.FromResult(new ListarDepartamentoPorNomeDepartamentoResponse(this));
             }
 
             //Criar meu objeto de resposta
@@ -35,7 +33,7 @@ namespace Commands.Departamento.ListarDepartamentoPorNomeDepartamento
             //Cria objeto de resposta
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

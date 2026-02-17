@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Model;
 using Sis_Pdv_Controle_Estoque_API.RabbitMQSender;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
@@ -163,10 +163,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
         
         #region Processamento Principal do Cupom
         
-        public void CumpomImpresso(string codItem, string codBarras, string descricao, string quantidade,
+        public void CumpomImpresso(string codItem, string CodBarras, string descricao, string quantidade,
                                     string valorUnit, string total, string status, string cpf,
                                     string totalVendido, string data, string hora, string caixa, 
-                                    string formaPagamento, string valorRecebido, string troco)
+                                    string FormaPagamento, string valorRecebido, string troco)
         {
             var sw = Stopwatch.StartNew();
             try
@@ -177,12 +177,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
                 listBox1.Clear();
                 
                 // Gera o cupom
-                ImprimirCupom(codItem, codBarras, descricao, quantidade, valorUnit, total, status, 
-                             cpf, data, hora, caixa, formaPagamento, valorRecebido, troco, totalVendido);
+                ImprimirCupom(codItem, CodBarras, descricao, quantidade, valorUnit, total, status, 
+                             cpf, data, hora, caixa, FormaPagamento, valorRecebido, troco, totalVendido);
                 
                 // Cria DTO do cupom
-                var cupom = new CupomDTO(codItem, codBarras, descricao, quantidade, valorUnit, total, 
-                                        status, cpf, data, hora, caixa, formaPagamento, valorRecebido, troco, totalVendido);
+                var cupom = new CupomDTO(codItem, CodBarras, descricao, quantidade, valorUnit, total, 
+                                        status, cpf, data, hora, caixa, FormaPagamento, valorRecebido, troco, totalVendido);
                 
                 // Envia para fila (assíncrono)
                 _ = EnviarCupomFila(cupom);
@@ -282,7 +282,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
         
         public void ImprimirCupom(string codItem, string codigoBarras, string descricao, string quantidade, 
                                  string valorUnitario, string total, string status, string cpf, string data, 
-                                 string hora, string caixa, string formaPagamento, string valorRecebido, 
+                                 string hora, string caixa, string FormaPagamento, string valorRecebido, 
                                  string troco, string totalVendido)
         {
             var sw = Stopwatch.StartNew();
@@ -297,11 +297,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
                 _produtos.Add(new ProdutoPedidoBase(codItem, codigoBarras, novaDescricao, quantidade, valorUnitario, total, status));
                 
                 // Gera arquivo de cupom
-                var caminhoArquivo = GerarArquivoCupom(totalVendido, formaPagamento, valorRecebido, troco);
+                var caminhoArquivo = GerarArquivoCupom(totalVendido, FormaPagamento, valorRecebido, troco);
                 CaminhoArquivo = caminhoArquivo;
                 
                 // Gera layout do cupom
-                GerarLayoutCupom(caminhoArquivo, data, hora, caixa, cpf, formaPagamento);
+                GerarLayoutCupom(caminhoArquivo, data, hora, caixa, cpf, FormaPagamento);
                 
                 // Salva arquivo final
                 SalvarArquivoFinal(caminhoArquivo);
@@ -318,7 +318,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
             }
         }
         
-        private string GerarArquivoCupom(string totalVendido, string formaPagamento, string valorRecebido, string troco)
+        private string GerarArquivoCupom(string totalVendido, string FormaPagamento, string valorRecebido, string troco)
         {
             var path = Path.Combine("C:\\", "Recibos");
             Directory.CreateDirectory(path);
@@ -335,7 +335,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
             
             // Escreve totais
             writer.WriteLine($";;Total R$;;;{totalVendido};;");
-            writer.WriteLine($";;{formaPagamento};;;{valorRecebido};;");
+            writer.WriteLine($";;{FormaPagamento};;;{valorRecebido};;");
             
             if (troco != "0,00" && !string.IsNullOrEmpty(troco))
             {
@@ -345,7 +345,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
             return caminhoArquivo;
         }
         
-        private void GerarLayoutCupom(string caminhoArquivo, string data, string hora, string caixa, string cpf, string formaPagamento)
+        private void GerarLayoutCupom(string caminhoArquivo, string data, string hora, string caixa, string cpf, string FormaPagamento)
         {
             var sb = new StringBuilder();
             
@@ -374,10 +374,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
             File.WriteAllText(caminhoArquivo, sb.ToString());
             
             // Gera layout final
-            GerarCabecalhoRodape(caminhoArquivo, data, hora, caixa, cpf, formaPagamento);
+            GerarCabecalhoRodape(caminhoArquivo, data, hora, caixa, cpf, FormaPagamento);
         }
         
-        private void GerarCabecalhoRodape(string caminhoArquivo, string data, string hora, string caixa, string cpf, string formaPagamento)
+        private void GerarCabecalhoRodape(string caminhoArquivo, string data, string hora, string caixa, string cpf, string FormaPagamento)
         {
             _layout.Clear();
             
@@ -394,7 +394,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
-                    ProcessarLinhaArquivo(line, formaPagamento, todos, cancelados, totalVenda);
+                    ProcessarLinhaArquivo(line, FormaPagamento, todos, cancelados, totalVenda);
                 }
                 
                 // Adiciona itens normais
@@ -438,7 +438,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
             _layout.Add("");
         }
         
-        private void ProcessarLinhaArquivo(string line, string formaPagamento, List<string> todos, List<string> cancelados, List<string> totalVenda)
+        private void ProcessarLinhaArquivo(string line, string FormaPagamento, List<string> todos, List<string> cancelados, List<string> totalVenda)
         {
             if (line.Contains("Cancelado"))
             {
@@ -446,7 +446,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
                 cancelados.Add(linhaAlterada);
                 todos.Add(linhaAlterada);
             }
-            else if (line.Contains("Total") || line.Contains(formaPagamento) || line.Contains("Troco"))
+            else if (line.Contains("Total") || line.Contains(FormaPagamento) || line.Contains("Troco"))
             {
                 totalVenda.Add(line);
             }
@@ -758,32 +758,32 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Cupom
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [Cupom-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [Cupom-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [Cupom-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [Cupom-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [Cupom-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [Cupom-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
             {
                 var status = success ? "SUCCESS" : "FAILED";
-                Console.WriteLine($"[API] [Cupom-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+                Debug.WriteLine($"[API] [Cupom-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
             }
             
             public static void LogPerformance(string operation, TimeSpan duration)
             {
-                Console.WriteLine($"[PERF] [Cupom-{operation}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {duration.TotalMilliseconds}ms");
+                Debug.WriteLine($"[PERF] [Cupom-{operation}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {duration.TotalMilliseconds}ms");
             }
         }
         

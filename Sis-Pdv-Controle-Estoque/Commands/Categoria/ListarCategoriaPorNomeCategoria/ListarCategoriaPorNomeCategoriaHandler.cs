@@ -1,4 +1,4 @@
-Ôªøusing Interfaces;
+using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
 
@@ -6,29 +6,27 @@ namespace Commands.Categoria.ListarCategoriaPorNomeCategoria
 {
     public class ListarCategoriaPorNomeCategoriaHandler : Notifiable, IRequestHandler<ListarCategoriaPorNomeCategoriaRequest, ListarCategoriaPorNomeCategoriaResponse>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryCategoria _repositoryCategoria;
 
-        public ListarCategoriaPorNomeCategoriaHandler(IMediator mediator, IRepositoryCategoria repositoryCategoria)
+        public ListarCategoriaPorNomeCategoriaHandler(IRepositoryCategoria repositoryCategoria)
         {
-            _mediator = mediator;
             _repositoryCategoria = repositoryCategoria;
         }
 
-        public async Task<ListarCategoriaPorNomeCategoriaResponse> Handle(ListarCategoriaPorNomeCategoriaRequest request, CancellationToken cancellationToken)
+        public Task<ListarCategoriaPorNomeCategoriaResponse> Handle(ListarCategoriaPorNomeCategoriaRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new ListarCategoriaPorNomeCategoriaResponse(this);
+                return Task.FromResult(new ListarCategoriaPorNomeCategoriaResponse(this));
             }
 
             var Collection = _repositoryCategoria.Listar().Where(x => x.NomeCategoria == request.NomeCategoria);
             if (!Collection.Any())
             {
-                AddNotification("ATEN√á√ÉO", "CATEGORIA N√ÉO ENCONTRADA");
-                return new ListarCategoriaPorNomeCategoriaResponse(this);
+                AddNotification("ATEN«√O", "CATEGORIA N√O ENCONTRADA");
+                return Task.FromResult(new ListarCategoriaPorNomeCategoriaResponse(this));
             }
 
             //Criar meu objeto de resposta
@@ -36,7 +34,7 @@ namespace Commands.Categoria.ListarCategoriaPorNomeCategoria
             //Cria objeto de resposta
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

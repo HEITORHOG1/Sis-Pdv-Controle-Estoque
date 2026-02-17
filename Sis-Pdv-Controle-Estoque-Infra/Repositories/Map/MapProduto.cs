@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Repositories.Map
@@ -18,7 +18,7 @@ namespace Repositories.Map
             builder.Property(x => x.MargemLucro).IsRequired();
             builder.Property(x => x.DataFabricao).IsRequired();
             builder.Property(x => x.DataVencimento).IsRequired();
-            builder.Property(x => x.QuatidadeEstoqueProduto).IsRequired();
+            builder.Property(x => x.QuantidadeEstoqueProduto).IsRequired();
             builder.Property(x => x.MinimumStock).HasPrecision(18, 2).HasDefaultValue(0);
             builder.Property(x => x.MaximumStock).HasPrecision(18, 2).HasDefaultValue(0);
             builder.Property(x => x.ReorderPoint).HasPrecision(18, 2).HasDefaultValue(0);

@@ -5,15 +5,13 @@ namespace Repositories
 {
     public class RepositoryCliente : RepositoryBase<Cliente, Guid>, IRepositoryCliente
     {
-        private readonly PdvContext _context;
         public RepositoryCliente(PdvContext context) : base(context)
         {
-            _context = context;
         }
 
-        public async Task<int> CountAsync()
+        public async Task<int> CountAsync(CancellationToken cancellationToken = default)
         {
-            return await _context.Clientes.CountAsync();
+            return await _context.Set<Cliente>().CountAsync(cancellationToken);
         }
     }
 }

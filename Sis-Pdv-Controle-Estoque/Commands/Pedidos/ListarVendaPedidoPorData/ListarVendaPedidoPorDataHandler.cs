@@ -1,34 +1,32 @@
-Ôªøusing MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Pedidos.ListarVendaPedidoPorData
 {
     public class ListarVendaPedidoPorDataHandler : Notifiable, IRequestHandler<ListarVendaPedidoPorDataRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryPedido _repositoryPedido;
 
-        public ListarVendaPedidoPorDataHandler(IMediator mediator, IRepositoryPedido repositoryPedido)
+        public ListarVendaPedidoPorDataHandler(IRepositoryPedido repositoryPedido)
         {
-            _mediator = mediator;
             _repositoryPedido = repositoryPedido;
         }
 
-        public async Task<Commands.Response> Handle(ListarVendaPedidoPorDataRequest request, CancellationToken cancellationToken)
+        public Task<Commands.Response> Handle(ListarVendaPedidoPorDataRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new Commands.Response(this);
+                return Task.FromResult(new Commands.Response(this));
             }
 
             var Collection = _repositoryPedido.ListarVendaPedidoPorData(request.DataInicio, request.DataFim);
 
             if (!Collection.Result.Any())
             {
-                AddNotification("ATEN√á√ÉO", "Pedido N√ÉO ENCONTRADA");
-                return new Commands.Response(this);
+                AddNotification("ATEN«√O", "Pedido N√O ENCONTRADA");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             //Criar meu objeto de resposta
@@ -36,7 +34,7 @@ namespace Commands.Pedidos.ListarVendaPedidoPorData
             //Cria objeto de resposta
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

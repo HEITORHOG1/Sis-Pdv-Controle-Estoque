@@ -1,4 +1,4 @@
-﻿using Commands.Pedidos.ListarVendaPedidoPorData;
+using Commands.Pedidos.ListarVendaPedidoPorData;
 using Repositories.Base;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,10 +6,8 @@ namespace Repositories
 {
     public class RepositoryPedido : RepositoryBase<Pedido, Guid>, IRepositoryPedido
     {
-        private readonly PdvContext _context;
         public RepositoryPedido(PdvContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<IList<ListarVendaPedidoPorDataResponse>> ListarVendaPedidoPorData(DateTime DataInicio, DateTime DataFim)
@@ -22,9 +20,9 @@ namespace Repositories
                 .Select(p => new ListarVendaPedidoPorDataResponse
                 {
                     Id = p.Id,
-                    dataDoPedido = p.DataDoPedido,
-                    formaPagamento = p.FormaPagamento,
-                    totalPedido = p.TotalPedido
+                    DataDoPedido = p.DataDoPedido,
+                    FormaPagamento = p.FormaPagamento,
+                    TotalPedido = p.TotalPedido
                 })
                 .ToListAsync();
         }

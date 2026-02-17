@@ -2,9 +2,9 @@
 
 namespace Commands.Produto.RemoverProduto
 {
-    public class RemoverProdutoResquest : IRequest<Response>
+    public class RemoverProdutoRequest : IRequest<Response>
     {
-        public RemoverProdutoResquest(Guid id)
+        public RemoverProdutoRequest(Guid id)
         {
             Id = id;
         }

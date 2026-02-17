@@ -1,4 +1,4 @@
-﻿using MessageBus;
+using MessageBus;
 
 namespace Model
 {

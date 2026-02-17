@@ -1,16 +1,14 @@
-﻿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Cliente.AdicionarCliente
 {
     public class AdicionarClienteHandler : Notifiable, IRequestHandler<AdicionarClienteRequest, Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryCliente _repositoryCliente;
 
-        public AdicionarClienteHandler(IMediator mediator, IRepositoryCliente repositoryCliente)
+        public AdicionarClienteHandler(IRepositoryCliente repositoryCliente)
         {
-            _mediator = mediator;
             _repositoryCliente = repositoryCliente;
         }
 
@@ -18,10 +16,10 @@ namespace Commands.Cliente.AdicionarCliente
         {
             // Validation is now handled by the ValidationBehavior pipeline
 
-            //Verificar se o cliente já existe
+            //Verificar se o cliente j� existe
             if (await _repositoryCliente.ExisteAsync(x => x.CpfCnpj == request.CpfCnpj))
             {
-                AddNotification("CpfCnpj", "Cliente já cadastrado com este CPF/CNPJ");
+                AddNotification("CpfCnpj", "Cliente j� cadastrado com este CPF/CNPJ");
                 return new Response(this);
             }
 
@@ -32,7 +30,7 @@ namespace Commands.Cliente.AdicionarCliente
                 return new Response(this);
             }
             
-            cliente = await _repositoryCliente.AdicionarAsync(cliente);
+            cliente = await _repositoryCliente.AdicionarAsync(cliente, cancellationToken);
 
             //Criar meu objeto de resposta
             var response = new Response(this, cliente);

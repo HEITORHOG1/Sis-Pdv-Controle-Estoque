@@ -8,15 +8,15 @@ namespace Model
         }
         public ProdutoPedido(Guid pedidoId,
                              Guid produtoId,
-                            string codBarras,
-                            int quantidadeItemPedido,
-                            decimal totalProdutoPedido)
+                            string CodBarras,
+                            int QuantidadeItemPedido,
+                            decimal TotalProdutoPedido)
         {
             PedidoId = pedidoId;
             ProdutoId = produtoId;
-            CodBarras = codBarras;
-            QuantidadeItemPedido = quantidadeItemPedido;
-            TotalProdutoPedido = totalProdutoPedido;
+            this.CodBarras = CodBarras;
+            this.QuantidadeItemPedido = QuantidadeItemPedido;
+            this.TotalProdutoPedido = TotalProdutoPedido;
         }
 
 
@@ -30,13 +30,13 @@ namespace Model
         public decimal? TotalProdutoPedido { get; set; }
 
 
-        internal void AlterarProdutoPedido(Guid pedidoId, Guid produtoId, string codBarras, int quantidadeItemPedido, decimal totalProdutoPedido)
+        internal void AlterarProdutoPedido(Guid pedidoId, Guid produtoId, string CodBarras, int QuantidadeItemPedido, decimal TotalProdutoPedido)
         {
             new Pedido { Id = pedidoId };
             new Produto { Id = produtoId };
-            CodBarras = codBarras;
-            QuantidadeItemPedido = quantidadeItemPedido;
-            TotalProdutoPedido = totalProdutoPedido;
+            this.CodBarras = CodBarras;
+            this.QuantidadeItemPedido = QuantidadeItemPedido;
+            this.TotalProdutoPedido = TotalProdutoPedido;
         }
     }
 }

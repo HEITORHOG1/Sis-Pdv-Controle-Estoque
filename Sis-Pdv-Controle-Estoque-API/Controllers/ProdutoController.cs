@@ -1,4 +1,4 @@
-﻿using Commands.Produto.ListarProdutosPaginado;
+using Commands.Produto.ListarProdutosPaginado;
 using Commands.Produto.AdicionarProduto;
 using Commands.Produto.AlterarProduto;
 using Commands.Produto.AtualizarEstoque;
@@ -52,7 +52,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     [Produces("application/json")]
     [Tags("Products")]
     [Authorize]
-    public class ProdutoController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ControllerBase
+    public class ProdutoController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ApiControllerBase
     {
         private readonly IMediator _mediator;
 
@@ -128,63 +128,63 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ListarProdutosPaginado([FromQuery, Required] ListarProdutosPaginadoRequest request)
+        public async Task<IActionResult> ListarProdutosPaginado([FromQuery, Required] ListarProdutosPaginadoRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         // Rotas versionadas equivalentes às rotas legadas
         [HttpPost("AdicionarProduto")]
-        public async Task<IActionResult> AdicionarProduto([FromBody] AdicionarProdutoRequest request)
+        public async Task<IActionResult> AdicionarProduto([FromBody] AdicionarProdutoRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         [HttpPut("AlterarProduto")]
-        public async Task<IActionResult> AlterarProduto([FromBody] AlterarProdutoRequest request)
+        public async Task<IActionResult> AlterarProduto([FromBody] AlterarProdutoRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         [HttpPut("AtualizaEstoque")]
-        public async Task<IActionResult> AtualizaEstoque([FromBody] AtualizarEstoqueRequest request)
+        public async Task<IActionResult> AtualizaEstoque([FromBody] AtualizarEstoqueRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         [HttpDelete("RemoverProduto/{id:Guid}")]
-        public async Task<IActionResult> RemoverProduto(Guid id)
+        public async Task<IActionResult> RemoverProduto(Guid id, CancellationToken cancellationToken)
         {
-            var request = new RemoverProdutoResquest(id);
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var request = new RemoverProdutoRequest(id);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         [HttpGet("ListarProduto")]
-        public async Task<IActionResult> ListarProduto()
+        public async Task<IActionResult> ListarProduto(CancellationToken cancellationToken)
         {
             var request = new ListarProdutoRequest();
-            var response = await _mediator.Send(request);
+            var response = await _mediator.Send(request, cancellationToken);
             return Ok(response);
         }
 
         [HttpGet("ListarProdutoPorId/{id:Guid}")]
-        public async Task<IActionResult> ListarProdutoPorId(Guid id)
+        public async Task<IActionResult> ListarProdutoPorId(Guid id, CancellationToken cancellationToken)
         {
             var request = new ListarProdutoPorIdRequest(id);
-            var response = await _mediator.Send(request);
+            var response = await _mediator.Send(request, cancellationToken);
             return Ok(response);
         }
 
-        [HttpGet("ListarProdutoPorCodBarras/{codBarras}")]
-        public async Task<IActionResult> ListarProdutoPorCodBarras(string codBarras)
+        [HttpGet("ListarProdutoPorCodBarras/{CodBarras}")]
+        public async Task<IActionResult> ListarProdutoPorCodBarras(string CodBarras, CancellationToken cancellationToken)
         {
-            var request = new ListarProdutoPorCodBarrasRequest(codBarras);
-            var response = await _mediator.Send(request);
+            var request = new ListarProdutoPorCodBarrasRequest(CodBarras);
+            var response = await _mediator.Send(request, cancellationToken);
             return Ok(response);
         }
     }

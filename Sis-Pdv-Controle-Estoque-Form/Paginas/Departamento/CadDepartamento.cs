@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Extensions;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
@@ -255,11 +255,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 
                 if (response.IsValidResponse())
                 {
-                    ExibirSucesso($"Departamento '{response.data.nomeDepartamento}' cadastrado com sucesso!");
+                    ExibirSucesso($"Departamento '{response.data.NomeDepartamento}' cadastrado com sucesso!");
                     LimparCampos();
                     await AtualizarLista();
                     
-                    DepartamentoLogger.LogInfo($"Departamento cadastrado: ID={response.data.id}, Nome={response.data.nomeDepartamento}", "Create");
+                    DepartamentoLogger.LogInfo($"Departamento cadastrado: ID={response.data.id}, Nome={response.data.NomeDepartamento}", "Create");
                 }
                 else
                 {
@@ -305,11 +305,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 
                 if (response?.success == true)
                 {
-                    ExibirSucesso($"Departamento alterado para '{response.data.nomeDepartamento}' com sucesso!");
+                    ExibirSucesso($"Departamento alterado para '{response.data.NomeDepartamento}' com sucesso!");
                     DesativarModoEdicao();
                     await AtualizarLista();
                     
-                    DepartamentoLogger.LogInfo($"Departamento alterado: ID={response.data.id}, Nome={response.data.nomeDepartamento}", "Update");
+                    DepartamentoLogger.LogInfo($"Departamento alterado: ID={response.data.id}, Nome={response.data.NomeDepartamento}", "Update");
                 }
                 else
                 {
@@ -340,10 +340,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                     return;
                 }
                 
-                var nomeDepartamento = txtNomeDepartamento.Text.Trim();
+                var NomeDepartamento = txtNomeDepartamento.Text.Trim();
                 var confirmacao = MessageBox.Show(
                     $"⚠️ ATENÇÃO - Exclusão de Departamento\n\n" +
-                    $"Departamento: {nomeDepartamento}\n\n" +
+                    $"Departamento: {NomeDepartamento}\n\n" +
                     $"Esta ação não pode ser desfeita.\n" +
                     $"Tem certeza que deseja excluir este departamento?",
                     "Confirmar Exclusão",
@@ -354,17 +354,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 
                 SetLoadingState(true);
                 
-                DepartamentoLogger.LogInfo($"Iniciando exclusão do departamento: ID={LblId.Text}, Nome={nomeDepartamento}", "Delete");
+                DepartamentoLogger.LogInfo($"Iniciando exclusão do departamento: ID={LblId.Text}, Nome={NomeDepartamento}", "Delete");
                 
                 var response = await _departamentoService.RemoverDepartamento(LblId.Text);
                 
                 if (response?.success == true)
                 {
-                    ExibirSucesso($"Departamento '{nomeDepartamento}' excluído com sucesso!");
+                    ExibirSucesso($"Departamento '{NomeDepartamento}' excluído com sucesso!");
                     LimparCampos();
                     await AtualizarLista();
                     
-                    DepartamentoLogger.LogInfo($"Departamento excluído: ID={LblId.Text}, Nome={nomeDepartamento}", "Delete");
+                    DepartamentoLogger.LogInfo($"Departamento excluído: ID={LblId.Text}, Nome={NomeDepartamento}", "Delete");
                 }
                 else
                 {
@@ -930,9 +930,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
             await AtualizarLista();
         }
         
-        private async Task ConsultarPorNomeDepartamento(string nomeDepartamento)
+        private async Task ConsultarPorNomeDepartamento(string NomeDepartamento)
         {
-            await ConsultarPorNome(nomeDepartamento);
+            await ConsultarPorNome(NomeDepartamento);
         }
         
         private void DefinirCabecalhos(List<string> listaCabecalhos)
@@ -971,27 +971,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [Departamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [Departamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [Departamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [Departamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [Departamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [Departamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
             {
                 var status = success ? "SUCCESS" : "FAILED";
-                Console.WriteLine($"[API] [Departamento-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+                Debug.WriteLine($"[API] [Departamento-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
             }
             
             public static void LogOperation(string operation, string id = null, string value = null)
@@ -999,13 +999,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 var details = string.Empty;
                 if (!string.IsNullOrEmpty(id)) details += $" ID={id}";
                 if (!string.IsNullOrEmpty(value)) details += $" Value={value}";
-                Console.WriteLine($"[OPERATION] [Departamento-{operation}] {DateTime.Now:yyyy-MM-dd HH:mm:ss}{details}");
+                Debug.WriteLine($"[OPERATION] [Departamento-{operation}] {DateTime.Now:yyyy-MM-dd HH:mm:ss}{details}");
             }
             
             public static void LogValidationError(string field, string message, string value = null)
             {
                 var details = !string.IsNullOrEmpty(value) ? $" Value={value}" : "";
-                Console.WriteLine($"[VALIDATION] [Departamento-{field}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}{details}");
+                Debug.WriteLine($"[VALIDATION] [Departamento-{field}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}{details}");
             }
         }
         

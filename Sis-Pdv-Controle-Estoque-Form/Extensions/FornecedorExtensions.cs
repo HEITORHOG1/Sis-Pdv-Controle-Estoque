@@ -15,17 +15,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
             return new FornecedorDto
             {
                 Id = apiResponse.id ?? string.Empty,
-                nomeFantasia = apiResponse.nomeFantasia ?? string.Empty,
+                NomeFantasia = apiResponse.NomeFantasia ?? string.Empty,
                 Cnpj = apiResponse.Cnpj ?? string.Empty,
-                inscricaoEstadual = apiResponse.inscricaoEstadual ?? string.Empty,
-                cepFornecedor = apiResponse.cepFornecedor,
+                InscricaoEstadual = apiResponse.InscricaoEstadual ?? string.Empty,
+                CepFornecedor = apiResponse.CepFornecedor,
                 Rua = apiResponse.Rua ?? string.Empty,
                 Numero = apiResponse.Numero ?? string.Empty,
                 Complemento = apiResponse.Complemento ?? string.Empty,
                 Bairro = apiResponse.Bairro ?? string.Empty,
                 Cidade = apiResponse.Cidade ?? string.Empty,
                 Uf = apiResponse.Uf ?? string.Empty,
-                statusAtivo = apiResponse.statusAtivo
+                StatusAtivo = apiResponse.StatusAtivo
             };
         }
 
@@ -41,7 +41,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Valida se uma resposta da API é válida
+        /// Valida se uma resposta da API ï¿½ vï¿½lida
         /// </summary>
         public static bool IsValidResponse(this FornecedorResponse response)
         {
@@ -49,7 +49,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Valida se uma lista de respostas da API é válida
+        /// Valida se uma lista de respostas da API ï¿½ vï¿½lida
         /// </summary>
         public static bool IsValidResponse(this FornecedorResponseList response)
         {
@@ -57,7 +57,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém as mensagens de erro de uma resposta
+        /// Obtï¿½m as mensagens de erro de uma resposta
         /// </summary>
         public static List<string> GetErrorMessages(this FornecedorResponse response)
         {
@@ -72,7 +72,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém as mensagens de erro de uma lista de respostas
+        /// Obtï¿½m as mensagens de erro de uma lista de respostas
         /// </summary>
         public static List<string> GetErrorMessages(this FornecedorResponseList response)
         {
@@ -87,14 +87,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Formata CNPJ para exibição
+        /// Formata CNPJ para exibiï¿½ï¿½o
         /// </summary>
         public static string FormatCNPJ(this string cnpj)
         {
             if (string.IsNullOrWhiteSpace(cnpj))
                 return string.Empty;
 
-            // Remove formatação existente
+            // Remove formataï¿½ï¿½o existente
             var numbersOnly = new string(cnpj.Where(char.IsDigit).ToArray());
 
             if (numbersOnly.Length == 14)
@@ -102,11 +102,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 return $"{numbersOnly.Substring(0, 2)}.{numbersOnly.Substring(2, 3)}.{numbersOnly.Substring(5, 3)}/{numbersOnly.Substring(8, 4)}-{numbersOnly.Substring(12, 2)}";
             }
 
-            return cnpj; // Retorna original se não for possível formatar
+            return cnpj; // Retorna original se nï¿½o for possï¿½vel formatar
         }
 
         /// <summary>
-        /// Formata CEP para exibição
+        /// Formata CEP para exibiï¿½ï¿½o
         /// </summary>
         public static string FormatCEP(this int cep)
         {
@@ -115,7 +115,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém endereço completo formatado
+        /// Obtï¿½m endereï¿½o completo formatado
         /// </summary>
         public static string GetEnderecoCompleto(this FornecedorDto fornecedor)
         {
@@ -132,21 +132,21 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
 
             endereco += $", {fornecedor.Bairro}";
             endereco += $", {fornecedor.Cidade} - {fornecedor.Uf}";
-            endereco += $", CEP: {fornecedor.cepFornecedor.FormatCEP()}";
+            endereco += $", CEP: {fornecedor.CepFornecedor.FormatCEP()}";
 
             return endereco;
         }
 
         /// <summary>
-        /// Verifica se o fornecedor está ativo
+        /// Verifica se o fornecedor estï¿½ ativo
         /// </summary>
         public static bool EstaAtivo(this FornecedorDto fornecedor)
         {
-            return fornecedor?.statusAtivo == 1;
+            return fornecedor?.StatusAtivo == 1;
         }
 
         /// <summary>
-        /// Obtém status formatado
+        /// Obtï¿½m status formatado
         /// </summary>
         public static string GetStatusFormatado(this FornecedorDto fornecedor)
         {

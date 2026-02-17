@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Commands.Pedidos.ListarPedidorPorId
+namespace Commands.Pedidos.ListarPedidoPorId
 {
     public class ListarPedidoPorIdRequest : IRequest<Commands.Response>
     {

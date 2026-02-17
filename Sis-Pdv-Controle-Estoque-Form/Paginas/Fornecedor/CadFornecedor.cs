@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Services.Fornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Extensions;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
@@ -81,7 +81,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
                 var fornecedor = fornecedoresList[e.RowIndex];
                 PreencherCamposEdicao(fornecedor);
                 
-                FornecedorLogger.LogOperation("FornecedorSelecionado", fornecedor.Id, fornecedor.nomeFantasia);
+                FornecedorLogger.LogOperation("FornecedorSelecionado", fornecedor.Id, fornecedor.NomeFantasia);
             }
         }
 
@@ -97,17 +97,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
 
                 var dto = new FornecedorDto()
                 {
-                    nomeFantasia = txbNomeFantasia.Text.Trim(),
+                    NomeFantasia = txbNomeFantasia.Text.Trim(),
                     Cnpj = mskTxbCnpj.Text.Trim(),
-                    inscricaoEstadual = txbInscricaoEstadual.Text.Trim(),
-                    cepFornecedor = int.Parse(txbCep.Text.Replace("-", "").Replace(".", "")),
+                    InscricaoEstadual = txbInscricaoEstadual.Text.Trim(),
+                    CepFornecedor = int.Parse(txbCep.Text.Replace("-", "").Replace(".", "")),
                     Rua = txbRua.Text.Trim(),
                     Numero = txbNumero.Text.Trim(),
                     Complemento = txbComplemento.Text.Trim(),
                     Bairro = txbBairro.Text.Trim(),
                     Cidade = txbCidade.Text.Trim(),
                     Uf = txbEstado.Text.Trim(),
-                    statusAtivo = rbFornecedorAtivo.Checked ? 1 : 0
+                    StatusAtivo = rbFornecedorAtivo.Checked ? 1 : 0
                 };
 
                 // Normaliza os dados
@@ -118,12 +118,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
                 if (errosValidacao.Any())
                 {
                     var mensagem = $"Erros de validação:\n• {string.Join("\n• ", errosValidacao)}";
-                    FornecedorLogger.LogValidationError("Fornecedor", mensagem, dto.nomeFantasia);
+                    FornecedorLogger.LogValidationError("Fornecedor", mensagem, dto.NomeFantasia);
                     MessageBox.Show(mensagem, "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                FornecedorLogger.LogOperation("CadastroIniciado", value: dto.nomeFantasia);
+                FornecedorLogger.LogOperation("CadastroIniciado", value: dto.NomeFantasia);
 
                 // Verifica se já existe um fornecedor com o mesmo CNPJ
                 if (await FornecedorJaExiste(dto.Cnpj))
@@ -142,9 +142,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
                 if (response.IsValidResponse())
                 {
                     await LimpaCampos();
-                    var mensagem = $"Fornecedor '{response.data.nomeFantasia}' inserido com sucesso!";
+                    var mensagem = $"Fornecedor '{response.data.NomeFantasia}' inserido com sucesso!";
                     
-                    FornecedorLogger.LogOperation("CadastroRealizado", response.data.id, response.data.nomeFantasia);
+                    FornecedorLogger.LogOperation("CadastroRealizado", response.data.id, response.data.NomeFantasia);
                     MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await Consultar();
                 }
@@ -184,17 +184,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
                 var dto = new FornecedorDto()
                 {
                     Id = txbId.Text,
-                    nomeFantasia = txbNomeFantasia.Text.Trim(),
+                    NomeFantasia = txbNomeFantasia.Text.Trim(),
                     Cnpj = mskTxbCnpj.Text.Trim(),
-                    inscricaoEstadual = txbInscricaoEstadual.Text.Trim(),
-                    cepFornecedor = int.Parse(txbCep.Text.Replace("-", "").Replace(".", "")),
+                    InscricaoEstadual = txbInscricaoEstadual.Text.Trim(),
+                    CepFornecedor = int.Parse(txbCep.Text.Replace("-", "").Replace(".", "")),
                     Rua = txbRua.Text.Trim(),
                     Numero = txbNumero.Text.Trim(),
                     Complemento = txbComplemento.Text.Trim(),
                     Bairro = txbBairro.Text.Trim(),
                     Cidade = txbCidade.Text.Trim(),
                     Uf = txbEstado.Text.Trim(),
-                    statusAtivo = rbFornecedorAtivo.Checked ? 1 : 0
+                    StatusAtivo = rbFornecedorAtivo.Checked ? 1 : 0
                 };
 
                 // Normaliza os dados
@@ -205,12 +205,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
                 if (errosValidacao.Any())
                 {
                     var mensagem = $"Erros de validação:\n• {string.Join("\n• ", errosValidacao)}";
-                    FornecedorLogger.LogValidationError("Fornecedor", mensagem, dto.nomeFantasia);
+                    FornecedorLogger.LogValidationError("Fornecedor", mensagem, dto.NomeFantasia);
                     MessageBox.Show(mensagem, "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                FornecedorLogger.LogOperation("AlteracaoIniciada", dto.Id, dto.nomeFantasia);
+                FornecedorLogger.LogOperation("AlteracaoIniciada", dto.Id, dto.NomeFantasia);
 
                 var response = await fornecedorService.AlterarFornecedor(dto);
 
@@ -220,9 +220,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
                 if (response.IsValidResponse())
                 {
                     await LimpaCampos();
-                    var mensagem = $"Fornecedor '{response.data.nomeFantasia}' alterado com sucesso!";
+                    var mensagem = $"Fornecedor '{response.data.NomeFantasia}' alterado com sucesso!";
                     
-                    FornecedorLogger.LogOperation("AlteracaoRealizada", response.data.id, response.data.nomeFantasia);
+                    FornecedorLogger.LogOperation("AlteracaoRealizada", response.data.id, response.data.NomeFantasia);
                     MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await Consultar();
                     btnAdicionar.Enabled = true;
@@ -593,10 +593,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
         private void PreencherCamposEdicao(FornecedorDto fornecedor)
         {
             txbId.Text = fornecedor.Id;
-            txbNomeFantasia.Text = fornecedor.nomeFantasia;
+            txbNomeFantasia.Text = fornecedor.NomeFantasia;
             mskTxbCnpj.Text = fornecedor.Cnpj;
-            txbInscricaoEstadual.Text = fornecedor.inscricaoEstadual;
-            txbCep.Text = fornecedor.cepFornecedor.ToString("D8").Insert(5, "-");
+            txbInscricaoEstadual.Text = fornecedor.InscricaoEstadual;
+            txbCep.Text = fornecedor.CepFornecedor.ToString("D8").Insert(5, "-");
             txbRua.Text = fornecedor.Rua;
             txbNumero.Text = fornecedor.Numero;
             txbComplemento.Text = fornecedor.Complemento;
@@ -604,7 +604,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
             txbCidade.Text = fornecedor.Cidade;
             txbEstado.Text = fornecedor.Uf;
             
-            if (fornecedor.statusAtivo == 1)
+            if (fornecedor.StatusAtivo == 1)
                 rbFornecedorAtivo.Checked = true;
             else
                 rbFornecedorInativo.Checked = true;

@@ -13,6 +13,6 @@ namespace Repositories.Transactions
             IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
             CancellationToken cancellationToken = default);
         Task CommitTransactionAsync(CancellationToken cancellationToken = default);
-        Task RollbackTransactionAsync();
+        Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
     }
 }

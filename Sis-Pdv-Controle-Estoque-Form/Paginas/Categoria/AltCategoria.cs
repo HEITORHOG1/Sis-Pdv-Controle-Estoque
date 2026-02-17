@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Categoria;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Services.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.Diagnostics;
@@ -19,28 +19,28 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
         
         #region Construtor e Inicialização
         
-        public AltCategoria(string nomeCategoria, string id)
+        public AltCategoria(string NomeCategoria, string id)
         {
             InitializeComponent();
-            InicializarComponentesModernos(nomeCategoria, id);
+            InicializarComponentesModernos(NomeCategoria, id);
         }
         
-        private void InicializarComponentesModernos(string nomeCategoria, string id)
+        private void InicializarComponentesModernos(string NomeCategoria, string id)
         {
             // Inicializa serviços
             _categoriaService = new CategoriaService();
             
             // Configura dados iniciais
-            txtNomeCategoria.Text = nomeCategoria ?? "";
+            txtNomeCategoria.Text = NomeCategoria ?? "";
             LblId.Text = id ?? "";
-            _nomeOriginal = nomeCategoria ?? "";
+            _nomeOriginal = NomeCategoria ?? "";
             
             // Configura estado inicial
             ValidarCampo();
             AtualizarStatusInterface();
             
             // Log de inicialização
-            AltCategoriaLogger.LogInfo($"Formulário de alteração inicializado - ID: {id}, Nome: {nomeCategoria}", "Startup");
+            AltCategoriaLogger.LogInfo($"Formulário de alteração inicializado - ID: {id}, Nome: {NomeCategoria}", "Startup");
         }
         
         #endregion
@@ -455,27 +455,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [AltCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [AltCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [AltCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [AltCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [AltCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [AltCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
             {
                 var status = success ? "SUCCESS" : "FAILED";
-                Console.WriteLine($"[API] [AltCategoria-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+                Debug.WriteLine($"[API] [AltCategoria-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
             }
         }
         

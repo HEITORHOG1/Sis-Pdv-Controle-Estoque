@@ -7,7 +7,7 @@ using Commands.Fornecedor.AdicionarFornecedor;
 using Commands.Fornecedor.AlterarFornecedor;
 using Commands.Fornecedor.ListarFornecedor;
 using Commands.Fornecedor.ListarFornecedorPorId;
-using Commands.Fornecedor.ListarFornecedorPorNomeDepartamento;
+using Commands.Fornecedor.ListarFornecedorPorNomeFornecedor;
 using Commands.Produto.AdicionarProduto;
 using Commands.Produto.AlterarProduto;
 using Commands.Produto.ListarProdutoPorNomeProduto;
@@ -73,8 +73,8 @@ namespace Sis_Pdv_Controle_Estoque_API
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.RefundPayment.RefundPaymentRequest).GetTypeInfo().Assembly);
                 cfg.RegisterServicesFromAssembly(typeof(Commands.Payment.CancelPayment.CancelPaymentRequest).GetTypeInfo().Assembly);
 
-                cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaResquest).GetTypeInfo().Assembly);
-                cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoResquest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(RemoverCategoriaRequest).GetTypeInfo().Assembly);
+                cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoRequest).GetTypeInfo().Assembly);
             });
 
             // Add pipeline behaviors

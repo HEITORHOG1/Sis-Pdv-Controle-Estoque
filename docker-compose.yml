@@ -11,6 +11,7 @@ services:
       - "8081:8081"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_RUNNING_IN_CONTAINER=true
       - DB_SERVER=mysql
       - DB_NAME=PDV_PROD
       - DB_USER=pdvuser

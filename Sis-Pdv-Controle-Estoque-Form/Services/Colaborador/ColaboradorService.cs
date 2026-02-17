@@ -1,4 +1,4 @@
-﻿using Commands.Colaborador.AdicionarColaborador;
+using Commands.Colaborador.AdicionarColaborador;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.Net;
@@ -34,22 +34,22 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
 
                 AdicionarColaboradorRequest request = new AdicionarColaboradorRequest()
                 {
-                    nomeColaborador = dto.nomeColaborador.Trim(),
-                    cargoColaborador = dto.cargoColaborador.Trim(),
-                    cpfColaborador = dto.cpfColaborador.Replace(".", "").Replace("-", ""),
-                    emailCorporativo = dto.emailCorporativo.Trim(),
-                    emailPessoalColaborador = dto.emailPessoalColaborador.Trim(),
-                    telefoneColaborador = dto.telefoneColaborador.Trim(),
+                    NomeColaborador = dto.NomeColaborador.Trim(),
+                    CargoColaborador = dto.cargoColaborador.Trim(),
+                    CpfColaborador = dto.cpfColaborador.Replace(".", "").Replace("-", ""),
+                    EmailCorporativo = dto.emailCorporativo.Trim(),
+                    EmailPessoalColaborador = dto.emailPessoalColaborador.Trim(),
+                    TelefoneColaborador = dto.telefoneColaborador.Trim(),
                     DepartamentoId = Guid.Parse(dto.departamentoId),
                     Usuario = new Model.Usuario
                     {
                         Senha = dto.senha.Trim(),
                         Login = dto.login.Trim(),
-                        StatusAtivo = dto.statusAtivo
+                        StatusAtivo = dto.StatusAtivo
                     },
                 };
 
-                System.Diagnostics.Debug.WriteLine($"Tentando adicionar colaborador: {request.nomeColaborador}");
+                System.Diagnostics.Debug.WriteLine($"Tentando adicionar colaborador: {request.NomeColaborador}");
 
                 var response = await _client.PostAsJson($"{BasePath}/Colaborador/AdicionarColaborador", request);
                 
@@ -184,16 +184,16 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
             }
         }
 
-        public async Task<ColaboradorResponseList> ListarColaboradorPorNomeColaborador(string nomeColaborador)
+        public async Task<ColaboradorResponseList> ListarColaboradorPorNomeColaborador(string NomeColaborador)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(nomeColaborador))
+                if (string.IsNullOrWhiteSpace(NomeColaborador))
                     throw new ArgumentException("Nome do colaborador é obrigatório.");
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
-                var response = await _client.GetAsync($"{BasePath}/Colaborador/ListarColaboradorPorNomeColaborador/{Uri.EscapeDataString(nomeColaborador)}");
+                var response = await _client.GetAsync($"{BasePath}/Colaborador/ListarColaboradorPorNomeColaborador/{Uri.EscapeDataString(NomeColaborador)}");
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -255,19 +255,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Colaborador
                 AdicionarColaboradorRequest request = new AdicionarColaboradorRequest()
                 {
                     Id = guidId,
-                    nomeColaborador = dto.nomeColaborador.Trim(),
-                    cargoColaborador = dto.cargoColaborador.Trim(),
-                    cpfColaborador = dto.cpfColaborador.Replace(".", "").Replace("-", ""),
-                    emailCorporativo = dto.emailCorporativo.Trim(),
-                    emailPessoalColaborador = dto.emailPessoalColaborador.Trim(),
-                    telefoneColaborador = dto.telefoneColaborador.Trim(),
+                    NomeColaborador = dto.NomeColaborador.Trim(),
+                    CargoColaborador = dto.cargoColaborador.Trim(),
+                    CpfColaborador = dto.cpfColaborador.Replace(".", "").Replace("-", ""),
+                    EmailCorporativo = dto.emailCorporativo.Trim(),
+                    EmailPessoalColaborador = dto.emailPessoalColaborador.Trim(),
+                    TelefoneColaborador = dto.telefoneColaborador.Trim(),
                     DepartamentoId = Guid.Parse(dto.departamentoId),
                     Usuario = new Model.Usuario
                     {
                         Id = string.IsNullOrWhiteSpace(dto.idlogin) ? Guid.NewGuid() : Guid.Parse(dto.idlogin),
                         Senha = dto.senha.Trim(),
                         Login = dto.login.Trim(),
-                        StatusAtivo = dto.statusAtivo
+                        StatusAtivo = dto.StatusAtivo
                     },
                 };
 

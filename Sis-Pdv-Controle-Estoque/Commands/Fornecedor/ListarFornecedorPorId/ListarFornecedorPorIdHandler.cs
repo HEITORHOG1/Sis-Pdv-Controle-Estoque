@@ -1,25 +1,23 @@
-ï»¿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Fornecedor.ListarFornecedorPorId
 {
     public class ListarFornecedorPorIdHandler : Notifiable, IRequestHandler<ListarFornecedorPorIdRequest, ListarFornecedorPorIdResponse>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryFornecedor _repositoryFornecedor;
 
-        public ListarFornecedorPorIdHandler(IMediator mediator, IRepositoryFornecedor repositoryFornecedor)
+        public ListarFornecedorPorIdHandler(IRepositoryFornecedor repositoryFornecedor)
         {
-            _mediator = mediator;
             _repositoryFornecedor = repositoryFornecedor;
         }
 
-        public async Task<ListarFornecedorPorIdResponse> Handle(ListarFornecedorPorIdRequest request, CancellationToken cancellationToken)
+        public Task<ListarFornecedorPorIdResponse> Handle(ListarFornecedorPorIdRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return null;
             }
 
@@ -27,7 +25,7 @@ namespace Commands.Fornecedor.ListarFornecedorPorId
 
             if (Collection == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return null;
             }
 
@@ -35,7 +33,7 @@ namespace Commands.Fornecedor.ListarFornecedorPorId
             var response = (ListarFornecedorPorIdResponse)Collection;
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

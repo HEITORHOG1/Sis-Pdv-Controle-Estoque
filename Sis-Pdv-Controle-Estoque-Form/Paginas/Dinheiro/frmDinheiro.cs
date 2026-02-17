@@ -290,11 +290,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Dinheiro
                 AtualizarBotoesSugestao();
             }
             
-            // Foco no campo de entrada
+            MoneyLogger.LogInfo($"Formulário carregado - Total da venda: {FormatarMoeda(_totalVenda)}", "UserInterface");
+        }
+        
+        private void frmDinheiro_Shown(object sender, EventArgs e)
+        {
+            // Shown event fires after the form is fully visible — Focus() works reliably here
+            ActiveControl = txbValorRecebido;
             txbValorRecebido.Focus();
             txbValorRecebido.SelectAll();
-            
-            MoneyLogger.LogInfo($"Formulário carregado - Total da venda: {FormatarMoeda(_totalVenda)}", "UserInterface");
         }
         
         private void pnHeader_MouseDown(object sender, MouseEventArgs e)
@@ -763,26 +767,26 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Dinheiro
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [Money-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [Money-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [Money-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [Money-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [Money-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [Money-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogPerformance(string operation, TimeSpan duration)
             {
-                Console.WriteLine($"[PERF] [Money] {operation} - {duration.TotalMilliseconds}ms");
+                Debug.WriteLine($"[PERF] [Money] {operation} - {duration.TotalMilliseconds}ms");
             }
         }
         

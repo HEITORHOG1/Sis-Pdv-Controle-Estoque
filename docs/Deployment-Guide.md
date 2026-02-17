@@ -1,286 +1,184 @@
-# PDV System Deployment Guide
+# Guia de Deploy do Sistema PDV
 
-## Overview
+## Visão Geral
 
-This guide provides comprehensive instructions for deploying the PDV (Point of Sale) Control System in different environments.
+Este guia cobre o deploy do sistema PDV (Ponto de Venda) nos ambientes de desenvolvimento, staging e produção. O projeto suporta deploy via **Docker Compose** (recomendado) ou **manual** com `dotnet publish`.
 
-## Table of Contents
+## Pré-Requisitos
 
-1. [Prerequisites](#prerequisites)
-2. [Environment Setup](#environment-setup)
-3. [Database Setup](#database-setup)
-4. [Application Configuration](#application-configuration)
-5. [Docker Deployment](#docker-deployment)
-6. [Manual Deployment](#manual-deployment)
-7. [Security Configuration](#security-configuration)
-8. [Monitoring Setup](#monitoring-setup)
-9. [Troubleshooting](#troubleshooting)
+### Stack Tecnológica
 
-## Prerequisites
+| Componente       | Versão Mínima     | Uso                                    |
+|------------------|-------------------|----------------------------------------|
+| .NET SDK         | 8.0               | Build e runtime da API                 |
+| MySQL            | 8.0               | Banco de dados relacional              |
+| RabbitMQ         | 3.12+             | Fila de mensagens (cupons fiscais)     |
+| Docker           | 24.0+             | Containerização (opcional)             |
+| Docker Compose   | 2.20+             | Orquestração de containers             |
+| Nginx            | alpine             | Reverse proxy e terminação SSL         |
 
-### System Requirements
+### Requisitos de Hardware (Produção)
 
-- **Operating System**: Linux (Ubuntu 20.04+ recommended), Windows Server 2019+, or macOS
-- **Runtime**: .NET 8.0 Runtime
-- **Database**: MySQL 8.0+ or MariaDB 10.5+
-- **Message Queue**: RabbitMQ 3.8+
-- **Memory**: Minimum 2GB RAM (4GB+ recommended)
-- **Storage**: Minimum 10GB free space (50GB+ recommended for production)
-- **Network**: HTTPS support, firewall configuration
+| Recurso  | Mínimo | Recomendado |
+|----------|--------|-------------|
+| CPU      | 2 cores| 4 cores     |
+| RAM      | 2 GB   | 4 GB+       |
+| Disco    | 10 GB  | 50 GB+      |
 
-### Software Dependencies
+## Estrutura dos Arquivos de Deploy
 
-```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install -y dotnet-runtime-8.0 mysql-server rabbitmq-server nginx
-
-# CentOS/RHEL
-sudo yum install -y dotnet-runtime-8.0 mysql-server rabbitmq-server nginx
-
-# Windows (using Chocolatey)
-choco install dotnet-8.0-runtime mysql rabbitmq nginx
+```
+raiz/
+├── Dockerfile                      ← Build multi-stage para produção
+├── Dockerfile.development          ← Build para desenvolvimento com hot reload
+├── docker-compose.yml              ← Produção (4 serviços)
+├── docker-compose.development.yml  ← Desenvolvimento local
+├── docker-compose.staging.yml      ← Staging/pré-produção
+├── .env.example                    ← Template de variáveis de ambiente
+├── nginx/
+│   └── nginx.conf                  ← Configuração do reverse proxy
+└── dev-run.ps1                     ← Script PowerShell para rodar localmente
 ```
 
-## Environment Setup
+## Deploy Local (Desenvolvimento)
 
-### Development Environment
+### Opção 1: Sem Docker
 
-```bash
-# Clone the repository
+```powershell
+# 1. Clone o repositório
 git clone <repository-url>
 cd Sis-Pdv-Controle-Estoque
 
-# Restore dependencies
+# 2. Restaure as dependências
 dotnet restore
 
-# Build the solution
+# 3. Configure os User Secrets (credenciais do banco)
+cd Sis-Pdv-Controle-Estoque-API
+dotnet user-secrets set "ConnectionStrings:DatabasePassword" "sua_senha"
+dotnet user-secrets set "Authentication:JwtSecret" "chave_jwt_minimo_32_caracteres_aqui"
+cd ..
+
+# 4. Compile a solução
 dotnet build
 
-# Run database migrations
+# 5. Aplique as migrações do banco
 dotnet ef database update --project Sis-Pdv-Controle-Estoque-Infra --startup-project Sis-Pdv-Controle-Estoque-API
+
+# 6. Execute a API
+dotnet run --project Sis-Pdv-Controle-Estoque-API
 ```
 
-### Production Environment
+A API estará disponível em `http://localhost:7003`. O Swagger UI estará em `http://localhost:7003/api-docs`.
+
+> **Pré-requisito:** MySQL 8.0 e RabbitMQ devem estar rodando localmente.
+
+### Opção 2: Com Docker Compose (Desenvolvimento)
 
 ```bash
-# Create application directory
-sudo mkdir -p /opt/pdv-system
-sudo chown -R www-data:www-data /opt/pdv-system
-
-# Create logs directory
-sudo mkdir -p /var/log/pdv-system
-sudo chown -R www-data:www-data /var/log/pdv-system
-
-# Create backup directory
-sudo mkdir -p /var/backups/pdv-system
-sudo chown -R www-data:www-data /var/backups/pdv-system
-```
-
-## Database Setup
-
-### MySQL Configuration
-
-```sql
--- Create database and user
-CREATE DATABASE PDV_Production CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'pdv_user'@'localhost' IDENTIFIED BY 'secure_password_here';
-GRANT ALL PRIVILEGES ON PDV_Production.* TO 'pdv_user'@'localhost';
-FLUSH PRIVILEGES;
-
--- Apply performance optimizations
-SET GLOBAL innodb_buffer_pool_size = 2147483648; -- 2GB
-SET GLOBAL innodb_log_file_size = 268435456; -- 256MB
-SET GLOBAL max_connections = 200;
-```
-
-### Database Optimization
-
-Run the database optimization script:
-
-```bash
-mysql -u root -p PDV_Production < database-optimization.sql
-```
-
-### Connection String Configuration
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=PDV_Production;Uid=pdv_user;Pwd=secure_password_here;SslMode=Required;AllowPublicKeyRetrieval=false;"
-  }
-}
-```
-
-## Application Configuration
-
-### Production Configuration (appsettings.Production.json)
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=PDV_Production;Uid=pdv_user;Pwd=${DB_PASSWORD};SslMode=Required;"
-  },
-  "Authentication": {
-    "JwtSecret": "${JWT_SECRET}",
-    "Issuer": "PDV-System-Production",
-    "Audience": "PDV-Users-Production",
-    "TokenExpirationMinutes": 30,
-    "RefreshTokenExpirationDays": 7
-  },
-  "Serilog": {
-    "MinimumLevel": {
-      "Default": "Warning",
-      "Override": {
-        "Sis_Pdv_Controle_Estoque": "Information"
-      }
-    }
-  },
-  "RateLimit": {
-    "MaxRequests": 60,
-    "WindowSizeInMinutes": 1
-  },
-  "Cors": {
-    "AllowedOrigins": [
-      "https://your-frontend-domain.com"
-    ]
-  },
-  "Sefaz": {
-    "Environment": "Producao",
-    "Certificado": {
-      "Arquivo": "/opt/pdv-system/certificates/certificado.pfx",
-      "Senha": "${SEFAZ_CERT_PASSWORD}"
-    }
-  }
-}
-```
-
-### Environment Variables
-
-Create `/opt/pdv-system/.env`:
-
-```bash
-# Database
-DB_PASSWORD=your_secure_database_password
-
-# JWT
-JWT_SECRET=your_super_secure_jwt_secret_key_minimum_32_characters
-
-# SEFAZ
-SEFAZ_CERT_PASSWORD=your_certificate_password
-
-# Application
-ASPNETCORE_ENVIRONMENT=Production
-ASPNETCORE_URLS=http://localhost:5000
-```
-
-## Docker Deployment
-
-### Docker Compose Setup
-
-```yaml
-# docker-compose.production.yml
-version: '3.8'
-
-services:
-  pdv-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5000:80"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Server=mysql;Database=PDV_Production;Uid=pdv_user;Pwd=${DB_PASSWORD}
-    depends_on:
-      - mysql
-      - rabbitmq
-    volumes:
-      - ./logs:/app/logs
-      - ./backups:/app/backups
-      - ./certificates:/app/certificates
-    restart: unless-stopped
-
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: PDV_Production
-      MYSQL_USER: pdv_user
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./database-optimization.sql:/docker-entrypoint-initdb.d/optimization.sql
-    ports:
-      - "3306:3306"
-    restart: unless-stopped
-
-  rabbitmq:
-    image: rabbitmq:3.8-management
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    restart: unless-stopped
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./certificates:/etc/nginx/certificates
-    depends_on:
-      - pdv-api
-    restart: unless-stopped
-
-volumes:
-  mysql_data:
-  rabbitmq_data:
-```
-
-### Deployment Commands
-
-```bash
-# Create environment file
+# Copia o template de variáveis
 cp .env.example .env
-# Edit .env with production values
+# Edite o .env com suas credenciais
 
-# Deploy with Docker Compose
-docker-compose -f docker-compose.production.yml up -d
-
-# Check logs
-docker-compose -f docker-compose.production.yml logs -f pdv-api
-
-# Run database migrations
-docker-compose -f docker-compose.production.yml exec pdv-api dotnet ef database update
+# Sobe todos os serviços com hot reload
+docker-compose -f docker-compose.development.yml up
 ```
 
-## Manual Deployment
+## Deploy com Docker Compose (Produção)
 
-### Build and Publish
+### Arquitetura dos Containers
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    Rede: pdv-network                 │
+│                                                     │
+│  ┌────────────┐    ┌────────────┐    ┌───────────┐  │
+│  │   Nginx    │───▶│  PDV API   │───▶│   MySQL   │  │
+│  │  :80/:443  │    │   :8080    │    │   :3306   │  │
+│  └────────────┘    └──────┬─────┘    └───────────┘  │
+│                           │                         │
+│                    ┌──────▼─────┐                    │
+│                    │  RabbitMQ  │                    │
+│                    │ :5672/:15672│                    │
+│                    └────────────┘                    │
+└─────────────────────────────────────────────────────┘
+```
+
+### Passo a Passo
 
 ```bash
-# Build for production
+# 1. Crie o arquivo de variáveis de ambiente
+cp .env.example .env
+
+# 2. Edite o .env com valores seguros para produção
+#    - DB_PASSWORD: senha forte para o banco
+#    - MYSQL_ROOT_PASSWORD: senha do root do MySQL
+#    - RABBITMQ_PASSWORD: senha do RabbitMQ
+#    - JWT_SECRET: chave de 32+ caracteres
+#    - PDV_ENCRYPTION_KEY: chave de exatamente 32 caracteres
+
+# 3. Suba os containers
+docker-compose up -d
+
+# 4. Verifique os logs
+docker-compose logs -f pdv-api
+
+# 5. Verifique o health check
+curl http://localhost:8080/health
+```
+
+### Volumes Persistentes
+
+O `docker-compose.yml` define 4 volumes:
+
+| Volume           | Container  | Caminho no Container    | Propósito              |
+|------------------|------------|-------------------------|------------------------|
+| `mysql-data`     | pdv-mysql  | `/var/lib/mysql`        | Dados do banco         |
+| `rabbitmq-data`  | pdv-rabbitmq| `/var/lib/rabbitmq`    | Estado das filas       |
+| `pdv-logs`       | pdv-api    | `/app/logs`             | Logs da aplicação      |
+| `pdv-backups`    | pdv-api    | `/app/backups`          | Backups automáticos    |
+
+### Health Checks dos Containers
+
+Todos os containers possuem health checks configurados:
+
+- **pdv-api:** `curl -f http://localhost:8080/health` (intervalo: 30s, timeout: 10s)
+- **mysql:** `mysqladmin ping` (start_period: 60s para migrações iniciais)
+- **rabbitmq:** `rabbitmq-diagnostics ping`
+
+A API só inicia após MySQL e RabbitMQ estarem healthy (`depends_on: condition: service_healthy`).
+
+## Dockerfile (Multi-Stage Build)
+
+O Dockerfile utiliza 3 estágios otimizados:
+
+```
+Estágio 1: build     → SDK 8.0, restore + build
+Estágio 2: publish   → Publica em modo Release
+Estágio 3: final     → Runtime 8.0 apenas (imagem menor)
+```
+
+Características de segurança do Dockerfile:
+- ✅ Executa como usuário não-root (`pdvuser`)
+- ✅ Diretórios de logs/backups/temp com permissões restritas
+- ✅ Health check embutido na imagem
+- ✅ `UseAppHost=false` para imagem mais leve
+
+## Deploy Manual (Sem Docker)
+
+### Build e Publicação
+
+```bash
+# Build para produção
 dotnet publish Sis-Pdv-Controle-Estoque-API/Sis-Pdv-Controle-Estoque-API.csproj \
   -c Release \
   -o /opt/pdv-system/app \
   --self-contained false \
   --runtime linux-x64
-
-# Set permissions
-sudo chown -R www-data:www-data /opt/pdv-system
-sudo chmod +x /opt/pdv-system/app/Sis-Pdv-Controle-Estoque-API
 ```
 
-### Systemd Service
+### Systemd Service (Linux)
 
-Create `/etc/systemd/system/pdv-system.service`:
+Crie `/etc/systemd/system/pdv-system.service`:
 
 ```ini
 [Unit]
@@ -305,39 +203,15 @@ EnvironmentFile=/opt/pdv-system/.env
 WantedBy=multi-user.target
 ```
 
-### Service Management
-
 ```bash
-# Enable and start service
 sudo systemctl enable pdv-system
 sudo systemctl start pdv-system
-
-# Check status
 sudo systemctl status pdv-system
-
-# View logs
-sudo journalctl -u pdv-system -f
 ```
 
-## Security Configuration
-
-### SSL/TLS Setup
-
-```bash
-# Generate SSL certificate (Let's Encrypt)
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d your-domain.com
-
-# Or use existing certificate
-sudo cp your-certificate.crt /etc/ssl/certs/pdv-system.crt
-sudo cp your-private-key.key /etc/ssl/private/pdv-system.key
-sudo chmod 600 /etc/ssl/private/pdv-system.key
-```
-
-### Nginx Configuration
+## Configuração do Nginx (Reverse Proxy)
 
 ```nginx
-# /etc/nginx/sites-available/pdv-system
 server {
     listen 80;
     server_name your-domain.com;
@@ -351,239 +225,113 @@ server {
     ssl_certificate /etc/ssl/certs/pdv-system.crt;
     ssl_certificate_key /etc/ssl/private/pdv-system.key;
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
-    ssl_prefer_server_ciphers off;
 
     # Security headers
     add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload";
     add_header X-Content-Type-Options nosniff;
     add_header X-Frame-Options DENY;
-    add_header X-XSS-Protection "1; mode=block";
-
-    # Rate limiting
-    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
-    limit_req zone=api burst=20 nodelay;
 
     location / {
-        proxy_pass http://localhost:5000;
+        proxy_pass http://localhost:8080;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection keep-alive;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade $http_upgrade;
     }
 }
 ```
 
-### Firewall Configuration
+## Banco de Dados
 
-```bash
-# UFW (Ubuntu)
-sudo ufw allow ssh
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw --force enable
+### Setup Inicial
 
-# iptables (CentOS/RHEL)
-sudo firewall-cmd --permanent --add-service=ssh
-sudo firewall-cmd --permanent --add-service=http
-sudo firewall-cmd --permanent --add-service=https
-sudo firewall-cmd --reload
+O sistema aplica migrações automaticamente no startup por meio de `db.Database.MigrateAsync()` no `Program.cs`. Não é necessário rodar migrações manualmente.
+
+### Seed de Dados
+
+Na primeira execução (banco vazio), o sistema automaticamente executa:
+1. **AuthSeederService** — cria roles padrão (SuperAdmin, Admin, Manager, Cashier, Viewer), permissões e o usuário admin
+2. **DomainSeederService** — cria dados de exemplo (categorias, departamentos, fornecedores, produtos, clientes, etc.)
+
+Em execuções subsequentes, apenas garante que o mapeamento admin/roles existe.
+
+### Configuração de Performance do MySQL
+
+```sql
+SET GLOBAL innodb_buffer_pool_size = 2147483648;  -- 2GB (ajuste pela RAM)
+SET GLOBAL innodb_log_file_size = 268435456;       -- 256MB
+SET GLOBAL max_connections = 200;
 ```
 
-## Monitoring Setup
-
-### Health Checks
-
-The application includes built-in health checks accessible at:
-- `/health` - Basic health check
-- `/health-ui` - Detailed health dashboard
-
-### Log Monitoring
+## Certificado SSL/TLS
 
 ```bash
-# Install log monitoring tools
-sudo apt install logrotate rsyslog
+# Let's Encrypt (automático)
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d your-domain.com
 
-# Configure log rotation
-sudo tee /etc/logrotate.d/pdv-system << EOF
-/var/log/pdv-system/*.log {
-    daily
-    missingok
-    rotate 30
-    compress
-    delaycompress
-    notifempty
-    create 644 www-data www-data
-    postrotate
-        systemctl reload pdv-system
-    endscript
-}
-EOF
+# Renovação automática via cron
+sudo certbot renew --dry-run
 ```
 
-### Performance Monitoring
+## Verificação Pós-Deploy
 
 ```bash
-# Install monitoring tools
-sudo apt install htop iotop nethogs
+# 1. Health check básico
+curl -f http://localhost:8080/health
 
-# Monitor application performance
-htop
-sudo iotop -o
-sudo nethogs
+# 2. Health check detalhado
+curl http://localhost:8080/health-ui
+
+# 3. Swagger UI
+curl http://localhost:8080/api-docs
+
+# 4. Logs da aplicação
+docker-compose logs -f pdv-api
 ```
 
-## Backup and Recovery
-
-### Automated Backups
-
-The system includes automated backup functionality:
-
-```json
-{
-  "BackupSchedule": {
-    "EnableScheduledBackups": true,
-    "DatabaseBackupSchedule": {
-      "Enabled": true,
-      "Frequency": "Daily",
-      "PreferredTime": "02:00:00"
-    }
-  }
-}
-```
-
-### Manual Backup
+## Procedimento de Atualização
 
 ```bash
-# Database backup
-mysqldump -u pdv_user -p PDV_Production > backup_$(date +%Y%m%d_%H%M%S).sql
+# 1. Pare o serviço
+docker-compose stop pdv-api
 
-# Application backup
-tar -czf pdv_app_backup_$(date +%Y%m%d_%H%M%S).tar.gz /opt/pdv-system/app
+# 2. Faça backup
+docker-compose exec mysql mysqldump -u root -p PDV_PROD > backup_$(date +%Y%m%d).sql
 
-# Configuration backup
-tar -czf pdv_config_backup_$(date +%Y%m%d_%H%M%S).tar.gz /opt/pdv-system/.env /opt/pdv-system/appsettings.Production.json
+# 3. Rebuild e suba
+docker-compose build pdv-api
+docker-compose up -d pdv-api
+
+# 4. Verifique (as migrações são aplicadas automaticamente)
+docker-compose logs -f pdv-api
+curl -f http://localhost:8080/health
+```
+
+## Rollback
+
+```bash
+# 1. Pare o container
+docker-compose stop pdv-api
+
+# 2. Restaure o banco se necessário
+docker-compose exec -T mysql mysql -u root -p PDV_PROD < backup_anterior.sql
+
+# 3. Aponte para a imagem anterior
+docker-compose up -d pdv-api
 ```
 
 ## Troubleshooting
 
-### Common Issues
-
-1. **Database Connection Issues**
-   ```bash
-   # Check MySQL status
-   sudo systemctl status mysql
-   
-   # Test connection
-   mysql -u pdv_user -p -h localhost PDV_Production
-   ```
-
-2. **Application Won't Start**
-   ```bash
-   # Check logs
-   sudo journalctl -u pdv-system -n 50
-   
-   # Check configuration
-   dotnet /opt/pdv-system/app/Sis-Pdv-Controle-Estoque-API.dll --environment Production
-   ```
-
-3. **Performance Issues**
-   ```bash
-   # Check system resources
-   htop
-   df -h
-   free -m
-   
-   # Check database performance
-   mysql -u root -p -e "SHOW PROCESSLIST;"
-   ```
-
-### Log Analysis
-
-```bash
-# Application logs
-tail -f /var/log/pdv-system/pdv-api-*.log
-
-# System logs
-sudo journalctl -u pdv-system -f
-
-# Nginx logs
-sudo tail -f /var/log/nginx/access.log
-sudo tail -f /var/log/nginx/error.log
-```
-
-### Performance Tuning
-
-1. **Database Optimization**
-   - Run `database-optimization.sql`
-   - Monitor slow queries
-   - Adjust buffer pool size
-
-2. **Application Tuning**
-   - Adjust performance settings
-   - Configure connection pooling
-   - Monitor memory usage
-
-3. **Web Server Optimization**
-   - Enable gzip compression
-   - Configure caching headers
-   - Optimize SSL settings
-
-## Maintenance
-
-### Regular Tasks
-
-1. **Daily**
-   - Check application logs
-   - Verify backup completion
-   - Monitor system resources
-
-2. **Weekly**
-   - Update system packages
-   - Review security logs
-   - Check disk space
-
-3. **Monthly**
-   - Update application dependencies
-   - Review performance metrics
-   - Test backup restoration
-
-### Update Procedure
-
-```bash
-# 1. Backup current version
-sudo systemctl stop pdv-system
-cp -r /opt/pdv-system/app /opt/pdv-system/app.backup
-
-# 2. Deploy new version
-dotnet publish -c Release -o /opt/pdv-system/app.new
-
-# 3. Run database migrations
-dotnet ef database update --project /opt/pdv-system/app.new
-
-# 4. Switch to new version
-mv /opt/pdv-system/app /opt/pdv-system/app.old
-mv /opt/pdv-system/app.new /opt/pdv-system/app
-
-# 5. Start application
-sudo systemctl start pdv-system
-
-# 6. Verify deployment
-curl -k https://localhost/health
-```
-
-## Support
-
-For technical support and additional documentation:
-- Check application logs first
-- Review this deployment guide
-- Contact system administrator
-- Refer to API documentation at `/swagger`
+| Problema | Causa Provável | Solução |
+|----------|----------------|---------|
+| API não inicia | Connection string incorreta | Verifique variáveis no `.env` |
+| Erro de migração | Schema inconsistente | Verifique arquivos SQL de fix no projeto da API |
+| RabbitMQ inacessível | Container não healthy | `docker-compose restart rabbitmq` |
+| Timeout no health check | MySQL ainda inicializando | Aguarde `start_period` de 60s |
+| 403 no Swagger | CORS não configurado | Adicione origem em `Cors:AllowedOrigins` |
 
 ---
 
-Author: Heitor Gonçalves — https://www.linkedin.com/in/heitorhog/
+Autor: Heitor Gonçalves — https://www.linkedin.com/in/heitorhog/

@@ -1,47 +1,45 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Pedidos.ListarPedidoPorNomeCpfCnpj
 {
     public class ListarPedidoPorNomeCpfCnpjHandler : Notifiable, IRequestHandler<ListarPedidoPorNomeCpfCnpjRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryPedido _repositoryPedido;
 
-        public ListarPedidoPorNomeCpfCnpjHandler(IMediator mediator, IRepositoryPedido repositoryPedido)
+        public ListarPedidoPorNomeCpfCnpjHandler(IRepositoryPedido repositoryPedido)
         {
-            _mediator = mediator;
             _repositoryPedido = repositoryPedido;
         }
 
         public async Task<Commands.Response> Handle(ListarPedidoPorNomeCpfCnpjRequest request, CancellationToken cancellationToken)
         {
-            //Valida se o objeto request esta nulo
+            // Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
                 return new Commands.Response(this);
             }
 
-            var Collection = _repositoryPedido.Listar()
-                                .Include(x => x.Colaborador)
-                                .Include(x => x.Cliente)
-                                .Where(x => x.Cliente.CpfCnpj == request.Cnpj);
-            if (!Collection.Any())
+            // Lista pedidos filtrando pelo CNPJ do Cliente
+            var collection = await _repositoryPedido.ListarPorAsync(
+                x => x.Cliente.CpfCnpj == request.Cnpj,
+                cancellationToken,
+                x => x.Colaborador,
+                x => x.Cliente);
+
+            if (!collection.Any())
             {
-                AddNotification("ATENÇÃO", "Pedido NÃO ENCONTRADA");
+                // Correção de mensagens acentuadas
+                AddNotification("ATENÇÃO", "Pedido NÃO ENCONTRADO");
                 return new Commands.Response(this);
             }
 
-            //Criar meu objeto de resposta
-            var response = new Commands.Response(this, Collection);
-            //Cria objeto de resposta
+            // Criar meu objeto de resposta
+            var response = new Commands.Response(this, collection);
 
-            ////Retorna o resultado
-            return await Task.FromResult(response);
+            // Retorna o resultado
+            return response;
         }
     }
 }
-
-

@@ -1,12 +1,12 @@
-﻿using MediatR;
+using MediatR;
 
 namespace Commands.Categoria.ListarCategoriaPorNomeCategoria
 {
     public class ListarCategoriaPorNomeCategoriaRequest : IRequest<ListarCategoriaPorNomeCategoriaResponse>
     {
-        public ListarCategoriaPorNomeCategoriaRequest(string nomeCategoria)
+        public ListarCategoriaPorNomeCategoriaRequest(string NomeCategoria)
         {
-            NomeCategoria = nomeCategoria;
+            NomeCategoria = NomeCategoria;
         }
         public string NomeCategoria { get; set; }
     }

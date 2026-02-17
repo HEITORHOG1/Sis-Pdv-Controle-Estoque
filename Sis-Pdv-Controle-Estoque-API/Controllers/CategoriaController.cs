@@ -1,4 +1,4 @@
-ï»¿using Commands.Categoria.AdicionarCategoria;
+using Commands.Categoria.AdicionarCategoria;
 using Commands.Categoria.AlterarCategoria;
 using Commands.Categoria.ListarCategoria;
 using Commands.Categoria.ListarCategoriaPorId;
@@ -22,7 +22,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     [Produces("application/json")]
     [Tags("Categories")]
     [Authorize]
-    public class CategoriaController : Base.ControllerBase
+    public class CategoriaController : Base.ApiControllerBase
     {
         private readonly IMediator _mediator;
         private readonly ILogger<CategoriaController> _logger;
@@ -48,8 +48,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// **Request Body:**
         /// ```json
         /// {
-        ///   "nome": "EletrÃ´nicos",
-        ///   "descricao": "Produtos eletrÃ´nicos e tecnologia",
+        ///   "nome": "Eletrônicos",
+        ///   "descricao": "Produtos eletrônicos e tecnologia",
         ///   "parentCategoryId": null,
         ///   "isActive": true,
         ///   "sortOrder": 1
@@ -63,8 +63,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         ///   "message": "Categoria criada com sucesso",
         ///   "data": {
         ///     "id": "123e4567-e89b-12d3-a456-426614174000",
-        ///     "nome": "EletrÃ´nicos",
-        ///     "descricao": "Produtos eletrÃ´nicos e tecnologia",
+        ///     "nome": "Eletrônicos",
+        ///     "descricao": "Produtos eletrônicos e tecnologia",
         ///     "parentCategoryId": null,
         ///     "isActive": true,
         ///     "sortOrder": 1,
@@ -95,15 +95,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <response code="500">Internal server error</response>
         [HttpPost]
         [Route("/api/Categoria/AdicionarCategoria")]
-        public async Task<IActionResult> AdicionarCategoria([FromBody] AdicionarCategoriaRequest request)
+        public async Task<IActionResult> AdicionarCategoria([FromBody] AdicionarCategoriaRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("AdicionarCategoria");
-                var response = await _mediator.Send(request, CancellationToken.None);
+                var response = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("AdicionarCategoria - Response: {@response}", response);
 
-                return await ResponseAsync(response);
+                return await ResponseAsync(response, cancellationToken);
             }
             catch (System.Exception ex)
             {
@@ -118,12 +118,12 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna uma lista de todas as categorias.</returns>
         [HttpGet]
         [Route("/api/Categoria/ListarCategoria")]
-        public async Task<IActionResult> ListarCategoria()
+        public async Task<IActionResult> ListarCategoria(CancellationToken cancellationToken)
         {
             _logger.LogInformation("ListarCategoria operation started. CorrelationId: {CorrelationId}", CorrelationId);
             
             var request = new ListarCategoriaRequest();
-            var result = await _mediator.Send(request, CancellationToken.None);
+            var result = await _mediator.Send(request, cancellationToken);
             
             _logger.LogInformation("ListarCategoria operation completed successfully. CorrelationId: {CorrelationId}", CorrelationId);
             
@@ -131,21 +131,21 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Recupera uma categoria especÃ­fica por seu identificador.
+        /// Recupera uma categoria específica por seu identificador.
         /// </summary>
         /// <param name="id">O identificador da categoria que se deseja recuperar.</param>
         /// <returns>Retorna a categoria que corresponde ao identificador fornecido.</returns>
 
         [HttpGet]
         [Route("/api/Categoria/ListarCategoriaPorId/{id:Guid}")]
-        public async Task<IActionResult> ListarCategoriaPorId(Guid id)
+        public async Task<IActionResult> ListarCategoriaPorId(Guid id, CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarCategoriaPorId");
                 var request = new ListarCategoriaPorIdRequest(id);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarCategoriaPorId - Response: {@response}", result);
                 return Ok(result);
             }
@@ -157,21 +157,21 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Recupera uma categoria especÃ­fica por seu nome.
+        /// Recupera uma categoria específica por seu nome.
         /// </summary>
         /// <param name="NomeCategoria">O nome da categoria que se deseja recuperar.</param>
         /// <returns>Retorna a categoria que corresponde ao nome fornecido.</returns>
 
         [HttpGet]
         [Route("/api/Categoria/ListarCategoriaPorNomeCategoria/{NomeCategoria}")]
-        public async Task<IActionResult> ListarCategoriaPorNomeCategoria(string NomeCategoria)
+        public async Task<IActionResult> ListarCategoriaPorNomeCategoria(string NomeCategoria, CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarCategoriaPorNomeCategoria");
                 var request = new ListarCategoriaPorNomeCategoriaRequest(NomeCategoria);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarCategoriaPorNomeCategoria - Response: {@response}", result);
                 return Ok(result);
             }
@@ -183,22 +183,22 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Atualiza as informaÃ§Ãµes de uma categoria especÃ­fica.
+        /// Atualiza as informações de uma categoria específica.
         /// </summary>
-        /// <param name="request">O objeto contendo as novas informaÃ§Ãµes da categoria.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de atualizaÃ§Ã£o.</returns>
+        /// <param name="request">O objeto contendo as novas informações da categoria.</param>
+        /// <returns>Retorna a resposta da solicitação de atualização.</returns>
 
         [HttpPut]
         [Route("/api/Categoria/AlterarCategoria")]
-        public async Task<IActionResult> AlterarCategoria([FromBody] AlterarCategoriaRequest request)
+        public async Task<IActionResult> AlterarCategoria([FromBody] AlterarCategoriaRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("AlterarCategoria");
-                var response = await _mediator.Send(request, CancellationToken.None);
+                var response = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("AlterarCategoria - Response: {@response}", response);
                 
-                return await ResponseAsync(response);
+                return await ResponseAsync(response, cancellationToken);
             }
             catch (System.Exception ex)
             {
@@ -208,22 +208,22 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Remove uma categoria especÃ­fica do sistema.
+        /// Remove uma categoria específica do sistema.
         /// </summary>
         /// <param name="id">O identificador da categoria que se deseja remover.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de remoÃ§Ã£o.</returns>
+        /// <returns>Retorna a resposta da solicitação de remoção.</returns>
         [HttpDelete]
         [Route("/api/Categoria/RemoverCategoria/{id:Guid}")]
-        public async Task<IActionResult> RemoverCategoria(Guid id)
+        public async Task<IActionResult> RemoverCategoria(Guid id, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("RemoverCategoria");
-                var request = new RemoverCategoriaResquest(id);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var request = new RemoverCategoriaRequest(id);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("RemoverCategoria - Response: {@response}", result);
                 
-                return await ResponseAsync(result);
+                return await ResponseAsync(result, cancellationToken);
 
             }
             catch (System.Exception ex)

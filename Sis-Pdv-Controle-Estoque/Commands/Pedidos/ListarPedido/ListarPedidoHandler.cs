@@ -1,38 +1,34 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Pedidos.ListarPedido
 {
     public class ListarPedidoPorIdHandler : Notifiable, IRequestHandler<ListarPedidoRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryPedido _repositoryPedido;
 
-        public ListarPedidoPorIdHandler(IMediator mediator, IRepositoryPedido repositoryPedido)
+        public ListarPedidoPorIdHandler(IRepositoryPedido repositoryPedido)
         {
-            _mediator = mediator;
             _repositoryPedido = repositoryPedido;
         }
 
         public async Task<Commands.Response> Handle(ListarPedidoRequest request, CancellationToken cancellationToken)
         {
-            //Valida se o objeto request esta nulo
+            // Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return new Commands.Response(this);
             }
 
-            var grupoCollection = _repositoryPedido.Listar().Include(x => x.Colaborador).ToList();
+            // Lista Pedidos incluindo o Colaborador
+            var grupoCollection = await _repositoryPedido.ListarAsync(cancellationToken, x => x.Colaborador);
 
-
-            //Cria objeto de resposta
+            // Cria objeto de resposta
             var response = new Commands.Response(this, grupoCollection);
 
-            ////Retorna o resultado
-            return await Task.FromResult(response);
+            // Retorna o resultado
+            return response;
         }
     }
 }
-

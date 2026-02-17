@@ -101,7 +101,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         [ProducesResponseType(typeof(ApiResponse<AuthResult>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<AuthResult>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse<AuthResult>), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ApiResponse<AuthResult>>> Login([FromBody, Required] LoginRequest request)
+        public async Task<ActionResult<ApiResponse<AuthResult>>> Login([FromBody, Required] LoginRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -109,7 +109,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 return BadRequest(ApiResponse<AuthResult>.Error("Dados inválidos", errors));
             }
 
-            var result = await _authenticationService.AuthenticateAsync(request);
+            var result = await _authenticationService.AuthenticateAsync(request, cancellationToken);
 
             if (!result.Success)
             {
@@ -151,7 +151,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         [ProducesResponseType(typeof(ApiResponse<AuthResult>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<AuthResult>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse<AuthResult>), StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<ApiResponse<AuthResult>>> RefreshToken([FromBody, Required] RefreshTokenRequest request)
+        public async Task<ActionResult<ApiResponse<AuthResult>>> RefreshToken([FromBody, Required] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -159,7 +159,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 return BadRequest(ApiResponse<AuthResult>.Error("Dados inválidos", errors));
             }
 
-            var result = await _authenticationService.RefreshTokenAsync(request.RefreshToken);
+            var result = await _authenticationService.RefreshTokenAsync(request.RefreshToken, cancellationToken);
 
             if (!result.Success)
             {
@@ -200,7 +200,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         [AllowAnonymous]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<bool>), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<ApiResponse<bool>>> Logout([FromBody, Required] RefreshTokenRequest request)
+        public async Task<ActionResult<ApiResponse<bool>>> Logout([FromBody, Required] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -208,7 +208,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 return BadRequest(ApiResponse<bool>.Error("Dados inválidos", errors));
             }
 
-            var success = await _authenticationService.RevokeTokenAsync(request.RefreshToken);
+            var success = await _authenticationService.RevokeTokenAsync(request.RefreshToken, cancellationToken);
 
             if (!success)
             {

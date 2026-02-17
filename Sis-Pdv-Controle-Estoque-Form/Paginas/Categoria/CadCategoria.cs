@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Categoria;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Services.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.ComponentModel;
@@ -318,10 +318,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
                     return;
                 }
                 
-                var nomeCategoria = txtNomeCategoria.Text.Trim();
+                var NomeCategoria = txtNomeCategoria.Text.Trim();
                 var confirmacao = MessageBox.Show(
                     $"⚠️ ATENÇÃO - Exclusão de Categoria\n\n" +
-                    $"Categoria: {nomeCategoria}\n\n" +
+                    $"Categoria: {NomeCategoria}\n\n" +
                     $"Esta ação não pode ser desfeita.\n" +
                     $"Tem certeza que deseja excluir esta categoria?",
                     "Confirmar Exclusão",
@@ -332,17 +332,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
                 
                 SetLoadingState(true);
                 
-                CategoriaLogger.LogInfo($"Iniciando exclusão da categoria: ID={LblId.Text}, Nome={nomeCategoria}", "Delete");
+                CategoriaLogger.LogInfo($"Iniciando exclusão da categoria: ID={LblId.Text}, Nome={NomeCategoria}", "Delete");
                 
                 var response = await _categoriaService.RemoverCategoria(LblId.Text);
                 
                 if (response?.success == true)
                 {
-                    ExibirSucesso($"Categoria '{nomeCategoria}' excluída com sucesso!");
+                    ExibirSucesso($"Categoria '{NomeCategoria}' excluída com sucesso!");
                     LimparCampos();
                     await AtualizarLista();
                     
-                    CategoriaLogger.LogInfo($"Categoria excluída: ID={LblId.Text}, Nome={nomeCategoria}", "Delete");
+                    CategoriaLogger.LogInfo($"Categoria excluída: ID={LblId.Text}, Nome={NomeCategoria}", "Delete");
                 }
                 else
                 {
@@ -856,9 +856,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
             await AtualizarLista();
         }
         
-        private async Task ConsultarPorNomeCategoria(string nomeCategoria)
+        private async Task ConsultarPorNomeCategoria(string NomeCategoria)
         {
-            await ConsultarPorNome(nomeCategoria);
+            await ConsultarPorNome(NomeCategoria);
         }
         
         private void DefinirCabecalhos(List<string> listaCabecalhos)
@@ -875,27 +875,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [Categoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [Categoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [Categoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [Categoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [Categoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [Categoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
             {
                 var status = success ? "SUCCESS" : "FAILED";
-                Console.WriteLine($"[API] [Categoria-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+                Debug.WriteLine($"[API] [Categoria-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
             }
         }
         

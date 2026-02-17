@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
+using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.Diagnostics;
 
@@ -11,36 +11,36 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         private DepartamentoService _departamentoService;
         private bool _isLoading = false;
         private bool _exclusaoConfirmada = false;
-        private string _nomeDepartamento = "";
+        private string _NomeDepartamento = "";
         private string _departamentoId = "";
         
         #endregion
         
         #region Construtor e Inicialização
         
-        public ExcluirDepartamento(string nomeDepartamento, string id)
+        public ExcluirDepartamento(string NomeDepartamento, string id)
         {
             InitializeComponent();
-            InicializarComponentesModernos(nomeDepartamento, id);
+            InicializarComponentesModernos(NomeDepartamento, id);
         }
         
-        private void InicializarComponentesModernos(string nomeDepartamento, string id)
+        private void InicializarComponentesModernos(string NomeDepartamento, string id)
         {
             // Inicializa serviços
             _departamentoService = new DepartamentoService();
             
             // Configura dados iniciais
-            _nomeDepartamento = nomeDepartamento ?? "";
+            _NomeDepartamento = NomeDepartamento ?? "";
             _departamentoId = id ?? "";
             
-            txtNomeDepartamento.Text = _nomeDepartamento;
+            txtNomeDepartamento.Text = _NomeDepartamento;
             LblId.Text = _departamentoId;
             
             // Configura estado inicial
             AtualizarStatusInterface();
             
             // Log de inicialização
-            ExcluirDepartamentoLogger.LogInfo($"Formulário de exclusão inicializado - ID: {id}, Nome: {nomeDepartamento}", "Startup");
+            ExcluirDepartamentoLogger.LogInfo($"Formulário de exclusão inicializado - ID: {id}, Nome: {NomeDepartamento}", "Startup");
         }
         
         #endregion
@@ -125,7 +125,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 
                 SetLoadingState(true);
                 
-                ExcluirDepartamentoLogger.LogInfo($"Iniciando exclusão do departamento: ID={_departamentoId}, Nome={_nomeDepartamento}", "Delete");
+                ExcluirDepartamentoLogger.LogInfo($"Iniciando exclusão do departamento: ID={_departamentoId}, Nome={_NomeDepartamento}", "Delete");
                 
                 // Verifica se o departamento pode ser excluído
                 if (!await PodeExcluirDepartamento())
@@ -144,13 +144,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 
                 if (response?.success == true)
                 {
-                    NomeExcluido = _nomeDepartamento;
+                    NomeExcluido = _NomeDepartamento;
                     ExclusaoRealizada = true;
                     _exclusaoConfirmada = true;
                     
-                    ExibirSucesso($"Departamento '{_nomeDepartamento}' excluído com sucesso!");
+                    ExibirSucesso($"Departamento '{_NomeDepartamento}' excluído com sucesso!");
                     
-                    ExcluirDepartamentoLogger.LogInfo($"Departamento excluído com sucesso: ID={_departamentoId}, Nome={_nomeDepartamento}", "Delete");
+                    ExcluirDepartamentoLogger.LogInfo($"Departamento excluído com sucesso: ID={_departamentoId}, Nome={_NomeDepartamento}", "Delete");
                     
                     // Pequeno delay para feedback visual
                     await Task.Delay(1500);
@@ -180,7 +180,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         {
             var confirmacao = MessageBox.Show(
                 $"🚨 CONFIRMAÇÃO FINAL DE EXCLUSÃO\n\n" +
-                $"Departamento: {_nomeDepartamento}\n" +
+                $"Departamento: {_NomeDepartamento}\n" +
                 $"ID: {_departamentoId}\n\n" +
                 $"⚠️ ATENÇÃO:\n" +
                 $"• Esta ação é IRREVERSÍVEL\n" +
@@ -199,7 +199,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 var segundaConfirmacao = MessageBox.Show(
                     $"🔴 ÚLTIMA CONFIRMAÇÃO\n\n" +
                     $"Esta é sua última chance de cancelar!\n\n" +
-                    $"Departamento '{_nomeDepartamento}' será excluído PERMANENTEMENTE.\n\n" +
+                    $"Departamento '{_NomeDepartamento}' será excluído PERMANENTEMENTE.\n\n" +
                     $"Continuar com a exclusão?",
                     "🔴 ÚLTIMA CHANCE",
                     MessageBoxButtons.YesNo,
@@ -416,27 +416,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [ExcluirDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
             {
                 var status = success ? "SUCCESS" : "FAILED";
-                Console.WriteLine($"[API] [ExcluirDepartamento-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+                Debug.WriteLine($"[API] [ExcluirDepartamento-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
             }
         }
         

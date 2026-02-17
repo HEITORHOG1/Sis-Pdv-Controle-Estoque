@@ -9,7 +9,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Cliente
     public class ClienteService
     {
         public string BasePath = BaseAppConfig.ReadSetting("Base");
-        private readonly HttpClient _client;
+        private HttpClient _client;
         private readonly ILogger<CategoriaService> _logger;
 
         public ClienteService(HttpClient client, ILogger<CategoriaService> logger)
@@ -20,6 +20,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Cliente
 
         public ClienteService()
         {
+            _client = Services.Http.HttpClientManager.GetClient();
+        }
+
+        private HttpClient GetClient()
+        {
+            if (_logger != null)
+                return _client; // injected client
+            return Services.Http.HttpClientManager.GetClient();
         }
 
         public async Task<ClienteResponse> Adicionar(ClienteDto dto)
@@ -32,7 +40,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Cliente
 
             _logger.LogInformation("Enviando requisição para Adicionar Cliente.");
 
-            var response = await _client.PostAsJson($"{BasePath}/Cliente/AdicionarCliente", request);
+            var response = await GetClient().PostAsJson($"{BasePath}/Cliente/AdicionarCliente", request);
             if (response.IsSuccessStatusCode)
             {
                 _logger.LogInformation("Requisição para Adicionar Cliente foi bem sucedida.");
@@ -48,7 +56,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Cliente
 
         public async Task<ClienteResponseList> ListarClientePorNomeCliente(string NomeCliente)
         {
-            var response = await _client.GetAsync($"{BasePath}/Cliente/ListarClientePorNomeCliente/{NomeCliente}");
+            var response = await GetClient().GetAsync($"{BasePath}/Cliente/ListarClientePorNomeCliente/{NomeCliente}");
             if (response.IsSuccessStatusCode)
                 return await response.ReadContentAs<ClienteResponseList>();
             else throw new Exception("Something went wrong when calling API");

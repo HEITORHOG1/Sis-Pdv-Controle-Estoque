@@ -1,10 +1,10 @@
-﻿namespace Sis_Pdv_Controle_Estoque_Form.Dto.Pedido
+namespace Sis_Pdv_Controle_Estoque_Form.Dto.Pedido
 {
     public class DataGrid
     {
-        public DateTime dataDoPedido { get; set; }
-        public string formaPagamento { get; set; }
-        public decimal totalPedido { get; set; }
+        public DateTime DataDoPedido { get; set; }
+        public string FormaPagamento { get; set; }
+        public decimal TotalPedido { get; set; }
         public Guid Id { get; set; }
     }
 }

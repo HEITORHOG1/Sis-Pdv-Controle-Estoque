@@ -587,21 +587,21 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [Menu-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [Menu-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception? ex = null)
             {
-                Console.WriteLine($"[ERROR] [Menu-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [Menu-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogPerformance(string operation, TimeSpan duration)
             {
-                Console.WriteLine($"[PERF] [Menu] {operation} - {duration.TotalMilliseconds}ms");
+                Debug.WriteLine($"[PERF] [Menu] {operation} - {duration.TotalMilliseconds}ms");
             }
         }
         

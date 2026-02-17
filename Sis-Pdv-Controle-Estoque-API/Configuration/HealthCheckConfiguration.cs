@@ -66,13 +66,17 @@ public static class HealthCheckConfiguration
             }, tags: new[] { "system", "memory", "live" });
 
         // Add Health Checks UI
+        // Use absolute URL with localhost so the UI doesn't resolve to 0.0.0.0
+        var aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS") ?? "http://+:8080";
+        var port = aspnetUrls.Contains(':') ? aspnetUrls.Split(':').Last() : "8080";
+        var baseUrl = $"http://localhost:{port}";
         services.AddHealthChecksUI(options =>
         {
             options.SetEvaluationTimeInSeconds(30); // Evaluate every 30 seconds
             options.MaximumHistoryEntriesPerEndpoint(50);
-            options.AddHealthCheckEndpoint("PDV System", "/health");
-            options.AddHealthCheckEndpoint("PDV System Ready", "/health/ready");
-            options.AddHealthCheckEndpoint("PDV System Live", "/health/live");
+            options.AddHealthCheckEndpoint("PDV System", $"{baseUrl}/health");
+            options.AddHealthCheckEndpoint("PDV System Ready", $"{baseUrl}/health/ready");
+            options.AddHealthCheckEndpoint("PDV System Live", $"{baseUrl}/health/live");
         })
         .AddInMemoryStorage();
 

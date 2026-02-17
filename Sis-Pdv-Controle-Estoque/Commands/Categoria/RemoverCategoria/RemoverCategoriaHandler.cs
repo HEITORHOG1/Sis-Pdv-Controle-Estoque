@@ -1,41 +1,39 @@
-Ôªøusing MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Categoria.RemoverCategoria
 {
-    public class RemoverCategoriaHandler : Notifiable, IRequestHandler<RemoverCategoriaResquest, Response>
+    public class RemoverCategoriaHandler : Notifiable, IRequestHandler<RemoverCategoriaRequest, Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryCategoria _repositoryCategoria;
 
-        public RemoverCategoriaHandler(IMediator mediator, IRepositoryCategoria repositoryCategoria)
+        public RemoverCategoriaHandler(IRepositoryCategoria repositoryCategoria)
         {
-            _mediator = mediator;
             _repositoryCategoria = repositoryCategoria;
         }
 
-        public async Task<Response> Handle(RemoverCategoriaResquest request, CancellationToken cancellationToken)
+        public Task<Response> Handle(RemoverCategoriaRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "Request n√£o pode ser nulo");
-                return new Response(this);
+                AddNotification("Request", "Request n„o pode ser nulo");
+                return Task.FromResult(new Response(this));
             }
 
             var categoria = _repositoryCategoria.ObterPorId(request.Id);
 
             if (categoria == null)
             {
-                AddNotification("Categoria", "CATEGORIA N√ÉO ENCONTRADA");
-                return new Response(this);
+                AddNotification("Categoria", "CATEGORIA N√O ENCONTRADA");
+                return Task.FromResult(new Response(this));
             }
 
-            // Verifica se a categoria j√° foi deletada
+            // Verifica se a categoria j· foi deletada
             if (categoria.IsDeleted)
             {
-                AddNotification("Categoria", "CATEGORIA J√Å FOI REMOVIDA");
-                return new Response(this);
+                AddNotification("Categoria", "CATEGORIA J¡ FOI REMOVIDA");
+                return Task.FromResult(new Response(this));
             }
 
             // Realiza o soft delete
@@ -45,7 +43,7 @@ namespace Commands.Categoria.RemoverCategoria
             var response = new Response(this, categoria);
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

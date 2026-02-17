@@ -1,4 +1,4 @@
-ï»¿using FluentValidation;
+using FluentValidation;
 
 namespace Commands.Produto.AtualizarEstoque
 {
@@ -6,9 +6,9 @@ namespace Commands.Produto.AtualizarEstoque
     {
         public AtualizarEstoqueRequestValidator()
         {
-            RuleFor(request => request.Id).NotEmpty().WithMessage("O ID do produto Ã© obrigatÃ³rio.");
+            RuleFor(request => request.Id).NotEmpty().WithMessage("O ID do produto é obrigatório.");
 
-            RuleFor(request => request.quatidadeEstoqueProduto)
+            RuleFor(request => request.QuantidadeEstoqueProduto)
                 .GreaterThanOrEqualTo(0)
                 .WithMessage("A quantidade em estoque deve ser maior ou igual a zero.");
         }

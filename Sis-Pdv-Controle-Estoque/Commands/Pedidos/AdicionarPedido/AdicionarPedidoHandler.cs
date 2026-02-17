@@ -1,20 +1,18 @@
-﻿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Pedidos.AdicionarPedido
 {
     public class AdicionarPedidoHandler : Notifiable, IRequestHandler<AdicionarPedidoRequest, Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryPedido _repositoryPedido;
 
-        public AdicionarPedidoHandler(IMediator mediator, IRepositoryPedido repositoryPedido)
+        public AdicionarPedidoHandler(IRepositoryPedido repositoryPedido)
         {
-            _mediator = mediator;
             _repositoryPedido = repositoryPedido;
         }
 
-        public async Task<Response> Handle(AdicionarPedidoRequest request, CancellationToken cancellationToken)
+        public Task<Response> Handle(AdicionarPedidoRequest request, CancellationToken cancellationToken)
         {
             // Validation is now handled by the ValidationBehavior pipeline
 
@@ -22,13 +20,13 @@ namespace Commands.Pedidos.AdicionarPedido
                                         request.ColaboradorId,
                                         request.ClienteId,
                                         request.Status,
-                                        request.dataDoPedido,
-                                        request.formaPagamento,
-                                        request.totalPedido);
+                                        request.DataDoPedido,
+                                        request.FormaPagamento,
+                                        request.TotalPedido);
 
             if (IsInvalid())
             {
-                return new Response(this);
+                return Task.FromResult(new Response(this));
             }
 
             Pedido = _repositoryPedido.Adicionar(Pedido);
@@ -36,7 +34,7 @@ namespace Commands.Pedidos.AdicionarPedido
             //Criar meu objeto de resposta
             var response = new Response(this, Pedido);
 
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

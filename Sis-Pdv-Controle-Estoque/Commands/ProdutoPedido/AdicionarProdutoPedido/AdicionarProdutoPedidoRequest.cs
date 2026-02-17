@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 
 namespace Commands.ProdutoPedido.AdicionarProdutoPedido
 {
@@ -6,8 +6,8 @@ namespace Commands.ProdutoPedido.AdicionarProdutoPedido
     {
         public Guid PedidoId { get; set; }
         public Guid ProdutoId { get; set; }
-        public string codBarras { get; set; }
-        public int quantidadeItemPedido { get; set; }
-        public decimal totalProdutoPedido { get; set; }
+        public string CodBarras { get; set; }
+        public int QuantidadeItemPedido { get; set; }
+        public decimal TotalProdutoPedido { get; set; }
     }
 }

@@ -1,17 +1,15 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+using MediatR;
+
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Produto.ListarProduto
 {
     public class ListarProdutoPorIdHandler : Notifiable, IRequestHandler<ListarProdutoRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryProduto _repositoryProduto;
 
-        public ListarProdutoPorIdHandler(IMediator mediator, IRepositoryProduto repositoryProduto)
+        public ListarProdutoPorIdHandler(IRepositoryProduto repositoryProduto)
         {
-            _mediator = mediator;
             _repositoryProduto = repositoryProduto;
         }
 
@@ -20,28 +18,29 @@ namespace Commands.Produto.ListarProduto
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisi��o n�o pode ser nula.");
                 return new Commands.Response(this);
             }
 
-            var _produto = _repositoryProduto.Listar().Include(x => x.Fornecedor).Include(x => x.Categoria).ToList();
-            List<ListarProdutoRequest> _lista = new List<ListarProdutoRequest>();            foreach (var item in _produto)
+            var _produto = await _repositoryProduto.ListarAsync(cancellationToken, x => x.Fornecedor, x => x.Categoria);
+            List<ListarProdutoRequest> _lista = new List<ListarProdutoRequest>();
+            foreach (var item in _produto)
             {
                 ListarProdutoRequest produto = new ListarProdutoRequest
                 {
                     Id = item.Id,
-                    codBarras = item.CodBarras,
-                    nomeProduto = item.NomeProduto,
+                    CodBarras = item.CodBarras,
+                    NomeProduto = item.NomeProduto,
                     NomeFornecedor = item.Fornecedor.NomeFantasia,
                     NomeCategoria = item.Categoria.NomeCategoria,
-                    descricaoProduto = item.DescricaoProduto,
-                    quatidadeEstoqueProduto = item.QuatidadeEstoqueProduto,
-                    precoVenda = item.PrecoVenda,
-                    precoCusto = item.PrecoCusto,
-                    margemLucro = item.MargemLucro,
-                    dataFabricao = item.DataFabricao,
-                    dataVencimento = item.DataVencimento,
-                    statusAtivo = item.StatusAtivo
+                    DescricaoProduto = item.DescricaoProduto,
+                    QuantidadeEstoqueProduto = item.QuantidadeEstoqueProduto,
+                    PrecoVenda = item.PrecoVenda,
+                    PrecoCusto = item.PrecoCusto,
+                    MargemLucro = item.MargemLucro,
+                    DataFabricao = item.DataFabricao,
+                    DataVencimento = item.DataVencimento,
+                    StatusAtivo = item.StatusAtivo
                 };
                 _lista.Add(produto);
             }
@@ -52,7 +51,7 @@ namespace Commands.Produto.ListarProduto
             var response = new Commands.Response(this, _lista);
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.Diagnostics;
@@ -20,21 +20,21 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         
         #region Construtor e Inicialização
         
-        public AltDepartamento(string nomeDepartamento, string id)
+        public AltDepartamento(string NomeDepartamento, string id)
         {
             InitializeComponent();
-            InicializarComponentesModernos(nomeDepartamento, id);
+            InicializarComponentesModernos(NomeDepartamento, id);
         }
         
-        private void InicializarComponentesModernos(string nomeDepartamento, string id)
+        private void InicializarComponentesModernos(string NomeDepartamento, string id)
         {
             // Inicializa serviços
             _departamentoService = new DepartamentoService();
             
             // Configura dados iniciais
-            txtNomeDepartamento.Text = nomeDepartamento ?? "";
+            txtNomeDepartamento.Text = NomeDepartamento ?? "";
             LblId.Text = id ?? "";
-            _nomeOriginal = nomeDepartamento ?? "";
+            _nomeOriginal = NomeDepartamento ?? "";
             _departamentoId = id ?? "";
             
             // Configura estado inicial
@@ -42,7 +42,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
             AtualizarStatusInterface();
             
             // Log de inicialização
-            AltDepartamentoLogger.LogInfo($"Formulário de alteração inicializado - ID: {id}, Nome: {nomeDepartamento}", "Startup");
+            AltDepartamentoLogger.LogInfo($"Formulário de alteração inicializado - ID: {id}, Nome: {NomeDepartamento}", "Startup");
         }
         
         #endregion
@@ -239,7 +239,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 
                 if (response?.success == true)
                 {
-                    NovoNome = response.data.nomeDepartamento;
+                    NovoNome = response.data.NomeDepartamento;
                     AlteracaoRealizada = true;
                     
                     ExibirSucesso($"Departamento alterado para '{NovoNome}' com sucesso!");
@@ -575,27 +575,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [AltDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [AltDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [AltDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [AltDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [AltDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [AltDepartamento-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
             {
                 var status = success ? "SUCCESS" : "FAILED";
-                Console.WriteLine($"[API] [AltDepartamento-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+                Debug.WriteLine($"[API] [AltDepartamento-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
             }
         }
         

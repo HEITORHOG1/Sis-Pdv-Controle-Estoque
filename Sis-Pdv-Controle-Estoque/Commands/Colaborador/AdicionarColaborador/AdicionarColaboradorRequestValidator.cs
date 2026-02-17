@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Validators;
 
 namespace Commands.Colaborador.AdicionarColaborador
@@ -7,7 +7,7 @@ namespace Commands.Colaborador.AdicionarColaborador
     {
         public AdicionarColaboradorRequestValidator()
         {
-            RuleFor(request => request.nomeColaborador)
+            RuleFor(request => request.NomeColaborador)
                 .NotEmpty().WithMessage("O nome do colaborador é obrigatório.")
                 .Length(2, 100).WithMessage("O nome do colaborador deve ter entre 2 e 100 caracteres.")
                 .MustBeValidName();
@@ -15,23 +15,23 @@ namespace Commands.Colaborador.AdicionarColaborador
             RuleFor(request => request.DepartamentoId)
                 .NotEmpty().WithMessage("O ID do departamento é obrigatório.");
 
-            RuleFor(request => request.cpfColaborador)
+            RuleFor(request => request.CpfColaborador)
                 .NotEmpty().WithMessage("O CPF do colaborador é obrigatório.")
                 .MustBeValidCpf();
 
-            RuleFor(request => request.cargoColaborador)
+            RuleFor(request => request.CargoColaborador)
                 .NotEmpty().WithMessage("O cargo do colaborador é obrigatório.")
                 .Length(2, 50).WithMessage("O cargo deve ter entre 2 e 50 caracteres.");
 
-            RuleFor(request => request.telefoneColaborador)
+            RuleFor(request => request.TelefoneColaborador)
                 .NotEmpty().WithMessage("O telefone do colaborador é obrigatório.")
                 .MustBeValidBrazilianPhone();
 
-            RuleFor(request => request.emailPessoalColaborador)
+            RuleFor(request => request.EmailPessoalColaborador)
                 .NotEmpty().WithMessage("O e-mail pessoal do colaborador é obrigatório.")
                 .MustBeValidEmail();
 
-            RuleFor(request => request.emailCorporativo)
+            RuleFor(request => request.EmailCorporativo)
                 .NotEmpty().WithMessage("O e-mail corporativo do colaborador é obrigatório.")
                 .MustBeValidEmail();
 
@@ -43,11 +43,11 @@ namespace Commands.Colaborador.AdicionarColaborador
                 .When(request => request.Id != Guid.Empty);
 
             // Cross-field validation: emails should be different
-            RuleFor(request => request.emailCorporativo)
-                .NotEqual(request => request.emailPessoalColaborador)
+            RuleFor(request => request.EmailCorporativo)
+                .NotEqual(request => request.EmailPessoalColaborador)
                 .WithMessage("E-mail corporativo deve ser diferente do e-mail pessoal.")
-                .When(request => !string.IsNullOrWhiteSpace(request.emailPessoalColaborador) && 
-                                !string.IsNullOrWhiteSpace(request.emailCorporativo));
+                .When(request => !string.IsNullOrWhiteSpace(request.EmailPessoalColaborador) && 
+                                !string.IsNullOrWhiteSpace(request.EmailCorporativo));
         }
     }
 }

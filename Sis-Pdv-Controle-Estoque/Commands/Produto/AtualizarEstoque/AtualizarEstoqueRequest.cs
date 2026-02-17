@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 
 namespace Commands.Produto.AtualizarEstoque
 {
@@ -6,6 +6,6 @@ namespace Commands.Produto.AtualizarEstoque
     {
 
         public Guid Id { get; set; }
-        public int quatidadeEstoqueProduto { get; set; }
+        public int QuantidadeEstoqueProduto { get; set; }
     }
 }

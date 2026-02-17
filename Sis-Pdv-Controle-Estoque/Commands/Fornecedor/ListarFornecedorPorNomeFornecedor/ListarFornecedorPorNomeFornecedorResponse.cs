@@ -1,6 +1,6 @@
 ﻿using prmToolkit.NotificationPattern;
 
-namespace Commands.Fornecedor.ListarFornecedorPorNomeDepartamento
+namespace Commands.Fornecedor.ListarFornecedorPorNomeFornecedor
 {
     public class ListarFornecedorPorNomeFornecedorResponse
     {

@@ -15,7 +15,13 @@ namespace Repositories.Map
             builder.Property(x => x.FormaPagamento).HasMaxLength(150).IsRequired();
             builder.Property(x => x.TotalPedido).IsRequired();
             builder.Property(x => x.ColaboradorId).IsRequired();
-            builder.Property(x => x.ClienteId).IsRequired();
+            builder.Property(x => x.ClienteId).IsRequired(false);
+
+            // FK Cliente nullable — permite vendas sem cliente (consumidor final)
+            builder.HasOne(x => x.Cliente)
+                .WithMany()
+                .HasForeignKey(x => x.ClienteId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

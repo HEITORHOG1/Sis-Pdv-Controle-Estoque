@@ -1,104 +1,60 @@
-# Configuration Management Guide
+# Gerenciamento de Configuração
 
-## Overview
+## Visão Geral
 
-The PDV System implements a comprehensive configuration management system that supports multiple environments, secure handling of sensitive data, and automatic validation.
+O sistema PDV utiliza o pipeline de configuração padrão do ASP.NET Core 8.0, com suporte a múltiplos ambientes, substituição por variáveis de ambiente e User Secrets para desenvolvimento local.
 
-## Environment Support
+## Ambientes Suportados
 
-The system supports three environments:
+| Ambiente       | Arquivo                          | Propósito                                     |
+|----------------|----------------------------------|-----------------------------------------------|
+| Base           | `appsettings.json`               | Configurações padrão compartilhadas           |
+| Desenvolvimento| `appsettings.Development.json`   | Overrides para desenvolvimento local          |
+| Staging        | `appsettings.Staging.json`       | Configurações de pré-produção                 |
+| Produção       | `appsettings.Production.json`    | Configurações com segurança reforçada         |
 
-- **Development**: Local development with relaxed security
-- **Staging**: Pre-production testing environment
-- **Production**: Live production environment with enhanced security
+O ambiente é definido pela variável `ASPNETCORE_ENVIRONMENT`.
 
-## Configuration Files
+## Hierarquia de Configuração (Ordem de Precedência)
 
-### Environment-Specific Files
-
-- `appsettings.json` - Base configuration
-- `appsettings.Development.json` - Development overrides
-- `appsettings.Staging.json` - Staging configuration
-- `appsettings.Production.json` - Production configuration
-
-### Environment Variables Files
-
-- `.env.development` - Development environment variables
-- `.env.staging` - Staging environment variables  
-- `.env.production` - Production environment variables
-- `.env.example` - Template for environment files
-
-## Setup Instructions
-
-### 1. Initial Environment Setup
-
-Run the setup script to create environment-specific configuration:
-
-```powershell
-# Development environment
-.\scripts\setup-environment.ps1 -Environment Development
-
-# Staging environment
-.\scripts\setup-environment.ps1 -Environment Staging
-
-# Production environment
-.\scripts\setup-environment.ps1 -Environment Production
+```
+1. Variáveis de ambiente         ← maior precedência
+2. User Secrets (somente Development)
+3. appsettings.{Environment}.json
+4. appsettings.json              ← menor precedência
 ```
 
-### 2. Customize Configuration
+## Seções de Configuração
 
-Edit the generated `.env.{environment}` file to match your specific requirements:
+### ConnectionStrings
 
-```bash
-# Database Configuration
-DB_PASSWORD=your_secure_password
-MYSQL_ROOT_PASSWORD=your_mysql_root_password
-
-# RabbitMQ Configuration
-RABBITMQ_PASSWORD=your_rabbitmq_password
-
-# Authentication Configuration
-JWT_SECRET=your_jwt_secret_minimum_32_characters
-
-# Security Configuration
-PDV_ENCRYPTION_KEY=your_32_character_encryption_key
-```
-
-### 3. Deploy Application
-
-Use the deployment script:
-
-```powershell
-# Deploy to development
-.\scripts\deploy.ps1 -Environment Development
-
-# Deploy to staging
-.\scripts\deploy.ps1 -Environment Staging
-
-# Deploy to production
-.\scripts\deploy.ps1 -Environment Production -Force
-```
-
-## Configuration Sections
-
-### Database Options
+O projeto mantém duas connection strings que apontam para o mesmo banco MySQL:
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=${DB_SERVER};Database=${DB_NAME};...",
-    "ControleFluxoCaixaConnectionString": "...",
-    "RabbitMQ": "amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}/"
+    "DefaultConnection": "Server=localhost;Database=PDV_02;Uid=root;Pwd=root;...",
+    "ControleFluxoCaixaConnectionString": "Server=localhost;Database=PDV_02;Uid=root;Pwd=root;...",
+    "RabbitMQ": "amqp://guest:guest@localhost:5672/"
   }
 }
 ```
 
-### Authentication Options
+> **Nota:** Em produção, as credenciais **DEVEM** ser substituídas por variáveis de ambiente ou User Secrets. Nunca commite senhas reais no repositório.
+
+**Parâmetros de connection pooling configurados:**
+- `Pooling=true` — habilita o pool de conexões
+- `MinPoolSize=5` / `MaxPoolSize=50` — limites do pool
+- `ConnectionTimeout=30` — timeout de obtenção de conexão (segundos)
+- `ConnectionLifeTime=300` — vida máxima de uma conexão no pool (segundos)
+- `ConnectionIdleTimeout=180` — timeout de inatividade (segundos)
+
+### Autenticação JWT
 
 ```json
 {
   "Authentication": {
-    "JwtSecret": "${JWT_SECRET}",
+    "JwtSecret": "...",
     "Issuer": "PDV-System",
     "Audience": "PDV-Users",
     "TokenExpirationMinutes": 60,
@@ -107,175 +63,259 @@ Use the deployment script:
 }
 ```
 
-### Performance Options
+> **Segurança:** O `JwtSecret` em `appsettings.json` é apenas para desenvolvimento. Em produção, deve ser fornecido via variável de ambiente `Authentication__JwtSecret` ou Azure Key Vault.
+
+### RabbitMQ
 
 ```json
 {
-  "Performance": {
-    "DefaultTimeoutMinutes": 30,
-    "QueryTimeoutMinutes": 10,
-    "EnableOptimizations": true,
-    "MaxConnections": 1000
+  "RabbitMQ": {
+    "HostName": "localhost",
+    "UserName": "guest",
+    "Password": "guest"
   }
 }
 ```
 
-## Environment Variable Substitution
+Utilizado para mensageria assíncrona (envio de cupons fiscais via SEFAZ).
 
-The system supports environment variable substitution using the `${VARIABLE_NAME}` syntax:
+### SEFAZ (Integração Fiscal)
 
-- `${VARIABLE_NAME}` - Required environment variable
-- `${VARIABLE_NAME:default_value}` - Optional with default value
-
-Example:
 ```json
 {
-  "ConnectionString": "Server=${DB_SERVER:localhost};Database=${DB_NAME};Uid=${DB_USER:root};Pwd=${DB_PASSWORD};"
+  "Sefaz": {
+    "Environment": "Homologacao",
+    "UF": "SP",
+    "CNPJ": "12345678000195",
+    "InscricaoEstadual": "123456789",
+    "WebService": {
+      "Ambiente": 2,
+      "Modelo": "65",
+      "Versao": "4.00"
+    },
+    "Certificado": {
+      "Arquivo": "certificado.pfx",
+      "Senha": "senha_certificado"
+    },
+    "Contingencia": {
+      "Habilitada": true,
+      "TipoEmissao": 9
+    },
+    "Configuracoes": {
+      "TimeoutWebService": 30000,
+      "TentativasEnvio": 3,
+      "IntervaloTentativas": 5000
+    }
+  }
 }
 ```
 
-## Security Features
+> **Produção:** Modelo 65 = NFC-e (Nota Fiscal ao Consumidor Eletrônica). O certificado digital `.pfx` deve ser mantido em local seguro com permissões restritas.
 
-### Secure Configuration Service
+### Pagamentos
 
-The `ISecureConfigurationService` provides:
-
-- Encrypted storage of sensitive values
-- Masked configuration display
-- Secure value retrieval
-- Configuration validation
-
-### Configuration Validation
-
-Automatic validation includes:
-
-- Required configuration presence
-- Data annotation validation
-- Connectivity testing
-- Security compliance checks
-
-### File Permissions
-
-Environment files are automatically secured with restricted permissions to prevent unauthorized access.
-
-## Docker Configuration
-
-### Development
-
-```bash
-docker-compose -f docker-compose.development.yml up
+```json
+{
+  "Payment": {
+    "DefaultProcessor": "Mock",
+    "Processors": {
+      "Mock": { "Enabled": true, "SimulateDelay": true, "DelayMs": 500 },
+      "Stone": { "Enabled": false, "ApiKey": "", "Environment": "sandbox" },
+      "Cielo": { "Enabled": false, "MerchantId": "", "MerchantKey": "", "Environment": "sandbox" }
+    },
+    "Validation": {
+      "ValidateCardNumber": true,
+      "MaxInstallments": 12
+    },
+    "Timeout": {
+      "CreditCard": 30000,
+      "DebitCard": 20000,
+      "Pix": 10000
+    }
+  }
+}
 ```
 
-### Staging
+Processadores de pagamento implementados: **Mock** (desenvolvimento), **Stone** e **Cielo** (produção).
 
-```bash
-docker-compose -f docker-compose.staging.yml up
+### Backup
+
+```json
+{
+  "BackupSchedule": {
+    "EnableScheduledBackups": true,
+    "DatabaseBackupSchedule": { "Frequency": "Daily", "PreferredTime": "02:00:00" },
+    "FileBackupSchedule": { "Frequency": "Weekly", "PreferredTime": "03:00:00" },
+    "FullBackupSchedule": { "Frequency": "Monthly", "PreferredTime": "01:00:00" },
+    "DatabaseRetentionDays": 30,
+    "FileRetentionDays": 7,
+    "FullBackupRetentionDays": 90
+  }
+}
 ```
 
-### Production
+O `BackupSchedulerService` é registrado como `IHostedService` e executa backups automaticamente conforme a agenda configurada.
 
-```bash
-docker-compose -f docker-compose.yml up
+### Rate Limiting
+
+```json
+{
+  "RateLimit": {
+    "MaxRequests": 100,
+    "WindowSizeInMinutes": 1
+  }
+}
 ```
 
-## API Endpoints
+### CORS
 
-### Configuration Management
+```json
+{
+  "Cors": {
+    "AllowedOrigins": [
+      "https://localhost:3000",
+      "https://localhost:5001"
+    ]
+  }
+}
+```
 
-- `GET /api/v1/configuration/masked` - Get masked configuration
-- `POST /api/v1/configuration/validate` - Validate configuration
-- `GET /api/v1/configuration/environment` - Get environment info
-- `POST /api/v1/configuration/test-connectivity` - Test connectivity
-- `POST /api/v1/configuration/reload` - Reload configuration (dev only)
+> **Produção:** Configure apenas as origens exatas do frontend. Nunca use `*`.
 
-## Best Practices
+### Serilog (Logging)
 
-### Development
+```json
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.EntityFrameworkCore": "Warning"
+      }
+    },
+    "Enrich": [
+      "FromLogContext", "WithCorrelationId", "WithEnvironmentName",
+      "WithMachineName", "WithProcessId", "WithThreadId"
+    ]
+  }
+}
+```
 
-1. Use the development environment file for local development
-2. Never commit environment files to version control
-3. Use the configuration reload endpoint for testing changes
-4. Validate configuration regularly during development
+Logs são escritos em:
+- **Console** — Development
+- **Arquivo** — `logs/pdv-api-YYYYMMDD.log` (retenção de 30 dias)
 
-### Staging
+### Health Checks
 
-1. Use production-like configuration with test data
-2. Test all configuration changes in staging first
-3. Verify connectivity to all external services
-4. Run full validation before promoting to production
+```json
+{
+  "HealthChecks": {
+    "EvaluationTimeInSeconds": 30,
+    "UI": {
+      "ApiPath": "/health-ui-api",
+      "UIPath": "/health-ui"
+    }
+  }
+}
+```
 
-### Production
+Endpoints disponíveis:
+- `/health` — health check básico
+- `/health-ui` — dashboard visual com histórico
 
-1. Use strong, unique passwords and secrets
-2. Enable all security features
-3. Monitor configuration validation results
-4. Implement proper backup and recovery procedures
-5. Use external secret management systems when possible
+### Hosting
+
+```json
+{
+  "Hosting": {
+    "Urls": "http://localhost:7003"
+  }
+}
+```
+
+A porta pode ser sobrescrita via `ASPNETCORE_URLS`.
+
+## Substituição por Variáveis de Ambiente
+
+O projeto implementa um `EnvironmentVariableConfigurationProvider` personalizado que suporta a sintaxe `${VARIABLE_NAME}` nos arquivos de configuração. Isso permite usar variáveis de ambiente para substituir valores sensíveis em produção.
+
+Exemplo (em `appsettings.Production.json`):
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=${DB_SERVER};Database=${DB_NAME};Uid=${DB_USER};Pwd=${DB_PASSWORD}"
+  }
+}
+```
+
+## Configuração Segura (SecureConfigurationService)
+
+O `ISecureConfigurationService` oferece:
+- **Mascaramento** de valores sensíveis para exibição em logs e endpoints
+- **Validação** automática de configurações obrigatórias
+- **Armazenamento criptografado** de valores sensíveis em memória
+
+## API de Configuração
+
+Endpoints disponíveis (apenas com autenticação):
+
+| Método | Endpoint                                | Descrição                           |
+|--------|-----------------------------------------|-------------------------------------|
+| GET    | `/api/v1/configuration/masked`          | Exibe configurações mascaradas      |
+| POST   | `/api/v1/configuration/validate`        | Valida todas as configurações       |
+| GET    | `/api/v1/configuration/environment`     | Informações do ambiente atual       |
+| POST   | `/api/v1/configuration/test-connectivity` | Testa conexão com dependências    |
+| POST   | `/api/v1/configuration/reload`          | Recarrega configuração (dev only)   |
+
+## Validação de Configuração
+
+O `ConfigurationValidator` executa as seguintes verificações na inicialização:
+1. Presença de configurações obrigatórias (ConnectionStrings, JWT, etc.)
+2. Validação de data annotations
+3. Teste de conectividade com banco de dados e RabbitMQ
+4. Verificação de conformidade de segurança
+
+## Boas Práticas
+
+### Desenvolvimento
+1. Use User Secrets para senhas locais (nunca edite `appsettings.json` com credenciais reais)
+2. Consulte o documento [User-Secrets-Configuration.md](./User-Secrets-Configuration.md) para configuração
+
+### Produção
+1. Forneça todas as credenciais via variáveis de ambiente
+2. Use o arquivo `.env.example` como template para criar seu `.env`
+3. Nunca commite arquivos `.env` no repositório (já está no `.gitignore`)
+4. Habilite HTTPS e configure CORS com origens específicas
+5. Defina o `JwtSecret` com no mínimo 32 caracteres aleatórios
+
+## Arquivo `.env.example`
+
+```bash
+DB_PASSWORD=your_database_password_here
+MYSQL_ROOT_PASSWORD=your_mysql_root_password_here
+RABBITMQ_PASSWORD=your_rabbitmq_password_here
+JWT_SECRET=your_jwt_secret_key_here_minimum_32_characters
+PDV_ENCRYPTION_KEY=your_encryption_key_here_exactly_32_chars
+```
 
 ## Troubleshooting
 
-### Configuration Validation Errors
+### A aplicação não inicia
+1. Verifique se todas as variáveis obrigatórias estão configuradas
+2. Consulte os logs em `logs/pdv-api-*.log`
+3. Use o endpoint `/api/v1/configuration/validate` para diagnóstico
 
-1. Check the validation endpoint: `POST /api/v1/configuration/validate`
-2. Review application logs for detailed error messages
-3. Verify all required environment variables are set
-4. Test connectivity to external services
+### Conexão com banco falha
+1. Confirme que o MySQL está rodando e acessível
+2. Verifique a connection string e credenciais
+3. Teste com `mysql -u root -p -h localhost`
 
-### Environment Variable Issues
-
-1. Verify environment file exists and has correct permissions
-2. Check variable names match exactly (case-sensitive)
-3. Ensure no extra spaces or special characters
-4. Validate environment variable substitution syntax
-
-### Docker Deployment Issues
-
-1. Verify environment file is loaded correctly
-2. Check container logs for configuration errors
-3. Ensure all required services are healthy
-4. Validate network connectivity between containers
-
-## Migration Guide
-
-### From Previous Configuration
-
-1. Backup existing configuration files
-2. Run the setup script for your environment
-3. Migrate custom settings to new format
-4. Test configuration validation
-5. Deploy and verify functionality
-
-### Environment Promotion
-
-1. Export configuration from source environment
-2. Run setup script for target environment
-3. Import and adapt configuration values
-4. Validate configuration in target environment
-5. Deploy and test thoroughly
-
-## Security Considerations
-
-### Secrets Management
-
-- Never store secrets in configuration files
-- Use environment variables for all sensitive data
-- Consider external secret management systems for production
-- Rotate secrets regularly
-
-### Access Control
-
-- Restrict access to configuration endpoints
-- Use proper authentication and authorization
-- Monitor configuration access and changes
-- Implement audit logging for configuration operations
-
-### Network Security
-
-- Use HTTPS for all communications
-- Implement proper firewall rules
-- Use VPNs or private networks when possible
-- Monitor network traffic for anomalies
+### Variáveis de ambiente não são lidas
+1. Verifique se `ASPNETCORE_ENVIRONMENT` está definido corretamente
+2. Lembre que o separador no Windows é `__` (duplo underscore): `Authentication__JwtSecret`
+3. Reinicie a aplicação após alterar variáveis
 
 ---
 
-Author: Heitor Gonçalves — https://www.linkedin.com/in/heitorhog/
+Autor: Heitor Gonçalves — https://www.linkedin.com/in/heitorhog/

@@ -1,14 +1,14 @@
-﻿using MediatR;
+using MediatR;
 
 namespace Commands.Produto.ListarProdutoPorNomeProduto
 {
     public class ListarProdutoPorCodBarrasRequest : IRequest<Commands.Response>
     {
-        public ListarProdutoPorCodBarrasRequest(string codBarras)
+        public ListarProdutoPorCodBarrasRequest(string CodBarras)
         {
-            this.codBarras = codBarras;
+            this.CodBarras = CodBarras;
         }
-        public string codBarras { get; set; }
+        public string CodBarras { get; set; }
     }
 }
 

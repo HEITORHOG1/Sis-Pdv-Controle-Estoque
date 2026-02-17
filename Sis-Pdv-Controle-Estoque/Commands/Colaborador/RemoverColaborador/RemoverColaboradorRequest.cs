@@ -2,9 +2,9 @@
 
 namespace Commands.Colaborador.RemoverColaborador
 {
-    public class RemoverColaboradorResquest : IRequest<Response>
+    public class RemoverColaboradorRequest : IRequest<Response>
     {
-        public RemoverColaboradorResquest(Guid id)
+        public RemoverColaboradorRequest(Guid id)
         {
             Id = id;
             //IdLogin = idLogin;

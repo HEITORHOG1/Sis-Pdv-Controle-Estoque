@@ -1,60 +1,56 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+using Interfaces;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Colaborador.RemoverColaborador
-
 {
-    public class RemoverColaboradorHandler : Notifiable, IRequestHandler<RemoverColaboradorResquest, Commands.Response>
+    public class RemoverColaboradorHandler : Notifiable, IRequestHandler<RemoverColaboradorRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryColaborador _repositoryColaborador;
         private readonly IRepositoryUsuario _repositoryUsuario;
-        public RemoverColaboradorHandler(IMediator mediator, IRepositoryColaborador repositoryColaborador, IRepositoryUsuario repositoryUsuario)
+        public RemoverColaboradorHandler(IRepositoryColaborador repositoryColaborador, IRepositoryUsuario repositoryUsuario)
         {
-            _mediator = mediator;
             _repositoryColaborador = repositoryColaborador;
             _repositoryUsuario = repositoryUsuario;
         }
 
-        public async Task<Commands.Response> Handle(RemoverColaboradorResquest request, CancellationToken cancellationToken)
+        public async Task<Commands.Response> Handle(RemoverColaboradorRequest request, CancellationToken cancellationToken)
         {
-            //Valida se o objeto request esta nulo
+            // Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return new Commands.Response(this);
             }
 
-            Model.Colaborador Colaborador = _repositoryColaborador.Listar().
-                Include(x => x.Usuario).
-                Where(x => x.Id == request.Id).FirstOrDefault();
+            // Busca colaborador e usuario via repositório (sem EF no Handler)
+            Model.Colaborador colaborador = await _repositoryColaborador.ObterPorAsync(
+                x => x.Id == request.Id,
+                cancellationToken,
+                x => x.Usuario);
 
-            if (Colaborador == null)
+            if (colaborador == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "Colaborador não encontrado.");
                 return new Commands.Response(this);
             }
-            if (Colaborador.Id == null)
+
+            // Remove logicamente (Soft Delete)
+            // Se Usuario for null (ex: tabela inconsistente), valida antes?
+            if (colaborador.Usuario != null)
             {
-                AddNotification("Request", "Colaborador.Id");
-                return new Commands.Response(this);
+                _repositoryUsuario.Remover(colaborador.Usuario);
             }
-            //if (Colaborador.Usuario.Id == null)
-            //{
-            //    AddNotification("Request", "Colaborador.Usuario.Id");
-            //    return new Commands.Response(this);
-            //}
-            _repositoryUsuario.Remover(Colaborador.Usuario);
-            _repositoryColaborador.Remover(Colaborador);
+            
+            _repositoryColaborador.Remover(colaborador);
+            
+            var result = new { colaborador.Id };
 
-            var result = new { Colaborador.Id };
+            // Cria objeto de resposta
+            var response = new Commands.Response(this, result);
 
-            //Cria objeto de resposta
-            var response = new Commands.Response(this, Colaborador);
-
-            ////Retorna o resultado
-            return await Task.FromResult(response);
+            // Retorna o resultado
+            return response;
         }
     }
 }

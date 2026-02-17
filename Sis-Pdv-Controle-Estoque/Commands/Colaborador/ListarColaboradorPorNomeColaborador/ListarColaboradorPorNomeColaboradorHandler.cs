@@ -1,4 +1,4 @@
-Ôªøusing Interfaces;
+using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
 
@@ -6,29 +6,27 @@ namespace Commands.Colaborador.ListarColaboradorPorNomeColaborador
 {
     public class ListarColaboradorPorNomeColaboradorHandler : Notifiable, IRequestHandler<ListarColaboradorPorNomeColaboradorRequest, ListarColaboradorPorNomeColaboradorResponse>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryColaborador _repositoryColaborador;
 
-        public ListarColaboradorPorNomeColaboradorHandler(IMediator mediator, IRepositoryColaborador repositoryColaborador)
+        public ListarColaboradorPorNomeColaboradorHandler(IRepositoryColaborador repositoryColaborador)
         {
-            _mediator = mediator;
             _repositoryColaborador = repositoryColaborador;
         }
 
-        public async Task<ListarColaboradorPorNomeColaboradorResponse> Handle(ListarColaboradorPorNomeColaboradorRequest request, CancellationToken cancellationToken)
+        public Task<ListarColaboradorPorNomeColaboradorResponse> Handle(ListarColaboradorPorNomeColaboradorRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new ListarColaboradorPorNomeColaboradorResponse(this);
+                return Task.FromResult(new ListarColaboradorPorNomeColaboradorResponse(this));
             }
 
             var Collection = _repositoryColaborador.Listar().Where(x => x.NomeColaborador == request.NomeColaborador);
             if (!Collection.Any())
             {
-                AddNotification("ATEN√á√ÉO", "Colaborador N√ÉO ENCONTRADA");
-                return new ListarColaboradorPorNomeColaboradorResponse(this);
+                AddNotification("ATEN«√O", "Colaborador N√O ENCONTRADA");
+                return Task.FromResult(new ListarColaboradorPorNomeColaboradorResponse(this));
             }
 
             //Criar meu objeto de resposta
@@ -36,7 +34,7 @@ namespace Commands.Colaborador.ListarColaboradorPorNomeColaborador
             //Cria objeto de resposta
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

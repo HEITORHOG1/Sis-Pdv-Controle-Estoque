@@ -1,4 +1,4 @@
-﻿using Commands.Departamento.AdicionarDepartamento;
+using Commands.Departamento.AdicionarDepartamento;
 using Commands.Departamento.AlterarDepartamento;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
@@ -167,16 +167,16 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Departamento
             }
         }
 
-        public async Task<DepartamentoResponseList> ListarDepartamentoPorNomeDepartamento(string nomeDepartamento)
+        public async Task<DepartamentoResponseList> ListarDepartamentoPorNomeDepartamento(string NomeDepartamento)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(nomeDepartamento))
+                if (string.IsNullOrWhiteSpace(NomeDepartamento))
                     throw new ArgumentException("Nome do departamento é obrigatório.");
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
-                var response = await _client.GetAsync($"{BasePath}/Departamento/ListarDepartamentoPorNomeDepartamento/{Uri.EscapeDataString(nomeDepartamento)}");
+                var response = await _client.GetAsync($"{BasePath}/Departamento/ListarDepartamentoPorNomeDepartamento/{Uri.EscapeDataString(NomeDepartamento)}");
                 
                 if (response.IsSuccessStatusCode)
                 {

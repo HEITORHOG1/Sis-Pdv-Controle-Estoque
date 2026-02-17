@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Cliente;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Cliente;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Pedido;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Produto;
@@ -34,17 +34,24 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         private bool _caixaAberto = false;
         private System.Windows.Forms.Timer _timerAtualizacao;
         
+        // Debounce para entrada de codigo de barras (scanner vs digitacao manual)
+        private System.Windows.Forms.Timer _timerDebounceBarcode;
+        private DateTime _lastKeystroke = DateTime.MinValue;
+        private int _keystrokeCount = 0;
+        private const int SCANNER_DEBOUNCE_MS = 150;  // Scanner envia tudo em < 100ms
+        private const int SCANNER_MIN_CHARS = 8;       // Codigo de barras minimo
+        
         // Dados do operador
         private readonly string _nomeOperador;
         private ColaboradorResponseList _colaboradorInfo;
         private Guid _colaboradorId;
         
-        // Configurações
+        // Configura��es
         private ConfiguracaoPdvDto _configuracoes;
         
         #endregion
         
-        #region Construtor e Inicialização
+        #region Construtor e Inicializa��o
         
         public frmTelaPdv(string nomeOperador)
         {
@@ -62,7 +69,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             _itensCarrinho = new BindingList<ItemCarrinhoDto>();
             _configuracoes = new ConfiguracaoPdvDto();
             
-            // Configura timer para atualizações
+            // Configura timer para atualiza��es
             _timerAtualizacao = new System.Windows.Forms.Timer();
             _timerAtualizacao.Interval = 1000; // 1 segundo
             _timerAtualizacao.Tick += Timer_Tick;
@@ -73,7 +80,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private void ConfigurarDataGridView()
         {
-            dgvCarrinho.DataSource = _itensCarrinho;
+            // Desabilita AutoGenerate para controlar as colunas manualmente
+            dgvCarrinho.AutoGenerateColumns = false;
+            
             dgvCarrinho.AllowUserToAddRows = false;
             dgvCarrinho.AllowUserToDeleteRows = false;
             dgvCarrinho.ReadOnly = true;
@@ -83,6 +92,96 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             // Event handlers
             dgvCarrinho.CellFormatting += DgvCarrinho_CellFormatting;
             dgvCarrinho.RowsAdded += DgvCarrinho_RowsAdded;
+        }
+        
+        /// <summary>
+        /// Configura as colunas do grid antes de receber dados,
+        /// mostrando headers corretos desde o inicio.
+        /// </summary>
+        private void ConfigurarColunasGridInicial()
+        {
+            dgvCarrinho.Columns.Clear();
+            
+            // Coluna Item (numero sequencial)
+            dgvCarrinho.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Codigo",
+                HeaderText = "Item",
+                DataPropertyName = "Codigo",
+                Width = 60,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
+                    Font = new Font("Consolas", 10F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(52, 152, 219)
+                }
+            });
+            
+            // Coluna Descricao do Produto (preenche espaco)
+            dgvCarrinho.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Descricao",
+                HeaderText = "Produto",
+                DataPropertyName = "Descricao",
+                MinimumWidth = 200,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleLeft
+                }
+            });
+            
+            // Coluna Quantidade
+            dgvCarrinho.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Quantidade",
+                HeaderText = "Qtd",
+                DataPropertyName = "Quantidade",
+                Width = 70,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleCenter,
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold)
+                }
+            });
+            
+            // Coluna Preco Unitario
+            dgvCarrinho.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PrecoUnitario",
+                HeaderText = "Valor Unit.",
+                DataPropertyName = "PrecoUnitario",
+                Width = 120,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleRight,
+                    Format = "C2"
+                }
+            });
+            
+            // Coluna Total
+            dgvCarrinho.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Total",
+                HeaderText = "Total",
+                DataPropertyName = "Total",
+                Width = 130,
+                DefaultCellStyle = new DataGridViewCellStyle
+                {
+                    Alignment = DataGridViewContentAlignment.MiddleRight,
+                    Format = "C2",
+                    Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+                    ForeColor = Color.FromArgb(39, 174, 96)
+                }
+            });
+            
+            // Estilo geral das linhas
+            dgvCarrinho.RowTemplate.Height = 40;
+            dgvCarrinho.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
+            dgvCarrinho.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            
+            // Vincula os dados
+            dgvCarrinho.DataSource = _itensCarrinho;
         }
         
         #endregion
@@ -119,8 +218,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private void InicializarInterfaceModerna()
         {
-            // Configura título da janela
-            lblTituloPdv.Text = $"🏪 SISTEMA PDV - {Environment.MachineName}";
+            // Configura titulo da janela
+            lblTituloPdv.Text = $"SISTEMA PDV - {Environment.MachineName}";
             
             // Configura campos iniciais
             txbQuantidade.Text = "1";
@@ -128,12 +227,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             lblSubTotal.Text = 0m.FormatarMoeda();
             lblDesconto.Text = 0m.FormatarMoeda();
             
-            // Focus no campo código de barras
+            // Focus no campo codigo de barras
             txbCodBarras.Focus();
             
             // Configura status inicial
-            lblStatusOperacao.Text = "🟡 Inicializando sistema...";
+            lblStatusOperacao.Text = "Inicializando sistema...";
             lblNomeCaixa.Text = "Carregando...";
+            
+            // Configura colunas do grid ANTES de receber dados
+            ConfigurarColunasGridInicial();
         }
         
         private async Task CarregarDadosOperador()
@@ -141,7 +243,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             var sw = Stopwatch.StartNew();
             try
             {
-                lblStatusOperacao.Text = "🔍 Carregando dados do operador...";
+                lblStatusOperacao.Text = "Carregando dados do operador...";
                 
                 var colaboradorService = new ColaboradorService();
                 _colaboradorInfo = await colaboradorService.ListarColaboradorPorNomeColaborador(_nomeOperador);
@@ -153,23 +255,37 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 if (_colaboradorInfo?.success == true && _colaboradorInfo.data?.Any() == true)
                 {
                     var colaborador = _colaboradorInfo.data.First();
-                    lblNomeOperador.Text = colaborador.nomeColaborador;
+                    lblNomeOperador.Text = colaborador.NomeColaborador;
                     _colaboradorId = Guid.Parse(colaborador.id);
                     
-                    lblStatusOperacao.Text = $"✅ Operador: {colaborador.nomeColaborador}";
+                    lblStatusOperacao.Text = $"Operador: {colaborador.NomeColaborador}";
                     PdvLogger.LogAutenticacao(_nomeOperador, true);
                 }
                 else
                 {
-                    // Se não encontrou o colaborador, vamos criar um modo de demonstração
-                    lblNomeOperador.Text = _nomeOperador;
-                    _colaboradorId = Guid.NewGuid(); // ID temporário para demonstração
+                    // Colaborador nao encontrado por nome — tenta buscar qualquer colaborador ativo como fallback
+                    PdvLogger.LogError($"Operador '{_nomeOperador}' nao encontrado por nome, buscando fallback", "Autenticacao");
                     
-                    lblStatusOperacao.Text = $"⚠️ Modo Demo - Operador: {_nomeOperador}";
-                    PdvLogger.LogError($"Operador '{_nomeOperador}' não encontrado, usando modo demonstração", "Autenticacao");
-                    
-                    MessageBox.Show($"⚠️ Operador '{_nomeOperador}' não encontrado no sistema.\n\nContinuando em MODO DEMONSTRAÇÃO.", 
-                        "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    var todosResp = await colaboradorService.ListarColaborador();
+                    if (todosResp?.success == true && todosResp.data?.Any() == true)
+                    {
+                        var primeiro = todosResp.data.First();
+                        lblNomeOperador.Text = _nomeOperador;
+                        _colaboradorId = Guid.Parse(primeiro.id);
+                        
+                        lblStatusOperacao.Text = $"Operador: {_nomeOperador} (ID: {primeiro.NomeColaborador})";
+                        PdvLogger.LogAutenticacao(_nomeOperador, true, $"Fallback para colaborador {primeiro.NomeColaborador}");
+                    }
+                    else
+                    {
+                        // Nenhum colaborador no sistema — operacao impossivel
+                        lblNomeOperador.Text = _nomeOperador;
+                        _colaboradorId = Guid.Empty;
+                        lblStatusOperacao.Text = "ERRO: Nenhum colaborador cadastrado";
+                        
+                        MessageBox.Show($"Nenhum colaborador cadastrado no sistema.\n\nCadastre colaboradores antes de operar o PDV.",
+                            "Erro Critico", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)
@@ -177,13 +293,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 sw.Stop();
                 PdvLogger.LogError("CarregarDadosOperador", ex.Message, ex);
                 
-                // Modo de fallback
+                // Erro de conexao — bloqueia operacao (nao usa Guid aleatorio)
                 lblNomeOperador.Text = _nomeOperador;
-                _colaboradorId = Guid.NewGuid();
-                lblStatusOperacao.Text = "⚠️ Erro ao carregar operador - Modo Demo";
+                _colaboradorId = Guid.Empty;
+                lblStatusOperacao.Text = "Erro ao carregar operador";
                 
-                MessageBox.Show($"⚠️ Erro ao carregar dados do operador.\n\nContinuando em MODO DEMONSTRAÇÃO.\n\nErro: {ex.Message}", 
-                    "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Erro ao carregar dados do operador.\n\nVerifique a conexao com a API.\n\nErro: {ex.Message}", 
+                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         
@@ -191,23 +307,23 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         {
             try
             {
-                lblStatusOperacao.Text = "🏪 Abrindo caixa...";
+                lblStatusOperacao.Text = "Abrindo caixa...";
                 
                 var caixa = $"CAIXA-{Environment.MachineName}";
                 await _pdvManager.AbrirCaixa(_nomeOperador, caixa);
                 
                 _caixaAberto = true;
                 lblCaixa.Text = caixa;
-                lblStatusCaixa.Text = "🟢 CAIXA ABERTO";
+                lblStatusCaixa.Text = "CAIXA ABERTO";
                 lblStatusCaixa.ForeColor = Color.LightGreen;
                 
-                lblStatusOperacao.Text = "✅ Caixa aberto - Sistema pronto";
+                lblStatusOperacao.Text = "Caixa aberto - Sistema pronto";
                 AtualizarStatusInterface();
             }
             catch (Exception ex)
             {
                 PdvLogger.LogError("AbrirCaixa", ex.Message, ex);
-                lblStatusOperacao.Text = "❌ Erro ao abrir caixa";
+                lblStatusOperacao.Text = "Erro ao abrir caixa";
                 throw;
             }
         }
@@ -223,7 +339,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 LimparInterface();
                 AtualizarStatusInterface();
                 
-                lblStatusOperacao.Text = "🛒 Nova venda iniciada";
+                lblStatusOperacao.Text = "Nova venda iniciada";
                 lblNomeCaixa.Text = "CAIXA LIVRE - Aguardando produtos";
                 
                 txbCodBarras.Focus();
@@ -242,27 +358,79 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private async void txbCodBarras_TextChanged(object sender, EventArgs e)
         {
-            // Só processa se o texto não estiver vazio e tiver pelo menos 8 caracteres
-            if (string.IsNullOrWhiteSpace(txbCodBarras.Text) || txbCodBarras.Text.Length < 8)
+            var texto = txbCodBarras.Text.Trim();
+            
+            if (string.IsNullOrWhiteSpace(texto))
+            {
+                // Campo vazio — reseta feedback
+                lblUltimoItemNome.Text = "---";
+                lblUltimoItemNome.ForeColor = Color.White;
+                lblUltimoItemPreco.Text = 0m.FormatarMoeda();
+                lblUltimoItemQtd.Text = "";
                 return;
-                
-            await ProcessarCodigoBarras(txbCodBarras.Text.Trim());
+            }
+            
+            // Feedback visual: mostra o que esta sendo digitado
+            lblUltimoItemNome.Text = $"Codigo: {texto}";
+            lblUltimoItemNome.ForeColor = Color.LightGray;
+            lblUltimoItemPreco.Text = "";
+            lblUltimoItemQtd.Text = texto.Length < SCANNER_MIN_CHARS 
+                ? $"Digite {SCANNER_MIN_CHARS - texto.Length} digitos a mais ou ENTER" 
+                : "Pressione ENTER para buscar";
+            
+            // Detecta scanner: caracteres chegam muito rapido (< 50ms cada)
+            var agora = DateTime.Now;
+            var intervalo = (agora - _lastKeystroke).TotalMilliseconds;
+            _lastKeystroke = agora;
+            
+            if (intervalo < 80) // Input rapido = scanner
+                _keystrokeCount++;
+            else
+                _keystrokeCount = 1; // Reset para digitacao manual
+            
+            // Scanner detectado: inicia debounce curto para aguardar fim do scan
+            if (_keystrokeCount >= 5 && texto.Length >= SCANNER_MIN_CHARS)
+            {
+                _timerDebounceBarcode?.Stop();
+                _timerDebounceBarcode = new System.Windows.Forms.Timer();
+                _timerDebounceBarcode.Interval = SCANNER_DEBOUNCE_MS;
+                _timerDebounceBarcode.Tick += async (s, ev) =>
+                {
+                    _timerDebounceBarcode.Stop();
+                    _timerDebounceBarcode.Dispose();
+                    _timerDebounceBarcode = null;
+                    _keystrokeCount = 0;
+                    await ProcessarCodigoBarras(txbCodBarras.Text.Trim());
+                };
+                _timerDebounceBarcode.Start();
+            }
         }
         
         private async void txbCodBarras_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Permite apenas números
+            // Permite numeros e controle (backspace, etc)
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
                 return;
             }
             
-            // Se pressionou Enter, processa o código
+            // Enter = busca manual
             if (e.KeyChar == (char)Keys.Enter)
             {
                 e.Handled = true;
-                await ProcessarCodigoBarras(txbCodBarras.Text.Trim());
+                
+                // Cancela debounce do scanner se estiver ativo
+                _timerDebounceBarcode?.Stop();
+                _timerDebounceBarcode?.Dispose();
+                _timerDebounceBarcode = null;
+                _keystrokeCount = 0;
+                
+                var texto = txbCodBarras.Text.Trim();
+                if (string.IsNullOrWhiteSpace(texto))
+                    return;
+                
+                await ProcessarCodigoBarras(texto);
             }
         }
         
@@ -276,6 +444,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             {
                 SetLoadingState(true);
                 
+                // Feedback visual: buscando...
+                lblUltimoItemNome.Text = "Buscando...";
+                lblUltimoItemNome.ForeColor = Color.Yellow;
+                lblUltimoItemPreco.Text = "";
+                lblUltimoItemQtd.Text = "";
+                Application.DoEvents();
+                
                 var produto = await _pdvManager.BuscarProdutoPorCodigo(codigoBarras);
                 
                 sw.Stop();
@@ -283,8 +458,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 
                 if (produto == null)
                 {
-                    MessageBox.Show($"Produto não encontrado: {codigoBarras}", "Produto Não Encontrado",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    // Feedback visual no painel — sem MessageBox bloqueante
+                    lblUltimoItemNome.Text = $"NAO ENCONTRADO";
+                    lblUltimoItemNome.ForeColor = Color.FromArgb(231, 76, 60); // Vermelho
+                    lblUltimoItemPreco.Text = "";
+                    lblUltimoItemQtd.Text = $"Codigo: {codigoBarras}";
+                    lblUltimoItemQtd.ForeColor = Color.FromArgb(231, 76, 60);
+                    
+                    System.Media.SystemSounds.Hand.Play(); // Som de erro
+                    
+                    // Seleciona texto para facilitar redigitacao
+                    txbCodBarras.SelectAll();
+                    txbCodBarras.Focus();
                     return;
                 }
                 
@@ -295,7 +480,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 var alertas = produto.GetAlertasVenda();
                 if (alertas.Any())
                 {
-                    var mensagem = $"ATENÇÃO:\n• {string.Join("\n• ", alertas)}\n\nDeseja continuar?";
+                    // Mostra alertas no painel antes de perguntar
+                    lblUltimoItemQtd.Text = "ALERTA DE ESTOQUE";
+                    lblUltimoItemQtd.ForeColor = Color.Orange;
+                    
+                    var mensagem = $"ATENCAO:\n- {string.Join("\n- ", alertas)}\n\nDeseja continuar?";
                     var resultado = MessageBox.Show(mensagem, "Alertas do Produto", 
                         MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                     
@@ -307,14 +496,22 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 }
                 
                 // Adiciona ao carrinho
-                await AdicionarItemCarrinho(produto);
+                AdicionarItemCarrinho(produto);
             }
             catch (Exception ex)
             {
                 sw.Stop();
                 PdvLogger.LogError("ProcessarCodigoBarras", ex.Message, ex);
-                MessageBox.Show($"Erro ao processar produto: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                // Feedback visual de erro — sem MessageBox
+                lblUltimoItemNome.Text = "ERRO NA BUSCA";
+                lblUltimoItemNome.ForeColor = Color.FromArgb(231, 76, 60);
+                lblUltimoItemPreco.Text = "";
+                lblUltimoItemQtd.Text = "Tente novamente";
+                lblUltimoItemQtd.ForeColor = Color.FromArgb(231, 76, 60);
+                
+                txbCodBarras.SelectAll();
+                txbCodBarras.Focus();
             }
             finally
             {
@@ -324,45 +521,81 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private void PreencherDadosProduto(Sis_Pdv_Controle_Estoque_Form.Dto.Produto.Data produto)
         {
-            txbDescricao.Text = produto.nomeProduto.TruncateForDisplay(50);
-            txbPrecoUnit.Text = produto.precoVenda.FormatarMoeda();
+            txbDescricao.Text = produto.NomeProduto.TruncateForDisplay(50);
+            txbPrecoUnit.Text = produto.PrecoVenda.FormatarMoeda();
             
-            // Calcula total (quantidade padrão = 1)
-            var quantidade = 1;
-            var total = produto.precoVenda * quantidade;
+            var quantidade = GetQuantidadeSelecionada();
+            var total = produto.PrecoVenda * quantidade;
             txbTotalRecebido.Text = total.FormatarMoeda();
             
-            // Mostra informações de estoque
-            if (produto.quatidadeEstoqueProduto <= 10)
+            // Atualiza display "ULTIMO ITEM" (como monitor de cliente)
+            lblUltimoItemNome.Text = produto.NomeProduto.TruncateForDisplay(40);
+            lblUltimoItemPreco.Text = total.FormatarMoeda();
+            lblUltimoItemQtd.Text = quantidade > 1 ? $"{quantidade}x {produto.PrecoVenda.FormatarMoeda()}" : "";
+            
+            // Alerta visual de estoque baixo
+            if (produto.QuantidadeEstoqueProduto <= 10)
             {
-                txbDescricao.BackColor = Color.LightYellow;
-                txbDescricao.Text += $" (Est: {produto.quatidadeEstoqueProduto})";
+                lblUltimoItemQtd.Text = $"Estoque: {produto.QuantidadeEstoqueProduto}";
+                lblUltimoItemQtd.ForeColor = Color.Orange;
             }
             else
             {
-                txbDescricao.BackColor = SystemColors.Window;
+                lblUltimoItemQtd.ForeColor = Color.LightGray;
             }
         }
         
-        private async Task AdicionarItemCarrinho(Sis_Pdv_Controle_Estoque_Form.Dto.Produto.Data produto)
+        private void AdicionarItemCarrinho(Sis_Pdv_Controle_Estoque_Form.Dto.Produto.Data produto)
         {
             try
             {
                 var quantidade = GetQuantidadeSelecionada();
-                await _pdvManager.AdicionarItem(produto.codBarras, quantidade);
+                // Usa o overload que recebe o produto diretamente (sem chamar API de novo)
+                _pdvManager.AdicionarItem(produto, quantidade);
                 
                 AtualizarCarrinho();
                 AtualizarTotais();
-                LimparCamposProduto();
                 
-                // Som de sucesso (opcional)
+                // Atualiza ULTIMO ITEM apos adicionar ao carrinho
+                // (mostra dados consolidados do carrinho, nao do scan individual)
+                var itemNoCarrinho = _pdvManager.VendaAtual?.Itens
+                    .LastOrDefault(i => i.CodigoBarras == produto.CodBarras && !i.Cancelado);
+                if (itemNoCarrinho != null)
+                {
+                    lblUltimoItemNome.Text = itemNoCarrinho.Descricao.Length > 40 
+                        ? itemNoCarrinho.Descricao.Substring(0, 37) + "..." 
+                        : itemNoCarrinho.Descricao;
+                    lblUltimoItemNome.ForeColor = Color.White;
+                    lblUltimoItemPreco.Text = itemNoCarrinho.Total.FormatarMoeda();
+                    lblUltimoItemQtd.Text = itemNoCarrinho.Quantidade > 1 
+                        ? $"{itemNoCarrinho.Quantidade}x {itemNoCarrinho.PrecoUnitario.FormatarMoeda()}" 
+                        : "";
+                    lblUltimoItemQtd.ForeColor = Color.LightGray;
+                }
+                
+                // Limpa barcode e reseta quantidade para proximo item
+                txbCodBarras.Clear();
+                txbQuantidade.Text = "1";
+                _keystrokeCount = 0;
+                txbCodBarras.Focus();
+                
+                // Som de sucesso
                 System.Media.SystemSounds.Beep.Play();
             }
             catch (Exception ex)
             {
                 PdvLogger.LogError("AdicionarItemCarrinho", ex.Message, ex);
-                MessageBox.Show($"Erro ao adicionar item: {ex.Message}", "Erro",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                
+                // Mostra erro no painel, nao em MessageBox
+                lblUltimoItemNome.Text = "ERRO AO ADICIONAR";
+                lblUltimoItemNome.ForeColor = Color.FromArgb(231, 76, 60);
+                lblUltimoItemPreco.Text = "";
+                lblUltimoItemQtd.Text = ex.Message.Length > 50 ? ex.Message.Substring(0, 47) + "..." : ex.Message;
+                lblUltimoItemQtd.ForeColor = Color.FromArgb(231, 76, 60);
+                System.Media.SystemSounds.Hand.Play();
+                
+                txbCodBarras.SelectAll();
+                txbCodBarras.Focus();
             }
         }
         
@@ -375,7 +608,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         #endregion
         
-        #region Atualização da Interface
+        #region Atualiza��o da Interface
         
         private void AtualizarCarrinho()
         {
@@ -395,13 +628,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 FormatarColunasGrid();
                 AplicarCoresGrid();
                 
-                // Atualiza contador e valor total no título do GroupBox
+                // Atualiza contador e valor total no t�tulo do GroupBox
                 var totalItens = _itensCarrinho.Count(i => !i.Cancelado);
                 var valorTotal = _itensCarrinho.Where(i => !i.Cancelado).Sum(i => i.Total);
                 
-                gbCarrinho.Text = $"🛒 CARRINHO DE COMPRAS ({totalItens} itens) - Total: {valorTotal:C2}";
+                gbCarrinho.Text = $"CARRINHO DE COMPRAS ({totalItens} itens) - Total: {valorTotal:C2}";
                 
-                // Auto-scroll para o último item adicionado
+                // Auto-scroll para o �ltimo item adicionado
                 if (dgvCarrinho.Rows.Count > 0)
                 {
                     dgvCarrinho.FirstDisplayedScrollingRowIndex = dgvCarrinho.Rows.Count - 1;
@@ -414,7 +647,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 }
                 else
                 {
-                    gbCarrinho.ForeColor = Color.FromArgb(52, 73, 94); // Padrão
+                    gbCarrinho.ForeColor = Color.FromArgb(52, 73, 94); // Padr�o
                 }
             }
             catch (Exception ex)
@@ -425,78 +658,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private void FormatarColunasGrid()
         {
+            // Colunas ja estao pre-configuradas em ConfigurarColunasGridInicial().
+            // Este metodo apenas garante que a formatacao continua correta
+            // apos o DataSource ser atualizado.
             if (dgvCarrinho.Columns.Count == 0) return;
             
             try
             {
-                // ✅ CARRINHO SIMPLIFICADO - APENAS COLUNAS ESSENCIAIS
-                
-                // 1. OCULTA TODAS as colunas que não são essenciais
-                string[] colunasOcultar = {
-                    "ProdutoId", "EstoqueDisponivel", "DataVencimento", 
-                    "Cancelado", "CodigoBarras"
-                };
-                
-                foreach (var coluna in colunasOcultar)
-                {
-                    if (dgvCarrinho.Columns[coluna] != null)
-                        dgvCarrinho.Columns[coluna].Visible = false;
-                }
-                
-                // 2. CONFIGURA as colunas essenciais visíveis
-                var colunasEssenciais = new Dictionary<string, (string Header, int Width, string Format)>
-                {
-                    ["Codigo"] = ("Item", 60, ""),
-                    ["Descricao"] = ("📦 Produto", 350, ""),
-                    ["Quantidade"] = ("Qtd", 60, ""),
-                    ["PrecoUnitario"] = ("Valor Unit.", 100, "C2"),
-                    ["Total"] = ("💰 Total", 120, "C2")
-                };
-                
-                foreach (var config in colunasEssenciais)
-                {
-                    var coluna = dgvCarrinho.Columns[config.Key];
-                    if (coluna != null)
-                    {
-                        coluna.HeaderText = config.Value.Header;
-                        coluna.Width = config.Value.Width;
-                        coluna.Visible = true;
-                        
-                        if (!string.IsNullOrEmpty(config.Value.Format))
-                        {
-                            coluna.DefaultCellStyle.Format = config.Value.Format;
-                        }
-                        
-                        // Alinhamento específico por coluna
-                        switch (config.Key)
-                        {
-                            case "Codigo":
-                            case "Quantidade":
-                                coluna.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                                break;
-                            case "PrecoUnitario":
-                            case "Total":
-                                coluna.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-                                break;
-                            case "Descricao":
-                                coluna.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-                                break;
-                        }
-                    }
-                }
-                
-                // 3. CONFIGURA AutoSizeMode para responsividade
-                if (dgvCarrinho.Columns["Descricao"] != null)
-                {
-                    dgvCarrinho.Columns["Descricao"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    dgvCarrinho.Columns["Descricao"].MinimumWidth = 200;
-                }
-                
-                // 4. ESTILO para melhor visualização
-                dgvCarrinho.RowTemplate.Height = 35;
+                // Aplica estilo de linhas
+                dgvCarrinho.RowTemplate.Height = 40;
                 dgvCarrinho.DefaultCellStyle.Font = new Font("Segoe UI", 10F);
                 dgvCarrinho.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-                
             }
             catch (Exception ex)
             {
@@ -514,17 +686,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                     {
                         if (item.Cancelado)
                         {
-                            // ❌ Item cancelado - vermelho com strikethrough
+                            // ? Item cancelado - vermelho com strikethrough
                             row.DefaultCellStyle.BackColor = Color.FromArgb(255, 235, 235);
                             row.DefaultCellStyle.ForeColor = Color.FromArgb(192, 57, 43);
                             row.DefaultCellStyle.Font = new Font(row.DefaultCellStyle.Font, FontStyle.Strikeout);
                             
-                            // Adiciona ícone de cancelado na descrição
+                            // Adiciona �cone de cancelado na descri��o
                             if (row.Cells["Descricao"] != null)
                             {
                                 var descricao = item.Descricao;
-                                if (!descricao.StartsWith("❌"))
-                                    row.Cells["Descricao"].Value = $"❌ {descricao}";
+                                if (!descricao.StartsWith("[X]"))
+                                    row.Cells["Descricao"].Value = $"[X] {descricao}";
                             }
                         }
                         else
@@ -533,25 +705,25 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                             
                             if (alertas.Any(a => a.Contains("vencido")))
                             {
-                                // 🔴 Produto vencido - não pode ser vendido
+                                // ?? Produto vencido - n�o pode ser vendido
                                 row.DefaultCellStyle.BackColor = Color.FromArgb(255, 205, 205);
                                 row.DefaultCellStyle.ForeColor = Color.FromArgb(169, 68, 66);
                             }
                             else if (alertas.Any(a => a.Contains("estoque")))
                             {
-                                // 🟡 Estoque baixo - atenção
+                                // ?? Estoque baixo - aten��o
                                 row.DefaultCellStyle.BackColor = Color.FromArgb(255, 248, 220);
                                 row.DefaultCellStyle.ForeColor = Color.FromArgb(133, 100, 4);
                             }
                             else if (alertas.Any(a => a.Contains("vence")))
                             {
-                                // 🟠 Próximo ao vencimento
+                                // ?? Pr�ximo ao vencimento
                                 row.DefaultCellStyle.BackColor = Color.FromArgb(254, 240, 220);
                                 row.DefaultCellStyle.ForeColor = Color.FromArgb(157, 88, 36);
                             }
                             else
                             {
-                                // ✅ Item normal - alternando cores para melhor leitura
+                                // ? Item normal - alternando cores para melhor leitura
                                 if (row.Index % 2 == 0)
                                 {
                                     row.DefaultCellStyle.BackColor = Color.White;
@@ -571,11 +743,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                             row.Cells["Total"].Style.ForeColor = Color.FromArgb(39, 174, 96); // Verde para valores
                         }
                         
-                        // Destaca código do item
+                        // Destaca c�digo do item
                         if (row.Cells["Codigo"] != null)
                         {
                             row.Cells["Codigo"].Style.Font = new Font("Consolas", 10F, FontStyle.Bold);
-                            row.Cells["Codigo"].Style.ForeColor = Color.FromArgb(52, 152, 219); // Azul para códigos
+                            row.Cells["Codigo"].Style.ForeColor = Color.FromArgb(52, 152, 219); // Azul para c�digos
                         }
                     }
                 }
@@ -608,7 +780,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                     if (total > 0)
                     {
                         lblTotal.ForeColor = Color.Yellow;
-                        lblStatusCaixa.Text = "🟡 VENDA EM ANDAMENTO";
+                        lblStatusCaixa.Text = "VENDA EM ANDAMENTO";
                         lblStatusCaixa.ForeColor = Color.Yellow;
                     }
                 }
@@ -619,7 +791,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                     lblTotal.Text = 0m.FormatarMoeda();
                     lblNomeCaixa.Text = "CAIXA LIVRE - Aguardando produtos";
                     
-                    lblStatusCaixa.Text = "🟢 CAIXA ABERTO";
+                    lblStatusCaixa.Text = "CAIXA ABERTO";
                     lblStatusCaixa.ForeColor = Color.LightGreen;
                 }
             }
@@ -633,16 +805,16 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         {
             try
             {
-                // Atualiza botões baseado no estado
+                // Atualiza bot�es baseado no estado
                 var temItens = _pdvManager.VendaAtual?.QuantidadeItensAtivos > 0;
                 
-                // Habilita/desabilita operações
+                // Habilita/desabilita opera��es
                 var podeOperar = _caixaAberto && _pdvManager.ValidarOperacao("ADICIONAR_ITEM");
                 
                 txbCodBarras.Enabled = podeOperar;
                 txbQuantidade.Enabled = podeOperar;
                 
-                // Habilita botões de pagamento apenas se houver itens
+                // Habilita bot�es de pagamento apenas se houver itens
                 btnPagamentoDinheiro.Enabled = temItens;
                 btnPagamentoCartao.Enabled = temItens;
                 btnPagamentoPix.Enabled = temItens;
@@ -650,18 +822,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 btnCancelarItem.Enabled = temItens;
                 btnCancelarVenda.Enabled = temItens;
                 
-                // Atualiza título da janela
+                // Atualiza t�tulo da janela
                 var stats = _pdvManager.GetEstatisticasCaixa();
                 Text = $"PDV Moderno - {stats["Operador"]} - {stats["Caixa"]}";
                 
-                // Atualiza status de operação
+                // Atualiza status de opera��o
                 if (temItens)
                 {
-                    lblStatusOperacao.Text = $"🛒 Venda em andamento - {_pdvManager.VendaAtual.QuantidadeItensAtivos} itens";
+                    lblStatusOperacao.Text = $"Venda em andamento - {_pdvManager.VendaAtual.QuantidadeItensAtivos} itens";
                 }
                 else
                 {
-                    lblStatusOperacao.Text = "🟢 Sistema PDV - Pronto para nova venda";
+                    lblStatusOperacao.Text = "Sistema PDV - Pronto para nova venda";
                 }
             }
             catch (Exception ex)
@@ -723,7 +895,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         #endregion
         
-        #region Métodos de Limpeza
+        #region M�todos de Limpeza
         
         private void LimparInterface()
         {
@@ -737,12 +909,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             // Limpa campos de pagamento
             LimparCamposPagamento();
             
-            // Reset cores dos botões
+            // Reset cores dos bot�es
             btnFinalizarVenda.BackColor = Color.FromArgb(39, 174, 96);
             btnFinalizarVenda.Enabled = false;
             
             // Atualiza GroupBox do carrinho
-            gbCarrinho.Text = "🛒 CARRINHO DE COMPRAS (0 itens)";
+            gbCarrinho.Text = "CARRINHO DE COMPRAS (0 itens)";
         }
         
         private void LimparCamposProduto()
@@ -752,7 +924,16 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             txbPrecoUnit.Clear();
             txbQuantidade.Text = "1";
             txbTotalRecebido.Clear();
-            txbDescricao.BackColor = SystemColors.Window;
+            
+            // Reseta display ULTIMO ITEM
+            lblUltimoItemNome.Text = "---";
+            lblUltimoItemNome.ForeColor = Color.White;
+            lblUltimoItemPreco.Text = 0m.FormatarMoeda();
+            lblUltimoItemQtd.Text = "";
+            lblUltimoItemQtd.ForeColor = Color.LightGray;
+            
+            // Reseta contadores do scanner
+            _keystrokeCount = 0;
             
             txbCodBarras.Focus();
         }
@@ -783,7 +964,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             if (loading)
             {
                 Cursor = Cursors.WaitCursor;
-                lblStatusOperacao.Text = "⏳ Processando...";
+                lblStatusOperacao.Text = "Processando...";
                 lblStatusOperacao.ForeColor = Color.Orange;
                 progressOperacao.Visible = true;
                 progressOperacao.Style = ProgressBarStyle.Marquee;
@@ -795,7 +976,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 lblStatusOperacao.ForeColor = Color.White;
                 if (_caixaAberto)
                 {
-                    lblStatusOperacao.Text = "🟢 Sistema PDV - Pronto";
+                    lblStatusOperacao.Text = "Sistema PDV - Pronto";
                 }
             }
             
@@ -804,7 +985,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             txbQuantidade.Enabled = !loading && _caixaAberto;
             dgvCarrinho.Enabled = !loading;
             
-            // Desabilita botões durante loading
+            // Desabilita bot�es durante loading
             btnPagamentoDinheiro.Enabled = !loading;
             btnPagamentoCartao.Enabled = !loading;
             btnPagamentoPix.Enabled = !loading;
@@ -815,7 +996,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         #endregion
         
-        #region Operações de Pagamento
+        #region Opera��es de Pagamento
         
         private void PagamentoDinheiro()
         {
@@ -828,10 +1009,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 
                 if (frmDinheiro.ShowDialog() == DialogResult.OK)
                 {
-                    var valorRecebido = decimal.Parse(frmDinheiro.ValorRecibido.Replace("R$", "").Replace(",", "."));
-                    var troco = decimal.Parse(frmDinheiro.Troco.Replace("R$", "").Replace(",", "."));
+                    // Usa propriedades decimais diretamente (sem parsing de string)
+                    var valorRecebido = frmDinheiro.ValorRecebidoDecimal;
+                    var troco = frmDinheiro.TrocoDecimal;
                     
-                    ProcessarPagamento("DINHEIRO", valorRecebido, troco);
+                    ProcessarPagamento("Dinheiro", valorRecebido, troco);
                 }
             }
             catch (Exception ex)
@@ -848,13 +1030,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             {
                 if (!ValidarVendaParaPagamento()) return;
                 
-                var valorTotal = _pdvManager.VendaAtual.ValorTotal;
-                ProcessarPagamento("CARTÃO", valorTotal, 0);
+                var valorFinal = _pdvManager.VendaAtual.ValorFinal;
+                ProcessarPagamento("Cartao de Credito", valorFinal, 0);
             }
             catch (Exception ex)
             {
                 PdvLogger.LogError("PagamentoCartao", ex.Message, ex);
-                MessageBox.Show($"Erro no pagamento com cartão: {ex.Message}", "Erro",
+                MessageBox.Show($"Erro no pagamento com cartao: {ex.Message}", "Erro",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -865,11 +1047,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             {
                 if (!ValidarVendaParaPagamento()) return;
                 
-                var valorTotal = _pdvManager.VendaAtual.ValorTotal;
+                var valorFinal = _pdvManager.VendaAtual.ValorFinal;
                 
                 var resultado = MessageBox.Show(
-                    $"💳 PAGAMENTO PIX\n\n" +
-                    $"Valor Total: {valorTotal:C2}\n\n" +
+                    $"PAGAMENTO PIX\n\n" +
+                    $"Valor: {valorFinal:C2}\n\n" +
                     $"Confirme o pagamento PIX no dispositivo do cliente.\n\n" +
                     $"Pagamento foi aprovado?",
                     "Pagamento PIX",
@@ -878,8 +1060,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 
                 if (resultado == DialogResult.Yes)
                 {
-                    ProcessarPagamento("PIX", valorTotal, 0);
-                    lblStatusOperacao.Text = "📱 Pagamento PIX processado";
+                    ProcessarPagamento("PIX", valorFinal, 0);
                 }
             }
             catch (Exception ex)
@@ -890,14 +1071,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             }
         }
         
-        private void ProcessarPagamento(string formaPagamento, decimal valorRecebido, decimal troco = 0)
+        private void ProcessarPagamento(string FormaPagamento, decimal valorRecebido, decimal troco = 0)
         {
             try
             {
-                _pdvManager.DefinirFormaPagamento(formaPagamento, valorRecebido);
+                _pdvManager.DefinirFormaPagamento(FormaPagamento, valorRecebido);
                 
                 // Atualiza interface com novos componentes
-                lblFormaPagamento.Text = formaPagamento;
+                lblFormaPagamento.Text = FormaPagamento;
                 lblValorAReceber.Text = valorRecebido.FormatarMoeda();
                 lblTroco.Text = troco.FormatarMoeda();
                 
@@ -905,15 +1086,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 ExibirCamposPagamento();
                 
                 // Atualiza status
-                lblStatusOperacao.Text = $"💳 Forma de pagamento: {formaPagamento}";
-                lblStatusCaixa.Text = "🟡 AGUARDANDO FINALIZAÇÃO";
+                lblStatusOperacao.Text = $"Forma de pagamento: {FormaPagamento}";
+                lblStatusCaixa.Text = "AGUARDANDO FINALIZACAO";
                 lblStatusCaixa.ForeColor = Color.Yellow;
                 
-                // Habilita botão finalizar
+                // Habilita bot�o finalizar
                 btnFinalizarVenda.Enabled = true;
                 btnFinalizarVenda.BackColor = Color.FromArgb(39, 174, 96);
                 
-                PdvLogger.LogFormaPagamento(formaPagamento, valorRecebido, $"Troco: {troco:C2}");
+                PdvLogger.LogFormaPagamento(FormaPagamento, valorRecebido, $"Troco: {troco:C2}");
             }
             catch (Exception ex)
             {
@@ -936,7 +1117,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         {
             if (_pdvManager.VendaAtual == null || _pdvManager.VendaAtual.QuantidadeItensAtivos == 0)
             {
-                MessageBox.Show("Adicione itens à venda antes de definir a forma de pagamento!", 
+                MessageBox.Show("Adicione itens � venda antes de definir a forma de pagamento!", 
                     "Venda Vazia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
@@ -946,7 +1127,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         #endregion
         
-        #region Finalização e Cancelamento de Vendas
+        #region Finaliza��o e Cancelamento de Vendas
         
         private async void FinalizarVendas()
         {
@@ -970,26 +1151,22 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 sw.Stop();
                 PdvLogger.LogPerformance("FinalizarVenda", sw.Elapsed);
                 
-                // Imprime cupom
+                // Imprime cupom (modal — operador ve o recibo e fecha)
                 if (_configuracoes.ImprimirCupomAutomatico)
                 {
                     await ImprimirCupomFiscal(pedidoId);
                 }
                 
-                // Mostra mensagem de sucesso
-                var venda = _pdvManager.VendaAtual;
-                var mensagem = $"Venda finalizada com sucesso!\n\n" +
-                              $"Pedido: {pedidoId}\n" +
-                              $"Total: {venda.ValorTotal:C2}\n" +
-                              $"Forma: {venda.FormaPagamento}\n" +
-                              $"Troco: {venda.Troco:C2}";
+                // Som de sucesso
+                System.Media.SystemSounds.Asterisk.Play();
                 
-                MessageBox.Show(mensagem, "Venda Finalizada", 
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
-                // Inicia nova venda
+                // Inicia nova venda — limpa tela e volta para PDV LIVRE
                 IniciarNovaVenda();
-                LimparCamposPagamento();
+                
+                // Atualiza status do header imediatamente (sem esperar timer)
+                lblStatusCaixa.Text = "CAIXA ABERTO";
+                lblStatusCaixa.ForeColor = Color.LightGreen;
+                lblStatusOperacao.Text = "Venda finalizada com sucesso! Aguardando nova venda...";
             }
             catch (Exception ex)
             {
@@ -1006,23 +1183,30 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private bool ValidarFinalizacaoVenda()
         {
+            if (_colaboradorId == Guid.Empty)
+            {
+                MessageBox.Show("Operador nao identificado!\n\nFecha o PDV e faca login novamente.", "Erro", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            
             if (_pdvManager.VendaAtual == null)
             {
-                MessageBox.Show("Não há venda ativa!", "Erro", 
+                MessageBox.Show("N\u00e3o h\u00e1 venda ativa!", "Erro", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
             
-            if (string.IsNullOrEmpty(lblFormaPagamento.Text))
+            if (string.IsNullOrEmpty(lblFormaPagamento.Text) || lblFormaPagamento.Text == "---")
             {
-                MessageBox.Show("Defina a forma de pagamento antes de finalizar!", 
+                MessageBox.Show("Defina a forma de pagamento antes de finalizar!\n\nF3 = Dinheiro\nF4 = Cartao\nF6 = PIX", 
                     "Forma de Pagamento", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
             
             if (_pdvManager.VendaAtual.QuantidadeItensAtivos == 0)
             {
-                MessageBox.Show("Adicione itens à venda!", "Venda Vazia", 
+                MessageBox.Show("Adicione itens � venda!", "Venda Vazia", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
@@ -1030,8 +1214,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             var erros = _pdvManager.VendaAtual.Validar();
             if (erros.Any())
             {
-                MessageBox.Show($"Venda inválida:\n• {string.Join("\n• ", erros)}", 
-                    "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Venda inv�lida:\n� {string.Join("\n� ", erros)}", 
+                    "Valida��o", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
             
@@ -1051,13 +1235,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             {
                 if (_pdvManager.VendaAtual == null || _pdvManager.VendaAtual.QuantidadeItensAtivos == 0)
                 {
-                    MessageBox.Show("Não há venda para cancelar!", "Aviso", 
+                    MessageBox.Show("N�o h� venda para cancelar!", "Aviso", 
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
                 
                 var resultado = MessageBox.Show(
-                    "Deseja realmente cancelar esta venda?\n\nTodos os itens serão removidos.",
+                    "Deseja realmente cancelar esta venda?\n\nTodos os itens ser�o removidos.",
                     "Cancelar Venda", 
                     MessageBoxButtons.YesNo, 
                     MessageBoxIcon.Question);
@@ -1089,8 +1273,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private string SolicitarMotivoAutorizacao()
         {
-            // Implementar dialog para autorização de cancelamento
-            // Por enquanto usa autorização simples
+            // Implementar dialog para autoriza��o de cancelamento
+            // Por enquanto usa autoriza��o simples
             using var frmVerificaLogin = new frmVerificaLogin();
             if (frmVerificaLogin.ShowDialog() == DialogResult.OK)
             {
@@ -1101,7 +1285,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         #endregion
         
-        #region Operações de Itens
+        #region Opera��es de Itens
         
         private void CancelarItem()
         {
@@ -1109,7 +1293,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             {
                 if (_pdvManager.VendaAtual?.QuantidadeItensAtivos == 0)
                 {
-                    MessageBox.Show("Não há itens para cancelar!", "Aviso", 
+                    MessageBox.Show("N�o h� itens para cancelar!", "Aviso", 
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
@@ -1144,21 +1328,50 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private int SolicitarCodigoItem()
         {
-            // Implementar dialog para selecionar item
-            // Por enquanto usa o primeiro item ativo
-            var primeiroItem = _pdvManager.VendaAtual?.Itens.FirstOrDefault(i => !i.Cancelado);
-            return primeiroItem?.Codigo ?? 0;
+            // Usa o item selecionado no grid
+            if (dgvCarrinho.CurrentRow != null)
+            {
+                var rowIndex = dgvCarrinho.CurrentRow.Index;
+                if (rowIndex >= 0 && rowIndex < _itensCarrinho.Count)
+                {
+                    var item = _itensCarrinho[rowIndex];
+                    if (!item.Cancelado)
+                    {
+                        var confirma = MessageBox.Show(
+                            $"Cancelar item {item.Codigo}?\n\n" +
+                            $"{item.Descricao}\n" +
+                            $"Qtd: {item.Quantidade} x {item.PrecoUnitario.FormatarMoeda()} = {item.Total.FormatarMoeda()}",
+                            "Confirmar Cancelamento",
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question);
+                        
+                        if (confirma == DialogResult.Yes)
+                            return item.Codigo;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Este item ja esta cancelado.", "Aviso",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Selecione um item no carrinho para cancelar.", "Selecione um Item",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            return 0;
         }
         
         #endregion
         
-        #region Impressão de Cupom
+        #region Impress�o de Cupom
         
         private async Task ImprimirCupomFiscal(Guid pedidoId)
         {
             try
             {
-                PdvLogger.LogImpressaoCupom(pedidoId, "FISCAL", false, "Iniciando impressão");
+                PdvLogger.LogImpressaoCupom(pedidoId, "FISCAL", false, "Iniciando impress�o");
                 
                 using var frmCupom = new frmCupom(pedidoId.ToString(), _nomeOperador);
                 
@@ -1195,7 +1408,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             catch (Exception ex)
             {
                 PdvLogger.LogImpressaoCupom(pedidoId, "FISCAL", false, ex.Message);
-                MessageBox.Show($"Erro ao imprimir cupom: {ex.Message}", "Erro de Impressão",
+                MessageBox.Show($"Erro ao imprimir cupom: {ex.Message}", "Erro de Impress�o",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
@@ -1214,15 +1427,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                         FinalizarVendas();
                         return true;
                         
-                    case Keys.D:
+                    case Keys.F3:
                         PagamentoDinheiro();
                         return true;
                         
-                    case Keys.C:
+                    case Keys.F4:
                         PagamentoCartao();
                         return true;
                         
-                    case Keys.I:
+                    case Keys.F6:
+                        PagamentoPix();
+                        return true;
+                        
+                    case Keys.F7:
                         CancelarItem();
                         return true;
                         
@@ -1237,8 +1454,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                     case Keys.Escape:
                         if (_pdvManager.VendaAtual?.QuantidadeItensAtivos > 0)
                         {
-                            var result = MessageBox.Show("Há uma venda em andamento. Deseja realmente sair?", 
-                                "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                            var result = MessageBox.Show("H� uma venda em andamento. Deseja realmente sair?", 
+                                "Confirma��o", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                             if (result == DialogResult.No)
                                 return true;
                         }
@@ -1263,11 +1480,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             var ajuda = "ATALHOS DO PDV:\n\n" +
                        "F1 - Esta ajuda\n" +
                        "F2 - Finalizar venda\n" +
+                       "F3 - Pagamento dinheiro\n" +
+                       "F4 - Pagamento cartao\n" +
                        "F5 - Limpar campos\n" +
+                       "F6 - Pagamento PIX\n" +
+                       "F7 - Cancelar item\n" +
                        "F8 - Cancelar venda\n" +
-                       "C - Pagamento cartão\n" +
-                       "D - Pagamento dinheiro\n" +
-                       "I - Cancelar item\n" +
                        "ESC - Sair";
             
             MessageBox.Show(ajuda, "Ajuda - Atalhos", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1284,13 +1502,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private void txbQuantidade_TextChanged(object sender, EventArgs e)
         {
-            // Atualiza cálculo quando quantidade muda
+            // Atualiza c�lculo quando quantidade muda
             AtualizarCalculoQuantidade();
         }
         
         private void txbQuantidade_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Permite apenas números
+            // Permite apenas n�meros
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
@@ -1306,6 +1524,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 {
                     var total = preco * quantidade;
                     txbTotalRecebido.Text = total.FormatarMoeda();
+                    
+                    // Atualiza display ULTIMO ITEM com nova quantidade
+                    lblUltimoItemPreco.Text = total.FormatarMoeda();
+                    lblUltimoItemQtd.Text = quantidade > 1 ? $"{quantidade}x {preco.FormatarMoeda()}" : "";
                 }
             }
             catch (Exception ex)
@@ -1325,8 +1547,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 if (_pdvManager.VendaAtual?.QuantidadeItensAtivos > 0)
                 {
                     var result = MessageBox.Show(
-                        "Há uma venda em andamento. Deseja realmente sair?\n\nA venda será perdida.",
-                        "Confirmação de Saída", 
+                        "H� uma venda em andamento. Deseja realmente sair?\n\nA venda ser� perdida.",
+                        "Confirma��o de Sa�da", 
                         MessageBoxButtons.YesNo, 
                         MessageBoxIcon.Warning);
                     
@@ -1345,7 +1567,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
                 if (_caixaAberto)
                 {
                     var totalVendas = 0; // Implementar contagem real
-                    var valorFinal = 0m; // Implementar cálculo real
+                    var valorFinal = 0m; // Implementar c�lculo real
                     await _pdvManager.FecharCaixa(valorFinal, totalVendas);
                 }
                 
@@ -1359,9 +1581,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         #endregion
         
-        #region Métodos Auxiliares (Compatibilidade)
+        #region M�todos Auxiliares (Compatibilidade)
         
-        // Métodos mantidos para compatibilidade com código existente
+        // M�todos mantidos para compatibilidade com c�digo existente
         
         private async Task CalculoValorQauntidade()
         {
@@ -1385,14 +1607,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         private void Adicionar(string codigoBarras, string descricao)
         {
-            // Método legado - nova implementação usa AdicionarItemCarrinho
+            // M�todo legado - nova implementa��o usa AdicionarItemCarrinho
         }
         
         private bool VerificaVazio()
         {
             return string.IsNullOrWhiteSpace(txbCodBarras.Text) ||
-                   string.IsNullOrWhiteSpace(txbDescricao.Text) ||
-                   string.IsNullOrWhiteSpace(txbPrecoUnit.Text) ||
                    string.IsNullOrWhiteSpace(txbQuantidade.Text);
         }
         
@@ -1407,7 +1627,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         
         #endregion
         
-        #region Event Handlers dos Botões Modernos
+        #region Event Handlers dos Bot�es Modernos
         
         private void btnMinimizar_Click(object sender, EventArgs e)
         {

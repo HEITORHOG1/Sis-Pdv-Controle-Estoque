@@ -396,26 +396,26 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [CancelItem-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [CancelItem-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [CancelItem-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [CancelItem-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [CancelItem-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [CancelItem-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogPerformance(string operation, TimeSpan duration)
             {
-                Console.WriteLine($"[PERF] [CancelItem] {operation} - {duration.TotalMilliseconds}ms");
+                Debug.WriteLine($"[PERF] [CancelItem] {operation} - {duration.TotalMilliseconds}ms");
             }
         }
         

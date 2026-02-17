@@ -873,7 +873,6 @@ namespace SisPdvControleEstoqueInfra.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("ClienteId")
-                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("ColaboradorId")
@@ -1058,8 +1057,9 @@ namespace SisPdvControleEstoqueInfra.Migrations
                     b.Property<decimal>("PrecoVenda")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<int>("QuatidadeEstoqueProduto")
-                        .HasColumnType("int");
+                    b.Property<int>("QuantidadeEstoqueProduto")
+                        .HasColumnType("int")
+                        .HasColumnName("QuatidadeEstoqueProduto");
 
                     b.Property<decimal>("ReorderPoint")
                         .ValueGeneratedOnAdd()
@@ -1612,8 +1612,7 @@ namespace SisPdvControleEstoqueInfra.Migrations
                     b.HasOne("Model.Cliente", "Cliente")
                         .WithMany()
                         .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Model.Colaborador", "Colaborador")
                         .WithMany()

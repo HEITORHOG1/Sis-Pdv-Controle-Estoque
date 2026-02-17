@@ -12,13 +12,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Auth
             var client = Services.Http.HttpClientManager.GetClient();
             var payload = new { login = login, password = password };
             var response = await client.PostAsJsonAsync($"{_basePath}/v1/users/login", payload);
-            response.EnsureSuccessStatusCode();
 
+            // Lê o body independente do status code (API retorna 400 para credenciais inválidas)
             var result = await response.Content.ReadFromJsonAsync<AuthResult>();
+
             if (result == null)
-                throw new Exception("Resposta de autentica��o inv�lida");
+                throw new Exception("Resposta de autenticação inválida");
             if (!result.success)
-                throw new Exception(result.message ?? "Falha ao autenticar");
+                throw new Exception(result.message ?? "Credenciais inválidas");
 
             return result;
         }

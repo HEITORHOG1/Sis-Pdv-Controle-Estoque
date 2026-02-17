@@ -1,4 +1,4 @@
-ï»¿using Interfaces;
+using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
 
@@ -6,21 +6,19 @@ namespace Commands.Colaborador.ListarColaboradorPorId
 {
     public class ListarColaboradorPorIdHandler : Notifiable, IRequestHandler<ListarColaboradorPorIdRequest, ListarColaboradorPorIdResponse>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryColaborador _repositoryColaborador;
 
-        public ListarColaboradorPorIdHandler(IMediator mediator, IRepositoryColaborador repositoryColaborador)
+        public ListarColaboradorPorIdHandler(IRepositoryColaborador repositoryColaborador)
         {
-            _mediator = mediator;
             _repositoryColaborador = repositoryColaborador;
         }
 
-        public async Task<ListarColaboradorPorIdResponse> Handle(ListarColaboradorPorIdRequest request, CancellationToken cancellationToken)
+        public Task<ListarColaboradorPorIdResponse> Handle(ListarColaboradorPorIdRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return null;
             }
 
@@ -28,7 +26,7 @@ namespace Commands.Colaborador.ListarColaboradorPorId
 
             if (Collection == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return null;
             }
 
@@ -36,7 +34,7 @@ namespace Commands.Colaborador.ListarColaboradorPorId
             var response = (ListarColaboradorPorIdResponse)Collection;
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Validators;
 
 namespace Commands.Fornecedor.AdicionarFornecedor
@@ -14,12 +14,12 @@ namespace Commands.Fornecedor.AdicionarFornecedor
 
         public AdicionarFornecedorRequestValidator()
         {
-            RuleFor(request => request.inscricaoEstadual)
+            RuleFor(request => request.InscricaoEstadual)
                 .NotEmpty().WithMessage("A Inscrição Estadual é obrigatória.")
                 .Length(8, 15).WithMessage("A Inscrição Estadual deve ter entre 8 e 15 caracteres.")
                 .Matches(@"^[0-9]+$").WithMessage("A Inscrição Estadual deve conter apenas números.");
 
-            RuleFor(request => request.nomeFantasia)
+            RuleFor(request => request.NomeFantasia)
                 .NotEmpty().WithMessage("O Nome Fantasia é obrigatório.")
                 .Length(2, 100).WithMessage("O Nome Fantasia deve ter entre 2 e 100 caracteres.")
                 .Matches(@"^[a-zA-ZÀ-ÿ0-9\s\-\.&]+$").WithMessage("O Nome Fantasia contém caracteres inválidos.");
@@ -44,15 +44,15 @@ namespace Commands.Fornecedor.AdicionarFornecedor
                 .Length(2, 50).WithMessage("A Cidade deve ter entre 2 e 50 caracteres.")
                 .MustBeValidName();
 
-            RuleFor(request => request.cepFornecedor.ToString())
+            RuleFor(request => request.CepFornecedor.ToString())
                 .MustBeValidCep()
-                .When(request => request.cepFornecedor > 0);
+                .When(request => request.CepFornecedor > 0);
 
-            RuleFor(request => request.cepFornecedor)
+            RuleFor(request => request.CepFornecedor)
                 .GreaterThan(0).WithMessage("O CEP é obrigatório e deve ser maior que zero.")
                 .InclusiveBetween(10000000, 99999999).WithMessage("CEP deve ter 8 dígitos.");
 
-            RuleFor(request => request.statusAtivo)
+            RuleFor(request => request.StatusAtivo)
                 .InclusiveBetween(0, 1).WithMessage("O Status Ativo deve ser 0 (inativo) ou 1 (ativo).");
 
             RuleFor(request => request.Cnpj)

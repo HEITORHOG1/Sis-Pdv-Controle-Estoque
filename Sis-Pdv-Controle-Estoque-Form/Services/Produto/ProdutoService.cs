@@ -1,4 +1,4 @@
-﻿using Commands.Produto.AdicionarProduto;
+using Commands.Produto.AdicionarProduto;
 using Commands.Produto.AlterarProduto;
 using Commands.Produto.AtualizarEstoque;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Produto;
@@ -29,28 +29,28 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                 var errosValidacao = dto.Validar();
                 if (errosValidacao.Any())
                 {
-                    throw new ArgumentException($"Dados inválidos: {string.Join(", ", errosValidacao)}");
+                    throw new ArgumentException($"Dados inv�lidos: {string.Join(", ", errosValidacao)}");
                 }
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
                 AdicionarProdutoRequest request = new AdicionarProdutoRequest()
                 {
-                    codBarras = dto.codBarras.Trim(),
-                    nomeProduto = dto.nomeProduto.Trim(),
-                    descricaoProduto = dto.descricaoProduto?.Trim() ?? string.Empty,
-                    precoCusto = dto.precoCusto,
-                    precoVenda = dto.precoVenda,
-                    margemLucro = dto.margemLucro,
-                    dataFabricao = dto.dataFabricao,
-                    dataVencimento = dto.dataVencimento,
-                    quatidadeEstoqueProduto = dto.quatidadeEstoqueProduto,
+                    CodBarras = dto.CodBarras.Trim(),
+                    NomeProduto = dto.NomeProduto.Trim(),
+                    DescricaoProduto = dto.DescricaoProduto?.Trim() ?? string.Empty,
+                    PrecoCusto = dto.PrecoCusto,
+                    PrecoVenda = dto.PrecoVenda,
+                    MargemLucro = dto.MargemLucro,
+                    DataFabricao = dto.DataFabricao,
+                    DataVencimento = dto.DataVencimento,
+                    QuantidadeEstoqueProduto = dto.QuantidadeEstoqueProduto,
                     FornecedorId = dto.FornecedorId,
                     CategoriaId = dto.CategoriaId,
-                    statusAtivo = dto.statusAtivo
+                    StatusAtivo = dto.StatusAtivo
                 };
 
-                System.Diagnostics.Debug.WriteLine($"Tentando adicionar produto: {request.nomeProduto}");
+                System.Diagnostics.Debug.WriteLine($"Tentando adicionar produto: {request.NomeProduto}");
                 System.Diagnostics.Debug.WriteLine($"FornecedorId: {request.FornecedorId}");
                 System.Diagnostics.Debug.WriteLine($"CategoriaId: {request.CategoriaId}");
                 System.Diagnostics.Debug.WriteLine($"URL: {BasePath}/v1/produto/AdicionarProduto");
@@ -82,15 +82,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
             catch (ApplicationException appEx)
             {
-                throw new Exception($"Erro na comunicação com API: {appEx.Message}");
+                throw new Exception($"Erro na comunica��o com API: {appEx.Message}");
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Erro de conexão: {ex.Message}");
+                throw new Exception($"Erro de conex�o: {ex.Message}");
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout na requisição: {ex.Message}");
+                throw new Exception($"Timeout na requisi��o: {ex.Message}");
             }
             catch (JsonException ex)
             {
@@ -129,15 +129,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
             catch (ApplicationException appEx)
             {
-                throw new Exception($"Erro na comunicação com API: {appEx.Message}");
+                throw new Exception($"Erro na comunica��o com API: {appEx.Message}");
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Erro de conexão: {ex.Message}");
+                throw new Exception($"Erro de conex�o: {ex.Message}");
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout na requisição: {ex.Message}");
+                throw new Exception($"Timeout na requisi��o: {ex.Message}");
             }
             catch (JsonException ex)
             {
@@ -150,10 +150,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             try
             {
                 if (string.IsNullOrWhiteSpace(id))
-                    throw new ArgumentException("Id é obrigatório.");
+                    throw new ArgumentException("Id � obrigat�rio.");
 
                 if (!Guid.TryParse(id, out _))
-                    throw new ArgumentException("Id deve ser um GUID válido.");
+                    throw new ArgumentException("Id deve ser um GUID v�lido.");
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
@@ -178,15 +178,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
             catch (ApplicationException appEx)
             {
-                throw new Exception($"Erro na comunicação com API: {appEx.Message}");
+                throw new Exception($"Erro na comunica��o com API: {appEx.Message}");
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Erro de conexão: {ex.Message}");
+                throw new Exception($"Erro de conex�o: {ex.Message}");
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout na requisição: {ex.Message}");
+                throw new Exception($"Timeout na requisi��o: {ex.Message}");
             }
             catch (JsonException ex)
             {
@@ -194,22 +194,22 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
         }
 
-        public async Task<ProdutoResponseList> ListarProdutoPorCodBarras(string codBarras)
+        public async Task<ProdutoResponseList> ListarProdutoPorCodBarras(string CodBarras)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(codBarras))
-                    throw new ArgumentException("Código de barras é obrigatório.");
+                if (string.IsNullOrWhiteSpace(CodBarras))
+                    throw new ArgumentException("C�digo de barras � obrigat�rio.");
 
-                // Remove espaços e caracteres especiais
-                codBarras = codBarras.Trim().Replace(" ", "").Replace("-", "");
+                // Remove espa�os e caracteres especiais
+                CodBarras = CodBarras.Trim().Replace(" ", "").Replace("-", "");
 
-                if (!System.Text.RegularExpressions.Regex.IsMatch(codBarras, @"^[0-9]+$"))
-                    throw new ArgumentException("Código de barras deve conter apenas números.");
+                if (!System.Text.RegularExpressions.Regex.IsMatch(CodBarras, @"^[0-9]+$"))
+                    throw new ArgumentException("C�digo de barras deve conter apenas n�meros.");
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
-                var response = await _client.GetAsync($"{BasePath}/v1/produto/ListarProdutoPorCodBarras/{Uri.EscapeDataString(codBarras)}");
+                var response = await _client.GetAsync($"{BasePath}/v1/produto/ListarProdutoPorCodBarras/{Uri.EscapeDataString(CodBarras)}");
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -226,19 +226,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                 }
 
                 await ThrowDetailedException(response, nameof(ListarProdutoPorCodBarras));
-                throw new Exception("Falha desconhecida ao consultar produto por código de barras.");
+                throw new Exception("Falha desconhecida ao consultar produto por c�digo de barras.");
             }
             catch (ApplicationException appEx)
             {
-                throw new Exception($"Erro na comunicação com API: {appEx.Message}");
+                throw new Exception($"Erro na comunica��o com API: {appEx.Message}");
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Erro de conexão: {ex.Message}");
+                throw new Exception($"Erro de conex�o: {ex.Message}");
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout na requisição: {ex.Message}");
+                throw new Exception($"Timeout na requisi��o: {ex.Message}");
             }
             catch (JsonException ex)
             {
@@ -258,13 +258,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                     throw new ArgumentNullException(nameof(dto));
                 
                 if (dto.Id == Guid.Empty)
-                    throw new ArgumentException("Id é obrigatório.");
+                    throw new ArgumentException("Id � obrigat�rio.");
 
                 // Valida o DTO
                 var errosValidacao = dto.Validar();
                 if (errosValidacao.Any())
                 {
-                    throw new ArgumentException($"Dados inválidos: {string.Join(", ", errosValidacao)}");
+                    throw new ArgumentException($"Dados inv�lidos: {string.Join(", ", errosValidacao)}");
                 }
 
                 _client = Services.Http.HttpClientManager.GetClient();
@@ -272,18 +272,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                 AlterarProdutoRequest request = new AlterarProdutoRequest()
                 {
                     Id = dto.Id,
-                    codBarras = dto.codBarras.Trim(),
-                    nomeProduto = dto.nomeProduto.Trim(),
-                    descricaoProduto = dto.descricaoProduto?.Trim() ?? string.Empty,
-                    precoCusto = dto.precoCusto,
-                    precoVenda = dto.precoVenda,
-                    margemLucro = dto.margemLucro,
-                    dataFabricao = dto.dataFabricao,
-                    dataVencimento = dto.dataVencimento,
-                    quatidadeEstoqueProduto = dto.quatidadeEstoqueProduto,
+                    CodBarras = dto.CodBarras.Trim(),
+                    NomeProduto = dto.NomeProduto.Trim(),
+                    DescricaoProduto = dto.DescricaoProduto?.Trim() ?? string.Empty,
+                    PrecoCusto = dto.PrecoCusto,
+                    PrecoVenda = dto.PrecoVenda,
+                    MargemLucro = dto.MargemLucro,
+                    DataFabricao = dto.DataFabricao,
+                    DataVencimento = dto.DataVencimento,
+                    QuantidadeEstoqueProduto = dto.QuantidadeEstoqueProduto,
                     FornecedorId = dto.FornecedorId,
                     CategoriaId = dto.CategoriaId,
-                    statusAtivo = dto.statusAtivo
+                    StatusAtivo = dto.StatusAtivo
                 };
 
                 var response = await _client.PutAsJson($"{BasePath}/v1/produto/AlterarProduto", request);
@@ -307,15 +307,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
             catch (ApplicationException appEx)
             {
-                throw new Exception($"Erro na comunicação com API: {appEx.Message}");
+                throw new Exception($"Erro na comunica��o com API: {appEx.Message}");
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Erro de conexão: {ex.Message}");
+                throw new Exception($"Erro de conex�o: {ex.Message}");
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout na requisição: {ex.Message}");
+                throw new Exception($"Timeout na requisi��o: {ex.Message}");
             }
             catch (JsonException ex)
             {
@@ -335,17 +335,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
                     throw new ArgumentNullException(nameof(dto));
                 
                 if (dto.Id == Guid.Empty)
-                    throw new ArgumentException("Id é obrigatório.");
+                    throw new ArgumentException("Id � obrigat�rio.");
 
-                if (dto.quatidadeEstoqueProduto < 0)
-                    throw new ArgumentException("Quantidade não pode ser negativa.");
+                if (dto.QuantidadeEstoqueProduto < 0)
+                    throw new ArgumentException("Quantidade n�o pode ser negativa.");
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
                 AtualizarEstoqueRequest request = new AtualizarEstoqueRequest()
                 {
                     Id = dto.Id,
-                    quatidadeEstoqueProduto = dto.quatidadeEstoqueProduto
+                    QuantidadeEstoqueProduto = dto.QuantidadeEstoqueProduto
                 };
 
                 var response = await _client.PutAsJson($"{BasePath}/v1/produto/AtualizaEstoque", request);
@@ -369,15 +369,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
             catch (ApplicationException appEx)
             {
-                throw new Exception($"Erro na comunicação com API: {appEx.Message}");
+                throw new Exception($"Erro na comunica��o com API: {appEx.Message}");
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Erro de conexão: {ex.Message}");
+                throw new Exception($"Erro de conex�o: {ex.Message}");
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout na requisição: {ex.Message}");
+                throw new Exception($"Timeout na requisi��o: {ex.Message}");
             }
             catch (JsonException ex)
             {
@@ -394,10 +394,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             try
             {
                 if (string.IsNullOrWhiteSpace(id))
-                    throw new ArgumentException("Id é obrigatório.");
+                    throw new ArgumentException("Id � obrigat�rio.");
 
                 if (!Guid.TryParse(id, out _))
-                    throw new ArgumentException("Id deve ser um GUID válido.");
+                    throw new ArgumentException("Id deve ser um GUID v�lido.");
 
                 _client = Services.Http.HttpClientManager.GetClient();
 
@@ -422,15 +422,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
             catch (ApplicationException appEx)
             {
-                throw new Exception($"Erro na comunicação com API: {appEx.Message}");
+                throw new Exception($"Erro na comunica��o com API: {appEx.Message}");
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Erro de conexão: {ex.Message}");
+                throw new Exception($"Erro de conex�o: {ex.Message}");
             }
             catch (TaskCanceledException ex)
             {
-                throw new Exception($"Timeout na requisição: {ex.Message}");
+                throw new Exception($"Timeout na requisi��o: {ex.Message}");
             }
             catch (JsonException ex)
             {
@@ -451,19 +451,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
             }
             catch
             {
-                content = "Não foi possível ler o conteúdo da resposta";
+                content = "N�o foi poss�vel ler o conte�do da resposta";
             }
 
             var message = response.StatusCode switch
             {
-                HttpStatusCode.BadRequest => "Dados inválidos enviados para o servidor",
-                HttpStatusCode.Unauthorized => "Não autorizado. Verifique suas credenciais",
+                HttpStatusCode.BadRequest => "Dados inv�lidos enviados para o servidor",
+                HttpStatusCode.Unauthorized => "N�o autorizado. Verifique suas credenciais",
                 HttpStatusCode.Forbidden => "Acesso negado",
                 HttpStatusCode.NotFound => GetNotFoundMessage(methodName),
                 HttpStatusCode.Conflict => GetConflictMessage(methodName),
                 HttpStatusCode.UnprocessableEntity => "Dados inconsistentes",
                 HttpStatusCode.InternalServerError => "Erro interno do servidor",
-                HttpStatusCode.ServiceUnavailable => "Serviço temporariamente indisponível",
+                HttpStatusCode.ServiceUnavailable => "Servi�o temporariamente indispon�vel",
                 _ => $"Erro HTTP {(int)response.StatusCode}: {response.ReasonPhrase}"
             };
 
@@ -474,13 +474,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
         {
             return methodName switch
             {
-                nameof(AdicionarProduto) => "Erro ao cadastrar: Fornecedor ou Categoria não encontrados",
-                nameof(AlterarProduto) => "Produto não encontrado para alteração",
-                nameof(RemoverProduto) => "Produto não encontrado para remoção",
-                nameof(ListarProdutoPorId) => "Produto não encontrado",
-                nameof(ListarProdutoPorCodBarras) => "Produto com este código de barras não foi encontrado",
-                nameof(AtualizarEstoque) => "Produto não encontrado para atualização de estoque",
-                _ => "Recurso não encontrado"
+                nameof(AdicionarProduto) => "Erro ao cadastrar: Fornecedor ou Categoria n�o encontrados",
+                nameof(AlterarProduto) => "Produto n�o encontrado para altera��o",
+                nameof(RemoverProduto) => "Produto n�o encontrado para remo��o",
+                nameof(ListarProdutoPorId) => "Produto n�o encontrado",
+                nameof(ListarProdutoPorCodBarras) => "Produto com este c�digo de barras n�o foi encontrado",
+                nameof(AtualizarEstoque) => "Produto n�o encontrado para atualiza��o de estoque",
+                _ => "Recurso n�o encontrado"
             };
         }
 
@@ -488,8 +488,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Produto
         {
             return methodName switch
             {
-                nameof(AdicionarProduto) => "Produto já existe com este código de barras",
-                nameof(AlterarProduto) => "Conflito ao alterar produto - código de barras já existe",
+                nameof(AdicionarProduto) => "Produto j� existe com este c�digo de barras",
+                nameof(AlterarProduto) => "Conflito ao alterar produto - c�digo de barras j� existe",
                 _ => "Conflito de dados"
             };
         }

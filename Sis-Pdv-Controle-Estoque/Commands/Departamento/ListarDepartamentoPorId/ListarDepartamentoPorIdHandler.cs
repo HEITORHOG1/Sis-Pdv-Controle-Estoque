@@ -1,25 +1,23 @@
-ï»¿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Departamento.ListarDepartamentoPorId
 {
     public class ListarDepartamentoPorIdHandler : Notifiable, IRequestHandler<ListarDepartamentoPorIdRequest, ListarDepartamentoPorIdResponse>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryDepartamento _repositoryDepartamento;
 
-        public ListarDepartamentoPorIdHandler(IMediator mediator, IRepositoryDepartamento repositoryDepartamento)
+        public ListarDepartamentoPorIdHandler(IRepositoryDepartamento repositoryDepartamento)
         {
-            _mediator = mediator;
             _repositoryDepartamento = repositoryDepartamento;
         }
 
-        public async Task<ListarDepartamentoPorIdResponse> Handle(ListarDepartamentoPorIdRequest request, CancellationToken cancellationToken)
+        public Task<ListarDepartamentoPorIdResponse> Handle(ListarDepartamentoPorIdRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return null;
             }
 
@@ -27,7 +25,7 @@ namespace Commands.Departamento.ListarDepartamentoPorId
 
             if (Collection == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return null;
             }
 
@@ -35,7 +33,7 @@ namespace Commands.Departamento.ListarDepartamentoPorId
             var response = (ListarDepartamentoPorIdResponse)Collection;
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

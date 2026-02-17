@@ -52,17 +52,17 @@ namespace Validators
             return cnpj.EndsWith(digito);
         }
 
-        public static bool IsValidCpfOrCnpj(string cpfCnpj)
+        public static bool IsValidCpfOrCnpj(string CpfCnpj)
         {
-            if (string.IsNullOrWhiteSpace(cpfCnpj))
+            if (string.IsNullOrWhiteSpace(CpfCnpj))
                 return false;
 
-            var cleanDocument = cpfCnpj.Replace(".", "").Replace("-", "").Replace("/", "");
+            var cleanDocument = CpfCnpj.Replace(".", "").Replace("-", "").Replace("/", "");
 
             return cleanDocument.Length switch
             {
-                11 => IsValidCpf(cpfCnpj),
-                14 => IsValidCnpj(cpfCnpj),
+                11 => IsValidCpf(CpfCnpj),
+                14 => IsValidCnpj(CpfCnpj),
                 _ => false
             };
         }

@@ -42,6 +42,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
             {
                 await SeedPermissionsAsync();
                 await SeedRolesAsync();
+                
+                // Save permissions and roles to DB before referencing them in subsequent seeds
+                await _context.SaveChangesAsync();
+                
                 await SeedRolePermissionsAsync();
                 await SeedDefaultUsersAsync();
                 
@@ -86,9 +90,12 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
                     });
                 }
 
-                // Ensure mapping exists
-                var hasMapping = await _context.UserRoles.IgnoreQueryFilters().AnyAsync(ur => ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
-                if (!hasMapping)
+                // Ensure mapping exists and is not soft-deleted
+                var existingMapping = await _context.UserRoles
+                    .IgnoreQueryFilters()
+                    .FirstOrDefaultAsync(ur => ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
+                
+                if (existingMapping == null)
                 {
                     await _userRoleRepository.AdicionarAsync(new UserRole
                     {
@@ -96,6 +103,21 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
                         RoleId = adminRole.Id
                     });
                 }
+                else if (existingMapping.IsDeleted)
+                {
+                    // Reactivate soft-deleted mapping
+                    existingMapping.IsDeleted = false;
+                    existingMapping.DeletedAt = null;
+                    existingMapping.DeletedBy = null;
+                    existingMapping.UpdatedAt = DateTime.UtcNow;
+                }
+
+                // Also ensure caixa1 and fiscal1 have their role mappings
+                await EnsureUserRoleMappingAsync("caixa1", "Cashier");
+                await EnsureUserRoleMappingAsync("fiscal1", "CashSupervisor");
+
+                // Ensure role permissions exist (fix for initial seed ordering bug)
+                await EnsureRolePermissionsAsync();
 
                 await _context.SaveChangesAsync();
             }
@@ -104,6 +126,51 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
                 _logger.LogError(ex, "Error ensuring admin user and roles");
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Ensures a user has a specific role mapping, creating or reactivating as needed
+        /// </summary>
+        private async Task EnsureUserRoleMappingAsync(string login, string roleName)
+        {
+            var user = await _userRepository.GetByLoginAsync(login);
+            if (user == null) return;
+
+            var role = await _roleRepository.GetByNameAsync(roleName);
+            if (role == null) return;
+
+            var existing = await _context.UserRoles
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(ur => ur.UserId == user.Id && ur.RoleId == role.Id);
+
+            if (existing == null)
+            {
+                await _userRoleRepository.AdicionarAsync(new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = role.Id
+                });
+            }
+            else if (existing.IsDeleted)
+            {
+                existing.IsDeleted = false;
+                existing.DeletedAt = null;
+                existing.DeletedBy = null;
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
+        }
+
+        /// <summary>
+        /// Ensures role permissions exist. Idempotent — only creates missing mappings.
+        /// Fixes databases where the initial seed ran before roles were committed.
+        /// </summary>
+        private async Task EnsureRolePermissionsAsync()
+        {
+            var hasAnyRolePermissions = await _context.RolePermissions.AnyAsync();
+            if (hasAnyRolePermissions) return; // Already seeded, nothing to do
+
+            _logger.LogInformation("No role permissions found — seeding them now");
+            await SeedRolePermissionsAsync();
         }
 
         private async Task SeedPermissionsAsync()

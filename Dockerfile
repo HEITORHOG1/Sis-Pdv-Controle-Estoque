@@ -18,6 +18,9 @@ COPY . .
 WORKDIR "/src/Sis-Pdv-Controle-Estoque-API"
 RUN dotnet build "Sis-Pdv-Controle-Estoque-API.csproj" -c Release -o /app/build
 
+# Ensure appsettings.Docker.json is copied
+RUN if [ -f "appsettings.Docker.json" ]; then cp appsettings.Docker.json /app/build/; fi
+
 # Publish stage
 FROM build AS publish
 RUN dotnet publish "Sis-Pdv-Controle-Estoque-API.csproj" -c Release -o /app/publish /p:UseAppHost=false
@@ -58,6 +61,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
+ENV DOTNET_RUNNING_IN_CONTAINER=true
 
 # Entry point
 ENTRYPOINT ["dotnet", "Sis-Pdv-Controle-Estoque-API.dll"]

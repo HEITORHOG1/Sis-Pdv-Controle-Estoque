@@ -1,4 +1,4 @@
-﻿namespace Sis_Pdv_Controle_Estoque_Form.Dto.Categoria
+namespace Sis_Pdv_Controle_Estoque_Form.Dto.Categoria
 {
 
     public class CategoriaDto
@@ -7,9 +7,9 @@
         {
 
         }
-        public CategoriaDto(string nomeCategoria, Guid _id)
+        public CategoriaDto(string NomeCategoria, Guid _id)
         {
-            NomeCategoria = nomeCategoria;
+            NomeCategoria = NomeCategoria;
             id = _id;
         }
         public string NomeCategoria { get; set; }

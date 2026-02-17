@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
 {
@@ -8,18 +8,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
         
         [Required(ErrorMessage = "Nome fantasia é obrigatório")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Nome fantasia deve ter entre 2 e 100 caracteres")]
-        public string nomeFantasia { get; set; } = string.Empty;
+        public string NomeFantasia { get; set; } = string.Empty;
         
         [Required(ErrorMessage = "CNPJ é obrigatório")]
         public string Cnpj { get; set; } = string.Empty;
         
         [Required(ErrorMessage = "Inscrição estadual é obrigatória")]
         [StringLength(15, MinimumLength = 8, ErrorMessage = "Inscrição estadual deve ter entre 8 e 15 caracteres")]
-        public string inscricaoEstadual { get; set; } = string.Empty;
+        public string InscricaoEstadual { get; set; } = string.Empty;
         
         [Required(ErrorMessage = "CEP é obrigatório")]
         [Range(10000000, 99999999, ErrorMessage = "CEP deve ter 8 dígitos")]
-        public int cepFornecedor { get; set; }
+        public int CepFornecedor { get; set; }
         
         [Required(ErrorMessage = "Rua é obrigatória")]
         [StringLength(100, MinimumLength = 5, ErrorMessage = "Rua deve ter entre 5 e 100 caracteres")]
@@ -45,7 +45,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
         public string Uf { get; set; } = string.Empty;
         
         [Range(0, 1, ErrorMessage = "Status deve ser 0 (inativo) ou 1 (ativo)")]
-        public int statusAtivo { get; set; } = 1;
+        public int StatusAtivo { get; set; } = 1;
 
         // Propriedades adicionais para auditoria
         public DateTime? DataCriacao { get; set; }
@@ -65,19 +65,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
             var erros = new List<string>();
 
             // Validação Nome Fantasia
-            if (string.IsNullOrWhiteSpace(nomeFantasia))
+            if (string.IsNullOrWhiteSpace(NomeFantasia))
             {
                 erros.Add("Nome fantasia é obrigatório");
             }
-            else if (nomeFantasia.Trim().Length < 2)
+            else if (NomeFantasia.Trim().Length < 2)
             {
                 erros.Add("Nome fantasia deve ter pelo menos 2 caracteres");
             }
-            else if (nomeFantasia.Length > 100)
+            else if (NomeFantasia.Length > 100)
             {
                 erros.Add("Nome fantasia não pode ter mais de 100 caracteres");
             }
-            else if (!System.Text.RegularExpressions.Regex.IsMatch(nomeFantasia, @"^[a-zA-ZÀ-ÿ0-9\s\-\.&]+$"))
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(NomeFantasia, @"^[a-zA-ZÀ-ÿ0-9\s\-\.&]+$"))
             {
                 erros.Add("Nome fantasia contém caracteres inválidos");
             }
@@ -93,21 +93,21 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
             }
 
             // Validação Inscrição Estadual
-            if (string.IsNullOrWhiteSpace(inscricaoEstadual))
+            if (string.IsNullOrWhiteSpace(InscricaoEstadual))
             {
                 erros.Add("Inscrição estadual é obrigatória");
             }
-            else if (inscricaoEstadual.Length < 8 || inscricaoEstadual.Length > 15)
+            else if (InscricaoEstadual.Length < 8 || InscricaoEstadual.Length > 15)
             {
                 erros.Add("Inscrição estadual deve ter entre 8 e 15 caracteres");
             }
-            else if (!System.Text.RegularExpressions.Regex.IsMatch(inscricaoEstadual, @"^[0-9]+$"))
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(InscricaoEstadual, @"^[0-9]+$"))
             {
                 erros.Add("Inscrição estadual deve conter apenas números");
             }
 
             // Validação CEP
-            if (cepFornecedor < 10000000 || cepFornecedor > 99999999)
+            if (CepFornecedor < 10000000 || CepFornecedor > 99999999)
             {
                 erros.Add("CEP deve ter 8 dígitos válidos");
             }
@@ -200,12 +200,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
         // Método para normalizar dados
         public void NormalizarDados()
         {
-            if (!string.IsNullOrEmpty(nomeFantasia))
+            if (!string.IsNullOrEmpty(NomeFantasia))
             {
-                nomeFantasia = System.Text.RegularExpressions.Regex.Replace(
-                    nomeFantasia.Trim(), @"\s+", " ");
+                NomeFantasia = System.Text.RegularExpressions.Regex.Replace(
+                    NomeFantasia.Trim(), @"\s+", " ");
                 var textInfo = System.Globalization.CultureInfo.CurrentCulture.TextInfo;
-                nomeFantasia = textInfo.ToTitleCase(nomeFantasia.ToLower());
+                NomeFantasia = textInfo.ToTitleCase(NomeFantasia.ToLower());
             }
 
             if (!string.IsNullOrEmpty(Rua))
@@ -235,9 +235,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
                 Uf = Uf.Trim().ToUpper();
             }
 
-            if (!string.IsNullOrEmpty(inscricaoEstadual))
+            if (!string.IsNullOrEmpty(InscricaoEstadual))
             {
-                inscricaoEstadual = inscricaoEstadual.Replace(".", "").Replace("-", "").Replace(" ", "");
+                InscricaoEstadual = InscricaoEstadual.Replace(".", "").Replace("-", "").Replace(" ", "");
             }
 
             if (!string.IsNullOrEmpty(Cnpj))
@@ -308,7 +308,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor
         // Override ToString para melhor exibição
         public override string ToString()
         {
-            return $"{nomeFantasia} - CNPJ: {Cnpj}";
+            return $"{NomeFantasia} - CNPJ: {Cnpj}";
         }
 
         // Método para verificar se é válido

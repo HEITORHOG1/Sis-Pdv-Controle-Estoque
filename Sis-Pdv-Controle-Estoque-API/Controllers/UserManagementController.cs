@@ -59,7 +59,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     [Route("api/v{version:apiVersion}/users")]
     [Produces("application/json")]
     [Tags("User Management")]
-    public class UserManagementController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ControllerBase
+    public class UserManagementController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ApiControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IAuthenticationService _authenticationService;
@@ -122,10 +122,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> RegisterUser([FromBody, Required] RegistrarUsuarioRequest request)
+        public async Task<IActionResult> RegisterUser([FromBody, Required] RegistrarUsuarioRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -133,9 +133,9 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] Sis_Pdv_Controle_Estoque_API.Models.Auth.LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] Sis_Pdv_Controle_Estoque_API.Models.Auth.LoginRequest request, CancellationToken cancellationToken)
         {
-            var response = await _authenticationService.AuthenticateAsync(request);
+            var response = await _authenticationService.AuthenticateAsync(request, cancellationToken);
             
             if (response.Success)
             {
@@ -150,7 +150,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPost("change-password")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword([FromBody] AlterarSenhaRequest request)
+        public async Task<IActionResult> ChangePassword([FromBody] AlterarSenhaRequest request, CancellationToken cancellationToken)
         {
             // Garantir que o usuário só pode alterar sua própria senha ou ter permissão de administrador
             var currentUserId = GetCurrentUserId();
@@ -159,8 +159,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 return Forbid("Você só pode alterar sua própria senha");
             }
 
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPut("profile")]
         [Authorize]
-        public async Task<IActionResult> UpdateProfile([FromBody] AtualizarPerfilRequest request)
+        public async Task<IActionResult> UpdateProfile([FromBody] AtualizarPerfilRequest request, CancellationToken cancellationToken)
         {
             // Garantir que o usuário só pode alterar seu próprio perfil ou ter permissão de administrador
             var currentUserId = GetCurrentUserId();
@@ -177,8 +177,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 return Forbid("Você só pode alterar seu próprio perfil");
             }
 
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -186,10 +186,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpGet("users")]
         [Authorize(Policy = "RequireUserManagementPermission")]
-        public async Task<IActionResult> ListUsers([FromQuery] ListarUsuariosRequest request)
+        public async Task<IActionResult> ListUsers([FromQuery] ListarUsuariosRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpGet("sessions/{userId:guid}")]
         [Authorize]
-        public async Task<IActionResult> ListUserSessions(Guid userId)
+        public async Task<IActionResult> ListUserSessions(Guid userId, CancellationToken cancellationToken)
         {
             // Garantir que o usuário só pode ver suas próprias sessões ou ter permissão de administrador
             var currentUserId = GetCurrentUserId();
@@ -207,8 +207,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
 
             var request = new ListarSessoesRequest { UsuarioId = userId };
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPost("sessions/{sessionId:guid}/revoke")]
         [Authorize]
-        public async Task<IActionResult> RevokeSession(Guid sessionId, [FromBody] RevogarSessaoRequest request)
+        public async Task<IActionResult> RevokeSession(Guid sessionId, [FromBody] RevogarSessaoRequest request, CancellationToken cancellationToken)
         {
             request.SessionId = sessionId;
 
@@ -227,8 +227,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 return Forbid("Você só pode revogar suas próprias sessões");
             }
 
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -236,11 +236,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPost("users/{userId:guid}/roles")]
         [Authorize(Policy = "RequireUserManagementPermission")]
-        public async Task<IActionResult> AssignRoles(Guid userId, [FromBody] AtribuirRolesRequest request)
+        public async Task<IActionResult> AssignRoles(Guid userId, [FromBody] AtribuirRolesRequest request, CancellationToken cancellationToken)
         {
             request.UsuarioId = userId;
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -248,10 +248,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPost("roles")]
         [Authorize(Policy = "RequireRoleManagementPermission")]
-        public async Task<IActionResult> CreateRole([FromBody] CriarRoleRequest request)
+        public async Task<IActionResult> CreateRole([FromBody] CriarRoleRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -259,10 +259,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpGet("roles")]
         [Authorize(Policy = "RequireRoleManagementPermission")]
-        public async Task<IActionResult> ListRoles([FromQuery] ListarRolesRequest request)
+        public async Task<IActionResult> ListRoles([FromQuery] ListarRolesRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -270,11 +270,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPut("roles/{roleId:guid}")]
         [Authorize(Policy = "RequireRoleManagementPermission")]
-        public async Task<IActionResult> UpdateRole(Guid roleId, [FromBody] AtualizarRoleRequest request)
+        public async Task<IActionResult> UpdateRole(Guid roleId, [FromBody] AtualizarRoleRequest request, CancellationToken cancellationToken)
         {
             request.Id = roleId;
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -282,11 +282,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpDelete("roles/{roleId:guid}")]
         [Authorize(Policy = "RequireRoleManagementPermission")]
-        public async Task<IActionResult> DeleteRole(Guid roleId)
+        public async Task<IActionResult> DeleteRole(Guid roleId, CancellationToken cancellationToken)
         {
             var request = new RemoverRoleRequest { Id = roleId };
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -294,10 +294,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpGet("permissions")]
         [Authorize(Policy = "RequireRoleManagementPermission")]
-        public async Task<IActionResult> ListPermissions([FromQuery] ListarPermissionsRequest request)
+        public async Task<IActionResult> ListPermissions([FromQuery] ListarPermissionsRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -305,11 +305,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPatch("users/{userId:guid}/status")]
         [Authorize(Policy = "RequireUserManagementPermission")]
-        public async Task<IActionResult> ChangeUserStatus(Guid userId, [FromBody] AlterarStatusUsuarioRequest request)
+        public async Task<IActionResult> ChangeUserStatus(Guid userId, [FromBody] AlterarStatusUsuarioRequest request, CancellationToken cancellationToken)
         {
             request.UsuarioId = userId;
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -317,11 +317,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPost("users/{userId:guid}/reset-password")]
         [Authorize(Policy = "RequireUserManagementPermission")]
-        public async Task<IActionResult> ResetUserPassword(Guid userId, [FromBody] ResetarSenhaRequest request)
+        public async Task<IActionResult> ResetUserPassword(Guid userId, [FromBody] ResetarSenhaRequest request, CancellationToken cancellationToken)
         {
             request.UsuarioId = userId;
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         /// <summary>
@@ -329,14 +329,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         [HttpPost("login-cqrs")]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginCqrs([FromBody] Commands.Usuarios.Login.LoginRequest request)
+        public async Task<IActionResult> LoginCqrs([FromBody] Commands.Usuarios.Login.LoginRequest request, CancellationToken cancellationToken)
         {
             // Adicionar informações de contexto da requisição
             request.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             request.UserAgent = HttpContext.Request.Headers["User-Agent"].ToString();
 
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
 
         private Guid GetCurrentUserId()

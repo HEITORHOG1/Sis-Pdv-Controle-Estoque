@@ -58,7 +58,7 @@ namespace Commands.Usuarios.Login
             usuario.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             usuario.LastLoginAt = DateTime.UtcNow;
 
-            await _repositoryUsuario.EditarAsync(usuario);
+            await _repositoryUsuario.EditarAsync(usuario, cancellationToken);
 
             // Criar sessão de usuário
             var userSession = new UserSession
@@ -72,7 +72,7 @@ namespace Commands.Usuarios.Login
                 IsActive = true
             };
 
-            await _repositoryUserSession.AdicionarAsync(userSession);
+            await _repositoryUserSession.AdicionarAsync(userSession, cancellationToken);
 
             var result = new
             {

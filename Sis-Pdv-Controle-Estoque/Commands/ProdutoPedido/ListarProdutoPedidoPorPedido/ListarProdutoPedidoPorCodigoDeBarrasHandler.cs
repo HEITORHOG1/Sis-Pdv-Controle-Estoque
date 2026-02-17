@@ -1,34 +1,32 @@
-Ôªøusing MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.ProdutoPedido.ListarProdutoPedidoPorPedido
 {
     public class ListarProdutoPedidoPorCodigoDeBarrasHandler : Notifiable, IRequestHandler<ListarProdutoPedidoPorCodigoDeBarrasRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryProdutoPedido _repositoryProdutoPedido;
 
-        public ListarProdutoPedidoPorCodigoDeBarrasHandler(IMediator mediator, IRepositoryProdutoPedido repositoryProdutoPedido)
+        public ListarProdutoPedidoPorCodigoDeBarrasHandler(IRepositoryProdutoPedido repositoryProdutoPedido)
         {
-            _mediator = mediator;
             _repositoryProdutoPedido = repositoryProdutoPedido;
         }
 
-        public async Task<Commands.Response> Handle(ListarProdutoPedidoPorCodigoDeBarrasRequest request, CancellationToken cancellationToken)
+        public Task<Commands.Response> Handle(ListarProdutoPedidoPorCodigoDeBarrasRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new Commands.Response(this);
+                return Task.FromResult(new Commands.Response(this));
             }
 
             var Collection = _repositoryProdutoPedido.Listar()
                                 .Where(x => x.CodBarras == request.CodBarras);
             if (!Collection.Any())
             {
-                AddNotification("ATEN√á√ÉO", "ProdutoPedido N√ÉO ENCONTRADA");
-                return new Commands.Response(this);
+                AddNotification("ATEN«√O", "ProdutoPedido N√O ENCONTRADA");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             //Criar meu objeto de resposta
@@ -36,7 +34,7 @@ namespace Commands.ProdutoPedido.ListarProdutoPedidoPorPedido
             //Cria objeto de resposta
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

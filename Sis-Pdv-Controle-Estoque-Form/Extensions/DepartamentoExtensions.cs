@@ -15,7 +15,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
             return new DepartamentoDto
             {
                 Id = apiResponse.id ?? string.Empty,
-                NomeDepartamento = apiResponse.nomeDepartamento ?? string.Empty
+                NomeDepartamento = apiResponse.NomeDepartamento ?? string.Empty
             };
         }
 
@@ -31,7 +31,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Valida se uma resposta da API é válida
+        /// Valida se uma resposta da API ï¿½ vï¿½lida
         /// </summary>
         public static bool IsValidResponse(this DepartamentoResponse response)
         {
@@ -39,7 +39,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Valida se uma lista de respostas da API é válida
+        /// Valida se uma lista de respostas da API ï¿½ vï¿½lida
         /// </summary>
         public static bool IsValidResponse(this DepartamentoResponseList response)
         {
@@ -47,7 +47,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém as mensagens de erro de uma resposta
+        /// Obtï¿½m as mensagens de erro de uma resposta
         /// </summary>
         public static List<string> GetErrorMessages(this DepartamentoResponse response)
         {
@@ -62,7 +62,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém as mensagens de erro de uma lista de respostas
+        /// Obtï¿½m as mensagens de erro de uma lista de respostas
         /// </summary>
         public static List<string> GetErrorMessages(this DepartamentoResponseList response)
         {

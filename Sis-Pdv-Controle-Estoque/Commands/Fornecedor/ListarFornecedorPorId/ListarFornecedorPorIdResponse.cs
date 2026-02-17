@@ -1,17 +1,17 @@
-﻿namespace Commands.Fornecedor.ListarFornecedorPorId
+namespace Commands.Fornecedor.ListarFornecedorPorId
 {
     public class ListarFornecedorPorIdResponse
     {
         public Guid? Id { get; set; }
-        public string inscricaoEstadual { get; set; }
-        public string nomeFantasia { get; set; }
+        public string InscricaoEstadual { get; set; }
+        public string NomeFantasia { get; set; }
         public string Uf { get; set; }
         public string Numero { get; set; }
         public string Complemento { get; set; }
         public string Bairro { get; set; }
         public string Cidade { get; set; }
-        public int cepFornecedor { get; set; }
-        public int statusAtivo { get; set; }
+        public int CepFornecedor { get; set; }
+        public int StatusAtivo { get; set; }
         public string Cnpj { get; set; }
         public string Rua { get; set; }
 
@@ -19,15 +19,15 @@
         {
             return new ListarFornecedorPorIdResponse()
             {
-                inscricaoEstadual = request.InscricaoEstadual,
-                nomeFantasia = request.NomeFantasia,
+                InscricaoEstadual = request.InscricaoEstadual,
+                NomeFantasia = request.NomeFantasia,
                 Uf = request.Uf,
                 Numero = request.Numero,
                 Complemento = request.Complemento,
                 Bairro = request.Bairro,
                 Cidade = request.Cidade,
-                cepFornecedor = request.CepFornecedor,
-                statusAtivo = request.StatusAtivo,
+                CepFornecedor = request.CepFornecedor,
+                StatusAtivo = request.StatusAtivo,
                 Cnpj = request.Cnpj,
                 Rua = request.Rua,
                 Id = request.Id

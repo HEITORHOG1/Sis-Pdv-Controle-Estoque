@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador
 {
@@ -8,7 +8,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador
         
         [Required(ErrorMessage = "Nome do colaborador é obrigatório")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Nome deve ter entre 2 e 100 caracteres")]
-        public string nomeColaborador { get; set; } = string.Empty;
+        public string NomeColaborador { get; set; } = string.Empty;
         
         [Required(ErrorMessage = "Departamento é obrigatório")]
         public string departamentoId { get; set; } = string.Empty;
@@ -43,7 +43,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador
         [StringLength(50, MinimumLength = 6, ErrorMessage = "Senha deve ter entre 6 e 50 caracteres")]
         public string senha { get; set; } = string.Empty;
         
-        public bool statusAtivo { get; set; } = true;
+        public bool StatusAtivo { get; set; } = true;
 
         // Propriedades adicionais para auditoria
         public DateTime? DataCriacao { get; set; }
@@ -55,19 +55,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador
             var erros = new List<string>();
 
             // Validação Nome
-            if (string.IsNullOrWhiteSpace(nomeColaborador))
+            if (string.IsNullOrWhiteSpace(NomeColaborador))
             {
                 erros.Add("Nome do colaborador é obrigatório");
             }
-            else if (nomeColaborador.Trim().Length < 2)
+            else if (NomeColaborador.Trim().Length < 2)
             {
                 erros.Add("Nome deve ter pelo menos 2 caracteres");
             }
-            else if (nomeColaborador.Length > 100)
+            else if (NomeColaborador.Length > 100)
             {
                 erros.Add("Nome não pode ter mais de 100 caracteres");
             }
-            else if (!System.Text.RegularExpressions.Regex.IsMatch(nomeColaborador, @"^[a-zA-ZÀ-ÿ\s]+$"))
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(NomeColaborador, @"^[a-zA-ZÀ-ÿ\s]+$"))
             {
                 erros.Add("Nome deve conter apenas letras e espaços");
             }
@@ -188,12 +188,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador
         // Método para normalizar dados
         public void NormalizarDados()
         {
-            if (!string.IsNullOrEmpty(nomeColaborador))
+            if (!string.IsNullOrEmpty(NomeColaborador))
             {
-                nomeColaborador = System.Text.RegularExpressions.Regex.Replace(
-                    nomeColaborador.Trim(), @"\s+", " ");
+                NomeColaborador = System.Text.RegularExpressions.Regex.Replace(
+                    NomeColaborador.Trim(), @"\s+", " ");
                 var textInfo = System.Globalization.CultureInfo.CurrentCulture.TextInfo;
-                nomeColaborador = textInfo.ToTitleCase(nomeColaborador.ToLower());
+                NomeColaborador = textInfo.ToTitleCase(NomeColaborador.ToLower());
             }
 
             if (!string.IsNullOrEmpty(cargoColaborador))
@@ -335,7 +335,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador
         // Override ToString para melhor exibição
         public override string ToString()
         {
-            return $"{nomeColaborador} - {cargoColaborador}";
+            return $"{NomeColaborador} - {cargoColaborador}";
         }
 
         // Método para verificar se é válido

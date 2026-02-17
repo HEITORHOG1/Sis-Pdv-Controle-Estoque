@@ -2,9 +2,9 @@
 
 namespace Commands.Categoria.RemoverCategoria
 {
-    public class RemoverCategoriaResquest : IRequest<Response>
+    public class RemoverCategoriaRequest : IRequest<Response>
     {
-        public RemoverCategoriaResquest(Guid id)
+        public RemoverCategoriaRequest(Guid id)
         {
             Id = id;
         }

@@ -10,7 +10,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
 
         static ProdutoLogger()
         {
-            // Garante que o diretório de logs existe
+            // Garante que o diretï¿½rio de logs existe
             Directory.CreateDirectory(LogPath);
         }
 
@@ -36,20 +36,20 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
 
         public static void LogOperation(string operation, string produtoId = "", string produtoNome = "", string codigoBarras = "")
         {
-            var message = $"Operação: {operation}";
+            var message = $"Operaï¿½ï¿½o: {operation}";
             if (!string.IsNullOrEmpty(produtoId))
                 message += $" | ID: {produtoId}";
             if (!string.IsNullOrEmpty(produtoNome))
                 message += $" | Nome: {produtoNome}";
             if (!string.IsNullOrEmpty(codigoBarras))
-                message += $" | Código: {codigoBarras}";
+                message += $" | Cï¿½digo: {codigoBarras}";
             
             WriteLog("OPERATION", message, operation);
         }
 
         public static void LogValidationError(string field, string error, string value = "")
         {
-            var message = $"Erro de validação - Campo: {field}, Erro: {error}";
+            var message = $"Erro de validaï¿½ï¿½o - Campo: {field}, Erro: {error}";
             if (!string.IsNullOrEmpty(value))
                 message += $", Valor: {value}";
             
@@ -64,67 +64,67 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
 
         public static void LogEstoque(string produtoNome, int quantidadeAnterior, int quantidadeNova, string operacao)
         {
-            var message = $"Atualização Estoque - Produto: {produtoNome}, Operação: {operacao}, " +
-                         $"Anterior: {quantidadeAnterior}, Nova: {quantidadeNova}, Diferença: {quantidadeNova - quantidadeAnterior}";
+            var message = $"Atualizaï¿½ï¿½o Estoque - Produto: {produtoNome}, Operaï¿½ï¿½o: {operacao}, " +
+                         $"Anterior: {quantidadeAnterior}, Nova: {quantidadeNova}, Diferenï¿½a: {quantidadeNova - quantidadeAnterior}";
             WriteLog("ESTOQUE", message, "EstoqueUpdate");
         }
 
         public static void LogPreco(string produtoNome, decimal precoAnterior, decimal precoNovo, string tipo)
         {
-            var message = $"Atualização Preço - Produto: {produtoNome}, Tipo: {tipo}, " +
+            var message = $"Atualizaï¿½ï¿½o Preï¿½o - Produto: {produtoNome}, Tipo: {tipo}, " +
                          $"Anterior: R$ {precoAnterior:F2}, Novo: R$ {precoNovo:F2}, " +
-                         $"Diferença: R$ {precoNovo - precoAnterior:F2}";
+                         $"Diferenï¿½a: R$ {precoNovo - precoAnterior:F2}";
             WriteLog("PRECO", message, "PrecoUpdate");
         }
 
         public static void LogCodigoBarras(string codigoBarras, bool isValido, string produtoNome = "")
         {
-            var message = $"Validação Código Barras - Código: {codigoBarras}, Válido: {isValido}";
+            var message = $"Validaï¿½ï¿½o Cï¿½digo Barras - Cï¿½digo: {codigoBarras}, Vï¿½lido: {isValido}";
             if (!string.IsNullOrEmpty(produtoNome))
                 message += $", Produto: {produtoNome}";
             
             WriteLog(isValido ? "CODIGO_VALID" : "CODIGO_INVALID", message, "CodigoValidation");
         }
 
-        public static void LogVencimento(string produtoNome, DateTime dataVencimento, int diasRestantes)
+        public static void LogVencimento(string produtoNome, DateTime DataVencimento, int diasRestantes)
         {
             var status = diasRestantes <= 0 ? "VENCIDO" : 
                         diasRestantes <= 7 ? "CRITICO" : 
                         diasRestantes <= 30 ? "ALERTA" : "OK";
             
             var message = $"Controle Vencimento - Produto: {produtoNome}, " +
-                         $"Vencimento: {dataVencimento:dd/MM/yyyy}, Dias Restantes: {diasRestantes}, Status: {status}";
+                         $"Vencimento: {DataVencimento:dd/MM/yyyy}, Dias Restantes: {diasRestantes}, Status: {status}";
             
             WriteLog($"VENCIMENTO_{status}", message, "VencimentoCheck");
         }
 
-        public static void LogMargemLucro(string produtoNome, decimal precoCusto, decimal precoVenda, decimal margem)
+        public static void LogMargemLucro(string produtoNome, decimal PrecoCusto, decimal PrecoVenda, decimal margem)
         {
             var status = margem < 10 ? "BAIXA" : margem > 100 ? "ALTA" : "NORMAL";
             
-            var message = $"Análise Margem - Produto: {produtoNome}, " +
-                         $"Custo: R$ {precoCusto:F2}, Venda: R$ {precoVenda:F2}, Margem: {margem:F2}%, Status: {status}";
+            var message = $"Anï¿½lise Margem - Produto: {produtoNome}, " +
+                         $"Custo: R$ {PrecoCusto:F2}, Venda: R$ {PrecoVenda:F2}, Margem: {margem:F2}%, Status: {status}";
             
             WriteLog($"MARGEM_{status}", message, "MargemAnalysis");
         }
 
         public static void LogCategorizacao(string produtoNome, string categoriaAnterior, string categoriaNova)
         {
-            var message = $"Alteração Categoria - Produto: {produtoNome}, " +
+            var message = $"Alteraï¿½ï¿½o Categoria - Produto: {produtoNome}, " +
                          $"Anterior: {categoriaAnterior}, Nova: {categoriaNova}";
             WriteLog("CATEGORIA", message, "CategoriaChange");
         }
 
         public static void LogFornecedor(string produtoNome, string fornecedorAnterior, string fornecedorNovo)
         {
-            var message = $"Alteração Fornecedor - Produto: {produtoNome}, " +
+            var message = $"Alteraï¿½ï¿½o Fornecedor - Produto: {produtoNome}, " +
                          $"Anterior: {fornecedorAnterior}, Novo: {fornecedorNovo}";
             WriteLog("FORNECEDOR", message, "FornecedorChange");
         }
 
         public static void LogBuscaCodigoBarras(string codigoBarras, bool encontrado, int quantidadeResultados = 0)
         {
-            var message = $"Busca por Código - Código: {codigoBarras}, Encontrado: {encontrado}";
+            var message = $"Busca por Cï¿½digo - Cï¿½digo: {codigoBarras}, Encontrado: {encontrado}";
             if (encontrado)
                 message += $", Resultados: {quantidadeResultados}";
             
@@ -133,9 +133,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
 
         public static void LogPerformance(string operacao, TimeSpan duracao, int quantidadeItens = 0)
         {
-            var message = $"Performance - Operação: {operacao}, Duração: {duracao.TotalMilliseconds}ms";
+            var message = $"Performance - Operaï¿½ï¿½o: {operacao}, Duraï¿½ï¿½o: {duracao.TotalMilliseconds}ms";
             if (quantidadeItens > 0)
-                message += $", Itens: {quantidadeItens}, Média: {duracao.TotalMilliseconds / quantidadeItens:F2}ms/item";
+                message += $", Itens: {quantidadeItens}, Mï¿½dia: {duracao.TotalMilliseconds / quantidadeItens:F2}ms/item";
             
             var status = duracao.TotalMilliseconds > 5000 ? "LENTA" : 
                         duracao.TotalMilliseconds > 2000 ? "MODERADA" : "RAPIDA";
@@ -156,10 +156,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
                 // Escreve no arquivo de log
                 File.AppendAllText(logFilePath, logEntry);
 
-                // Também escreve no Debug Output para desenvolvimento
+                // Tambï¿½m escreve no Debug Output para desenvolvimento
                 Debug.WriteLine($"[PRODUTO] [{level}] {message}");
 
-                // Limpa logs antigos (mantém apenas os últimos 30 dias)
+                // Limpa logs antigos (mantï¿½m apenas os ï¿½ltimos 30 dias)
                 CleanOldLogs();
             }
             catch (Exception ex)
@@ -222,7 +222,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
 
         public static void LogRelatorio(string tipoRelatorio, int quantidadeItens, string filtros = "")
         {
-            var message = $"Geração Relatório - Tipo: {tipoRelatorio}, Itens: {quantidadeItens}";
+            var message = $"Geraï¿½ï¿½o Relatï¿½rio - Tipo: {tipoRelatorio}, Itens: {quantidadeItens}";
             if (!string.IsNullOrEmpty(filtros))
                 message += $", Filtros: {filtros}";
             
@@ -231,7 +231,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
 
         public static void LogImportacao(string arquivo, int totalItens, int sucessos, int erros)
         {
-            var message = $"Importação - Arquivo: {Path.GetFileName(arquivo)}, " +
+            var message = $"Importaï¿½ï¿½o - Arquivo: {Path.GetFileName(arquivo)}, " +
                          $"Total: {totalItens}, Sucessos: {sucessos}, Erros: {erros}, " +
                          $"Taxa Sucesso: {(sucessos * 100.0 / totalItens):F1}%";
             
@@ -243,7 +243,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
 
         public static void LogExportacao(string arquivo, int quantidadeItens, string formato)
         {
-            var message = $"Exportação - Arquivo: {Path.GetFileName(arquivo)}, " +
+            var message = $"Exportaï¿½ï¿½o - Arquivo: {Path.GetFileName(arquivo)}, " +
                          $"Itens: {quantidadeItens}, Formato: {formato}";
             WriteLog("EXPORT", message, "Export");
         }

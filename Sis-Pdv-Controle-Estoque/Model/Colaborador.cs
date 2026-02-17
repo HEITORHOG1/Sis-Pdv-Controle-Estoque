@@ -8,19 +8,19 @@ namespace Model
             Usuario = new Usuario();
             Departamento = new Departamento();
         }
-        public Colaborador(Guid id, string nomeColaborador,
+        public Colaborador(Guid id, string NomeColaborador,
             Guid? DepartamentoId, string cpfColaborador,
             string cargoColaborador, string telefoneColaborador,
             string emailPessoalColaborador, string emailCorporativo, Usuario usuario)
         {
-            NomeColaborador = nomeColaborador;
+            this.NomeColaborador = NomeColaborador;
             this.DepartamentoId = DepartamentoId;
             CpfColaborador = cpfColaborador;
             CargoColaborador = cargoColaborador;
             TelefoneColaborador = telefoneColaborador;
             EmailPessoalColaborador = emailPessoalColaborador;
             EmailCorporativo = emailCorporativo;
-            Usuario = usuario;
+            this.Usuario = usuario;
             Id = id;
         }
 
@@ -33,17 +33,17 @@ namespace Model
         public string EmailCorporativo { get; set; }
         public virtual Usuario Usuario { get; set; }
         public virtual Departamento Departamento { get; set; }
-        public void AlterarColaborador(Guid id, string nomeColaborador, Guid Departamento, string cpfColaborador, string cargoColaborador,
-            string telefoneColaborador, string emailPessoalColaborador, string emailCorporativo, Usuario Usuario)
+        public void AlterarColaborador(Guid id, string NomeColaborador, Guid Departamento, string cpfColaborador, string cargoColaborador,
+            string telefoneColaborador, string emailPessoalColaborador, string emailCorporativo, Usuario usuario)
         {
-            NomeColaborador = nomeColaborador;
+            this.NomeColaborador = NomeColaborador;
             DepartamentoId = Departamento;
             CpfColaborador = cpfColaborador;
             CargoColaborador = cargoColaborador;
             TelefoneColaborador = telefoneColaborador;
             EmailPessoalColaborador = emailPessoalColaborador;
             EmailCorporativo = emailCorporativo;
-            this.Usuario = Usuario;
+            this.Usuario = usuario;
             Id = id;
         }
 
