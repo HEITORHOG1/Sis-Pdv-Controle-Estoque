@@ -1,25 +1,23 @@
-ï»¿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Categoria.ListarCategoriaPorId
 {
     public class ListarCategoriaPorIdHandler : Notifiable, IRequestHandler<ListarCategoriaPorIdRequest, ListarCategoriaPorIdResponse>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryCategoria _repositoryCategoria;
 
-        public ListarCategoriaPorIdHandler(IMediator mediator, IRepositoryCategoria repositoryCategoria)
+        public ListarCategoriaPorIdHandler(IRepositoryCategoria repositoryCategoria)
         {
-            _mediator = mediator;
             _repositoryCategoria = repositoryCategoria;
         }
 
-        public async Task<ListarCategoriaPorIdResponse> Handle(ListarCategoriaPorIdRequest request, CancellationToken cancellationToken)
+        public Task<ListarCategoriaPorIdResponse> Handle(ListarCategoriaPorIdRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return null;
             }
 
@@ -27,7 +25,7 @@ namespace Commands.Categoria.ListarCategoriaPorId
 
             if (Collection == null)
             {
-                AddNotification("Request", "");
+                AddNotification("Request", "A requisição não pode ser nula.");
                 return null;
             }
 
@@ -35,7 +33,7 @@ namespace Commands.Categoria.ListarCategoriaPorId
             var response = (ListarCategoriaPorIdResponse)Collection;
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

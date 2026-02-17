@@ -1,16 +1,14 @@
-﻿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Fornecedor.AdicionarFornecedor
 {
     public class AdicionarFornecedorHandler : Notifiable, IRequestHandler<AdicionarFornecedorRequest, Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryFornecedor _repositoryFornecedor;
 
-        public AdicionarFornecedorHandler(IMediator mediator, IRepositoryFornecedor repositoryFornecedor)
+        public AdicionarFornecedorHandler(IRepositoryFornecedor repositoryFornecedor)
         {
-            _mediator = mediator;
             _repositoryFornecedor = repositoryFornecedor;
         }
 
@@ -18,23 +16,23 @@ namespace Commands.Fornecedor.AdicionarFornecedor
         {
             // Validation is now handled by the ValidationBehavior pipeline
 
-            //Verificar se o fornecedor já existe
+            //Verificar se o fornecedor j� existe
             if (await _repositoryFornecedor.ExisteAsync(x => x.Cnpj == request.Cnpj))
             {
-                AddNotification("Cnpj", "Fornecedor já cadastrado com este CNPJ");
+                AddNotification("Cnpj", "Fornecedor j� cadastrado com este CNPJ");
                 return new Response(this);
             }
 
             Model.Fornecedor Fornecedor = new(
-                                request.inscricaoEstadual,
-                                request.nomeFantasia,
+                                request.InscricaoEstadual,
+                                request.NomeFantasia,
                                 request.Uf,
                                 request.Numero,
                                 request.Complemento,
                                 request.Bairro,
                                 request.Cidade,
-                                request.cepFornecedor,
-                                request.statusAtivo,
+                                request.CepFornecedor,
+                                request.StatusAtivo,
                                 request.Cnpj,
                                 request.Rua);
 
@@ -43,7 +41,7 @@ namespace Commands.Fornecedor.AdicionarFornecedor
                 return new Response(this);
             }
 
-            Fornecedor = await _repositoryFornecedor.AdicionarAsync(Fornecedor);
+            Fornecedor = await _repositoryFornecedor.AdicionarAsync(Fornecedor, cancellationToken);
 
             //Criar meu objeto de resposta
             var response = new Response(this, Fornecedor);

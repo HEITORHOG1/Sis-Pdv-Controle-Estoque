@@ -1,63 +1,126 @@
-# Configuração de Segredos para Desenvolvimento
+# Configuração de User Secrets para Desenvolvimento
 
-Este projeto utiliza **User Secrets** para armazenar dados sensíveis durante o desenvolvimento.
+## O que são User Secrets?
+
+[User Secrets](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets) é o mecanismo do .NET para armazenar dados sensíveis **fora do código-fonte** durante o desenvolvimento. Os segredos são armazenados no perfil do usuário do sistema operacional e **nunca** entram no repositório.
+
+## Pré-Requisito
+
+O projeto `Sis-Pdv-Controle-Estoque-API` já está configurado com um `UserSecretsId` no `.csproj`:
+
+```xml
+<PropertyGroup>
+  <UserSecretsId>be13dd57-4034-4b77-b15d-1c9a2fee9dfd</UserSecretsId>
+</PropertyGroup>
+```
 
 ## Como Configurar
 
-### 1. Inicializar User Secrets (já configurado)
+### 1. Definir os Segredos Necessários
+
+Todos os comandos abaixo devem ser executados a partir da pasta do projeto da API:
+
 ```powershell
 cd Sis-Pdv-Controle-Estoque-API
-dotnet user-secrets init
-```
 
-### 2. Configurar Senhas Locais
+# Senha do banco MySQL
+dotnet user-secrets set "ConnectionStrings:DatabasePassword" "sua_senha_mysql"
 
-```powershell
-# Senha do banco de dados MySQL
-dotnet user-secrets set "ConnectionStrings:DatabasePassword" "sua_senha_aqui"
+# JWT Secret (mínimo 32 caracteres - obrigatório)
+dotnet user-secrets set "Authentication:JwtSecret" "sua_chave_jwt_super_secreta_com_32_chars"
 
-# JWT Secret (mínimo 32 caracteres)
-dotnet user-secrets set "Authentication:JwtSecret" "sua_chave_jwt_super_secreta_aqui"
-
-# Senha do RabbitMQ (se aplicável)
+# Senha do RabbitMQ
 dotnet user-secrets set "RabbitMQ:Password" "sua_senha_rabbitmq"
 ```
 
-### 3. Listar Segredos Configurados
+### 2. Verificar Segredos Configurados
+
 ```powershell
 dotnet user-secrets list
 ```
 
-### 4. Remover um Segredo
-```powershell
-dotnet user-secrets remove "ConnectionStrings:DatabasePassword"
+Saída esperada:
+```
+ConnectionStrings:DatabasePassword = sua_senha_mysql
+Authentication:JwtSecret = sua_chave_jwt_super_secreta_com_32_chars
+RabbitMQ:Password = sua_senha_rabbitmq
 ```
 
-### 5. Limpar Todos os Segredos
+### 3. Gerenciar Segredos
+
 ```powershell
+# Remover um segredo específico
+dotnet user-secrets remove "ConnectionStrings:DatabasePassword"
+
+# Limpar todos os segredos
 dotnet user-secrets clear
 ```
 
-## Configuração para Produção
+## Onde Ficam Armazenados?
 
-Em produção, **NÃO use User Secrets**. Use variáveis de ambiente:
+| Sistema Operacional | Caminho                                                                     |
+|---------------------|-----------------------------------------------------------------------------|
+| Windows             | `%APPDATA%\Microsoft\UserSecrets\be13dd57-4034-4b77-b15d-1c9a2fee9dfd\secrets.json` |
+| Linux/macOS         | `~/.microsoft/usersecrets/be13dd57-4034-4b77-b15d-1c9a2fee9dfd/secrets.json` |
+
+O conteúdo é um arquivo JSON simples:
+```json
+{
+  "ConnectionStrings:DatabasePassword": "sua_senha_mysql",
+  "Authentication:JwtSecret": "sua_chave_jwt_super_secreta_com_32_chars",
+  "RabbitMQ:Password": "sua_senha_rabbitmq"
+}
+```
+
+> **Atenção:** User Secrets **NÃO são criptografados**. A segurança vem de estarem **fora** do repositório, não de criptografia.
+
+## Como São Usados no Código
+
+No `Program.cs` e `Setup.cs`, os segredos são lidos automaticamente pelo pipeline de configuração do ASP.NET Core:
+
+```csharp
+// A senha é lida automaticamente quando o ambiente é Development
+var dbPassword = builder.Configuration["ConnectionStrings:DatabasePassword"];
+
+// O JWT secret é lido na configuração de autenticação
+var jwtSecret = configuration["Authentication:JwtSecret"]
+    ?? throw new InvalidOperationException("JWT Secret not configured");
+```
+
+User Secrets só são carregados quando `ASPNETCORE_ENVIRONMENT=Development` (que é o padrão ao rodar via `dotnet run` no Visual Studio ou CLI).
+
+## Configuração para Outros Ambientes
 
 ### Docker / Docker Compose
+
+Use variáveis de ambiente com o separador `__` (duplo underscore):
+
 ```yaml
-environment:
-  - ConnectionStrings__DatabasePassword=${DB_PASSWORD}
-  - Authentication__JwtSecret=${JWT_SECRET}
-  - RabbitMQ__Password=${RABBITMQ_PASSWORD}
+# docker-compose.yml
+services:
+  pdv-api:
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=PDV_PROD;Uid=pdvuser;Pwd=${DB_PASSWORD}
+      - Authentication__JwtSecret=${JWT_SECRET}
+      - RabbitMQ__Password=${RABBITMQ_PASSWORD}
+```
+
+E defina os valores no arquivo `.env`:
+```bash
+DB_PASSWORD=senha_forte_de_producao
+JWT_SECRET=chave_jwt_forte_de_producao_com_32_chars
+RABBITMQ_PASSWORD=senha_rabbitmq_producao
 ```
 
 ### Azure App Service
-Configure as Application Settings no portal do Azure:
+
+Configure como **Application Settings** no portal do Azure:
 - `ConnectionStrings:DatabasePassword`
 - `Authentication:JwtSecret`
 - `RabbitMQ:Password`
 
 ### Kubernetes
-Use Kubernetes Secrets:
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -67,47 +130,52 @@ type: Opaque
 data:
   db-password: <base64-encoded-password>
   jwt-secret: <base64-encoded-secret>
+  rabbitmq-password: <base64-encoded-password>
 ```
 
-### AWS / Linux
+### Linux (variáveis de ambiente)
+
 ```bash
 export ConnectionStrings__DatabasePassword="senha"
-export Authentication__JwtSecret="chave_secreta"
-export RabbitMQ__Password="senha"
+export Authentication__JwtSecret="chave_secreta_com_32_chars"
+export RabbitMQ__Password="senha_rabbitmq"
 ```
 
-## Notas Importantes
+## Regras de Segurança
 
-1. **NUNCA** commite senhas no `appsettings.json` ou `appsettings.Development.json`
-2. User Secrets são armazenados em: `%APPDATA%\Microsoft\UserSecrets\<user_secrets_id>\secrets.json` (Windows)
-3. User Secrets **NÃO são criptografados**, apenas separados do código-fonte
-4. Para produção, sempre use soluções seguras como Azure Key Vault, AWS Secrets Manager, ou variáveis de ambiente
-
-## Onde os Segredos São Usados
-
-As configurações são lidas no `Program.cs` e `Setup.cs`:
-
-```csharp
-// Connection String com senha do User Secrets
-var dbPassword = builder.Configuration["ConnectionStrings:DatabasePassword"];
-var connectionString = $"Server=localhost;Database=PDV;Uid=root;Pwd={dbPassword};...";
-
-// JWT Secret do User Secrets
-var jwtSecret = builder.Configuration["Authentication:JwtSecret"];
-```
+1. **NUNCA** commite senhas em `appsettings.json` ou `appsettings.Development.json`
+2. O `appsettings.json` do repositório contém senhas padrão (`root`/`guest`) que são **apenas para referência** e devem ser sobrescritas via User Secrets
+3. Para produção, sempre use variáveis de ambiente ou soluções como Azure Key Vault / AWS Secrets Manager
+4. O arquivo `.env` está no `.gitignore` e **nunca deve ser commitado**
+5. Rode `dotnet user-secrets list` para confirmar que seus segredos estão configurados antes de rodar a API
 
 ## Troubleshooting
 
-### User Secrets não estão sendo carregados
-Verifique se o `<UserSecretsId>` está presente no arquivo `.csproj`:
-```xml
-<PropertyGroup>
-  <UserSecretsId>be13dd57-4034-4b77-b15d-1c9a2fee9dfd</UserSecretsId>
-</PropertyGroup>
+### User Secrets não carregam
+
+**Causa:** O ambiente não é "Development".
+
+**Solução:** Verifique a variável de ambiente:
+```powershell
+$env:ASPNETCORE_ENVIRONMENT
+# Deve retornar "Development"
 ```
 
-### Erro de conexão ao banco
-Verifique se configurou a senha correta:
+### `UserSecretsId` não encontrado no `.csproj`
+
+**Solução:** Confirme que o `.csproj` da API contém:
+```xml
+<UserSecretsId>be13dd57-4034-4b77-b15d-1c9a2fee9dfd</UserSecretsId>
+```
+
+Ou reinicialize:
+```powershell
+dotnet user-secrets init
+```
+
+### Erro de conexão com banco
+
+**Diagnóstico:**
 ```powershell
 dotnet user-secrets list
 ```
@@ -117,7 +185,20 @@ Deve mostrar:
 ConnectionStrings:DatabasePassword = sua_senha
 ```
 
+Se não aparecer, configure novamente:
+```powershell
+dotnet user-secrets set "ConnectionStrings:DatabasePassword" "sua_senha_correta"
+```
+
+### JWT Secret inválido
+
+O JWT Secret deve ter **no mínimo 32 caracteres**. Se for menor, a API lançará uma exceção na inicialização.
+
 ## Referências
 
 - [Safe storage of app secrets in development in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets)
 - [Configuration in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/)
+
+---
+
+Autor: Heitor Gonçalves — https://www.linkedin.com/in/heitorhog/

@@ -1,4 +1,4 @@
-﻿using Extensions;
+using Extensions;
 using FluentValidation;
 
 namespace Commands.Fornecedor.AlterarFornecedor
@@ -9,9 +9,9 @@ namespace Commands.Fornecedor.AlterarFornecedor
         {
             RuleFor(request => request.Id).NotEmpty().WithMessage("O ID do fornecedor é obrigatório.");
 
-            RuleFor(request => request.inscricaoEstadual).NotEmpty().WithMessage("A Inscrição Estadual é obrigatória.");
+            RuleFor(request => request.InscricaoEstadual).NotEmpty().WithMessage("A Inscrição Estadual é obrigatória.");
 
-            RuleFor(request => request.nomeFantasia).NotEmpty().WithMessage("O Nome Fantasia é obrigatório.");
+            RuleFor(request => request.NomeFantasia).NotEmpty().WithMessage("O Nome Fantasia é obrigatório.");
 
             RuleFor(request => request.Uf).NotEmpty().WithMessage("A UF é obrigatória.");
 
@@ -21,9 +21,9 @@ namespace Commands.Fornecedor.AlterarFornecedor
 
             RuleFor(request => request.Cidade).NotEmpty().WithMessage("A Cidade é obrigatória.");
 
-            RuleFor(request => request.cepFornecedor).GreaterThan(0).WithMessage("O CEP é obrigatório e deve ser maior que zero.");
+            RuleFor(request => request.CepFornecedor).GreaterThan(0).WithMessage("O CEP é obrigatório e deve ser maior que zero.");
 
-            RuleFor(request => request.statusAtivo).InclusiveBetween(0, 1).WithMessage("O Status Ativo deve ser 0 (inativo) ou 1 (ativo).");
+            RuleFor(request => request.StatusAtivo).InclusiveBetween(0, 1).WithMessage("O Status Ativo deve ser 0 (inativo) ou 1 (ativo).");
 
             RuleFor(request => request.Cnpj).NotEmpty().WithMessage("O CNPJ é obrigatório.")
                 .Must(BeAValidCNPJ).WithMessage("O CNPJ fornecido é inválido.");

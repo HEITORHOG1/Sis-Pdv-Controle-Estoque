@@ -1,4 +1,4 @@
-﻿using Commands.Fornecedor.AdicionarFornecedor;
+using Commands.Fornecedor.AdicionarFornecedor;
 using Commands.Fornecedor.AlterarFornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Dto.Fornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
@@ -35,20 +35,20 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Fornecedor
 
                 AdicionarFornecedorRequest request = new AdicionarFornecedorRequest()
                 {
-                    inscricaoEstadual = dto.inscricaoEstadual?.Trim() ?? string.Empty,
-                    nomeFantasia = dto.nomeFantasia.Trim(),
+                    InscricaoEstadual = dto.InscricaoEstadual?.Trim() ?? string.Empty,
+                    NomeFantasia = dto.NomeFantasia.Trim(),
                     Uf = dto.Uf.Trim().ToUpper(),
                     Numero = dto.Numero?.Trim() ?? string.Empty,
                     Complemento = dto.Complemento?.Trim() ?? string.Empty,
                     Bairro = dto.Bairro.Trim(),
                     Cidade = dto.Cidade.Trim(),
-                    cepFornecedor = dto.cepFornecedor,
-                    statusAtivo = dto.statusAtivo,
+                    CepFornecedor = dto.CepFornecedor,
+                    StatusAtivo = dto.StatusAtivo,
                     Cnpj = dto.Cnpj.Trim(),
                     Rua = dto.Rua.Trim()
                 };
 
-                System.Diagnostics.Debug.WriteLine($"Tentando adicionar fornecedor: {request.nomeFantasia}");
+                System.Diagnostics.Debug.WriteLine($"Tentando adicionar fornecedor: {request.NomeFantasia}");
 
                 var response = await _client.PostAsJson($"{BasePath}/Fornecedor/AdicionarFornecedor", request);
                 
@@ -254,15 +254,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Services.Fornecedor
                 AlterarFornecedorRequest request = new AlterarFornecedorRequest()
                 {
                     Id = guidId,
-                    inscricaoEstadual = dto.inscricaoEstadual?.Trim() ?? string.Empty,
-                    nomeFantasia = dto.nomeFantasia.Trim(),
+                    InscricaoEstadual = dto.InscricaoEstadual?.Trim() ?? string.Empty,
+                    NomeFantasia = dto.NomeFantasia.Trim(),
                     Uf = dto.Uf.Trim().ToUpper(),
                     Numero = dto.Numero?.Trim() ?? string.Empty,
                     Complemento = dto.Complemento?.Trim() ?? string.Empty,
                     Bairro = dto.Bairro.Trim(),
                     Cidade = dto.Cidade.Trim(),
-                    cepFornecedor = dto.cepFornecedor,
-                    statusAtivo = dto.statusAtivo,
+                    CepFornecedor = dto.CepFornecedor,
+                    StatusAtivo = dto.StatusAtivo,
                     Cnpj = dto.Cnpj.Trim(),
                     Rua = dto.Rua.Trim()
                 };

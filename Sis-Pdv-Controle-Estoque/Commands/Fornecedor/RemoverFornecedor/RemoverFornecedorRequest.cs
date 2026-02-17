@@ -2,9 +2,9 @@
 
 namespace Commands.Fornecedor.RemoverFornecedor
 {
-    public class RemoverFornecedorResquest : IRequest<Response>
+    public class RemoverFornecedorRequest : IRequest<Response>
     {
-        public RemoverFornecedorResquest(Guid id)
+        public RemoverFornecedorRequest(Guid id)
         {
             Id = id;
         }

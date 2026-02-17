@@ -30,11 +30,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
             _configuration = configuration;
         }
 
-        public async Task<AuthResult> AuthenticateAsync(LoginRequest request)
+        public async Task<AuthResult> AuthenticateAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
             try
             {
-                var user = await _userRepository.GetByLoginAsync(request.Login);
+                var user = await _userRepository.GetByLoginAsync(request.Login, cancellationToken);
                 
                 if (user == null || !user.StatusAtivo)
                 {
@@ -124,11 +124,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
             }
         }
 
-        public async Task<AuthResult> RefreshTokenAsync(string refreshToken)
+        public async Task<AuthResult> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             try
             {
-                var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
+                var user = await _userRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
                 
                 if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
                 {
@@ -207,11 +207,11 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
             }
         }
 
-        public async Task<bool> RevokeTokenAsync(string refreshToken)
+        public async Task<bool> RevokeTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             try
             {
-                var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
+                var user = await _userRepository.GetByRefreshTokenAsync(refreshToken, cancellationToken);
                 
                 if (user != null)
                 {
@@ -232,7 +232,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Services.Auth
             }
         }
 
-        public async Task<bool> ValidateTokenAsync(string token)
+        public async Task<bool> ValidateTokenAsync(string token, CancellationToken cancellationToken = default)
         {
             return await Task.FromResult(_jwtTokenService.ValidateToken(token));
         }

@@ -6,11 +6,8 @@ namespace Repositories
 {
     public class RepositoryUsuario : RepositoryBase<Usuario, Guid>, IRepositoryUsuario
     {
-        private readonly PdvContext _context;
-
         public RepositoryUsuario(PdvContext context) : base(context)
         {
-            _context = context;
         }
 
         /// <summary>
@@ -83,9 +80,9 @@ namespace Repositories
         /// <summary>
         /// Desativa um usuário pelo ID
         /// </summary>
-        public async Task<bool> DesativarAsync(Guid id)
+        public async Task<bool> DesativarAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var usuario = await ObterPorIdAsync(id);
+            var usuario = await ObterPorIdAsync(id, cancellationToken);
             if (usuario != null)
             {
                 Desativar(usuario);
@@ -97,9 +94,9 @@ namespace Repositories
         /// <summary>
         /// Ativa um usuário pelo ID
         /// </summary>
-        public async Task<bool> AtivarAsync(Guid id)
+        public async Task<bool> AtivarAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var usuario = await ListarTodosAtivos().FirstOrDefaultAsync(x => x.Id == id);
+            var usuario = await ListarTodosAtivos().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             if (usuario != null)
             {
                 Ativar(usuario);
@@ -108,33 +105,33 @@ namespace Repositories
             return false;
         }
 
-        public async Task<Usuario?> GetByLoginAsync(string login)
+        public async Task<Usuario?> GetByLoginAsync(string login, CancellationToken cancellationToken = default)
         {
             return await _context.Set<Usuario>()
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .ThenInclude(r => r.RolePermissions)
                 .ThenInclude(rp => rp.Permission)
-                .FirstOrDefaultAsync(u => u.Login == login && !u.IsDeleted && u.StatusAtivo);
+                .FirstOrDefaultAsync(u => u.Login == login && !u.IsDeleted && u.StatusAtivo, cancellationToken);
         }
 
-        public async Task<Usuario?> GetByEmailAsync(string email)
+        public async Task<Usuario?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             return await _context.Set<Usuario>()
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .ThenInclude(r => r.RolePermissions)
                 .ThenInclude(rp => rp.Permission)
-                .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted && u.StatusAtivo);
+                .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted && u.StatusAtivo, cancellationToken);
         }
 
-        public async Task<Usuario?> GetByRefreshTokenAsync(string refreshToken)
+        public async Task<Usuario?> GetByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             return await _context.Set<Usuario>()
-                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && !u.IsDeleted && u.StatusAtivo);
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken && !u.IsDeleted && u.StatusAtivo, cancellationToken);
         }
 
-        public async Task<IEnumerable<Role>> GetUserRolesAsync(Guid userId)
+        public async Task<IEnumerable<Role>> GetUserRolesAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Set<UserRole>()
                 .Where(ur => ur.UserId == userId && !ur.IsDeleted)
@@ -142,10 +139,10 @@ namespace Repositories
                 .ThenInclude(r => r.RolePermissions)
                 .ThenInclude(rp => rp.Permission)
                 .Select(ur => ur.Role)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Permission>> GetUserPermissionsAsync(Guid userId)
+        public async Task<IEnumerable<Permission>> GetUserPermissionsAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             return await _context.Set<UserRole>()
                 .Where(ur => ur.UserId == userId && !ur.IsDeleted)
@@ -153,22 +150,22 @@ namespace Repositories
                 .Where(rp => !rp.IsDeleted)
                 .Select(rp => rp.Permission)
                 .Distinct()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<bool> HasPermissionAsync(Guid userId, string permission)
+        public async Task<bool> HasPermissionAsync(Guid userId, string permission, CancellationToken cancellationToken = default)
         {
             return await _context.Set<UserRole>()
                 .Where(ur => ur.UserId == userId && !ur.IsDeleted)
                 .SelectMany(ur => ur.Role.RolePermissions)
                 .Where(rp => !rp.IsDeleted)
-                .AnyAsync(rp => rp.Permission.Name == permission);
+                .AnyAsync(rp => rp.Permission.Name == permission, cancellationToken);
         }
 
-        public async Task<int> CountActiveUsersAsync()
+        public async Task<int> CountActiveUsersAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Set<Usuario>()
-                .CountAsync(u => u.StatusAtivo && !u.IsDeleted);
+                .CountAsync(u => u.StatusAtivo && !u.IsDeleted, cancellationToken);
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 
 namespace Commands.ProdutoPedido.AlterarProdutoPedido
 {
@@ -12,13 +12,13 @@ namespace Commands.ProdutoPedido.AlterarProdutoPedido
 
             RuleFor(request => request.ProdutoId).NotEmpty().WithMessage("O ID do produto é obrigatório.");
 
-            RuleFor(request => request.codBarras).NotEmpty().WithMessage("O código de barras é obrigatório.");
+            RuleFor(request => request.CodBarras).NotEmpty().WithMessage("O código de barras é obrigatório.");
 
-            RuleFor(request => request.quantidadeItemPedido)
+            RuleFor(request => request.QuantidadeItemPedido)
                 .GreaterThan(0)
                 .WithMessage("A quantidade do item do pedido deve ser maior que zero.");
 
-            RuleFor(request => request.totalProdutoPedido)
+            RuleFor(request => request.TotalProdutoPedido)
             .GreaterThanOrEqualTo(0)
                 .WithMessage("O total do produto do pedido deve ser maior ou igual a zero.");
         }

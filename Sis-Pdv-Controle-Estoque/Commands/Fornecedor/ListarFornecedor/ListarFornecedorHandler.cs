@@ -1,16 +1,14 @@
-﻿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Fornecedor.ListarFornecedor
 {
     public class ListarFornecedorPorIdHandler : Notifiable, IRequestHandler<ListarFornecedorRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryFornecedor _repositoryFornecedor;
 
-        public ListarFornecedorPorIdHandler(IMediator mediator, IRepositoryFornecedor repositoryFornecedor)
+        public ListarFornecedorPorIdHandler(IRepositoryFornecedor repositoryFornecedor)
         {
-            _mediator = mediator;
             _repositoryFornecedor = repositoryFornecedor;
         }
 
@@ -19,7 +17,7 @@ namespace Commands.Fornecedor.ListarFornecedor
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "Request não pode ser nulo");
+                AddNotification("Request", "Request n�o pode ser nulo");
                 return new Commands.Response(this);
             }
 

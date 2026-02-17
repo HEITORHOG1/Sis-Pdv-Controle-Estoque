@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Categoria;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Services.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.Diagnostics;
@@ -12,36 +12,36 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
         private CategoriaService _categoriaService;
         private bool _isLoading = false;
         private bool _exclusaoConfirmada = false;
-        private string _nomeCategoria = "";
+        private string _NomeCategoria = "";
         private string _categoriaId = "";
         
         #endregion
         
         #region Construtor e Inicialização
         
-        public ExcluirCategoria(string nomeCategoria, string id)
+        public ExcluirCategoria(string NomeCategoria, string id)
         {
             InitializeComponent();
-            InicializarComponentesModernos(nomeCategoria, id);
+            InicializarComponentesModernos(NomeCategoria, id);
         }
         
-        private void InicializarComponentesModernos(string nomeCategoria, string id)
+        private void InicializarComponentesModernos(string NomeCategoria, string id)
         {
             // Inicializa serviços
             _categoriaService = new CategoriaService();
             
             // Configura dados iniciais
-            _nomeCategoria = nomeCategoria ?? "";
+            _NomeCategoria = NomeCategoria ?? "";
             _categoriaId = id ?? "";
             
-            txtNomeCategoria.Text = _nomeCategoria;
+            txtNomeCategoria.Text = _NomeCategoria;
             LblId.Text = _categoriaId;
             
             // Configura estado inicial
             AtualizarStatusInterface();
             
             // Log de inicialização
-            ExcluirCategoriaLogger.LogInfo($"Formulário de exclusão inicializado - ID: {id}, Nome: {nomeCategoria}", "Startup");
+            ExcluirCategoriaLogger.LogInfo($"Formulário de exclusão inicializado - ID: {id}, Nome: {NomeCategoria}", "Startup");
         }
         
         #endregion
@@ -126,7 +126,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
                 
                 SetLoadingState(true);
                 
-                ExcluirCategoriaLogger.LogInfo($"Iniciando exclusão da categoria: ID={_categoriaId}, Nome={_nomeCategoria}", "Delete");
+                ExcluirCategoriaLogger.LogInfo($"Iniciando exclusão da categoria: ID={_categoriaId}, Nome={_NomeCategoria}", "Delete");
                 
                 var response = await _categoriaService.RemoverCategoria(_categoriaId);
                 
@@ -135,13 +135,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
                 
                 if (response?.success == true)
                 {
-                    NomeExcluido = _nomeCategoria;
+                    NomeExcluido = _NomeCategoria;
                     ExclusaoRealizada = true;
                     _exclusaoConfirmada = true;
                     
-                    ExibirSucesso($"Categoria '{_nomeCategoria}' excluída com sucesso!");
+                    ExibirSucesso($"Categoria '{_NomeCategoria}' excluída com sucesso!");
                     
-                    ExcluirCategoriaLogger.LogInfo($"Categoria excluída com sucesso: ID={_categoriaId}, Nome={_nomeCategoria}", "Delete");
+                    ExcluirCategoriaLogger.LogInfo($"Categoria excluída com sucesso: ID={_categoriaId}, Nome={_NomeCategoria}", "Delete");
                     
                     // Pequeno delay para feedback visual
                     await Task.Delay(1500);
@@ -171,7 +171,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
         {
             var confirmacao = MessageBox.Show(
                 $"🚨 CONFIRMAÇÃO FINAL DE EXCLUSÃO\n\n" +
-                $"Categoria: {_nomeCategoria}\n" +
+                $"Categoria: {_NomeCategoria}\n" +
                 $"ID: {_categoriaId}\n\n" +
                 $"⚠️ ATENÇÃO:\n" +
                 $"• Esta ação é IRREVERSÍVEL\n" +
@@ -189,7 +189,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
                 var segundaConfirmacao = MessageBox.Show(
                     $"🔴 ÚLTIMA CONFIRMAÇÃO\n\n" +
                     $"Esta é sua última chance de cancelar!\n\n" +
-                    $"Categoria '{_nomeCategoria}' será excluída PERMANENTEMENTE.\n\n" +
+                    $"Categoria '{_NomeCategoria}' será excluída PERMANENTEMENTE.\n\n" +
                     $"Continuar com a exclusão?",
                     "🔴 ÚLTIMA CHANCE",
                     MessageBoxButtons.YesNo,
@@ -353,27 +353,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Categoria
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [ExcluirCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [ExcluirCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [ExcluirCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [ExcluirCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [ExcluirCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [ExcluirCategoria-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
             {
                 var status = success ? "SUCCESS" : "FAILED";
-                Console.WriteLine($"[API] [ExcluirCategoria-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+                Debug.WriteLine($"[API] [ExcluirCategoria-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
             }
         }
         

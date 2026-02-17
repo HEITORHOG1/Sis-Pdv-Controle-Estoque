@@ -1,4 +1,4 @@
-ï»¿using Commands.Colaborador.AdicionarColaborador;
+using Commands.Colaborador.AdicionarColaborador;
 using Commands.Colaborador.AlterarColaborador;
 using Commands.Colaborador.ListarColaborador;
 using Commands.Colaborador.ListarColaboradorPorId;
@@ -11,7 +11,7 @@ using Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
-    public class ColaboradorController : Base.ControllerBase
+    public class ColaboradorController : Base.ApiControllerBase
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ColaboradorController> _logger;
@@ -27,16 +27,16 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         /// <param name="Login">O login do colaborador.</param>
         /// <param name="Senha">A senha do colaborador.</param>
-        /// <returns>Retorna a resposta da validaÃ§Ã£o do login.</returns>
+        /// <returns>Retorna a resposta da validação do login.</returns>
         [HttpGet]
         [Route("api/Colaborador/ValidarLogin/{Login}/{Senha}")]
-        public async Task<IActionResult> ValidaLogin(string Login, string Senha)
+        public async Task<IActionResult> ValidaLogin(string Login, string Senha, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("ValidarLogin");
                 var request = new ValidarColaboradorLoginRequest(Login, Senha);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ValidarLogin - Response: {@response}", result);
                 return Ok(result);
             }
@@ -49,18 +49,18 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <summary>
         /// Adiciona um novo colaborador ao sistema.
         /// </summary>
-        /// <param name="request">O objeto contendo as informaÃ§Ãµes do novo colaborador.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de adiÃ§Ã£o.</returns>
+        /// <param name="request">O objeto contendo as informações do novo colaborador.</param>
+        /// <returns>Retorna a resposta da solicitação de adição.</returns>
         [HttpPost]
         [Route("api/Colaborador/AdicionarColaborador")]
-        public async Task<IActionResult> AdicionarColaborador([FromBody] AdicionarColaboradorRequest request)
+        public async Task<IActionResult> AdicionarColaborador([FromBody] AdicionarColaboradorRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("AdicionarColaborador");
-                var response = await _mediator.Send(request, CancellationToken.None);
+                var response = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("AdicionarColaborador - Response: {@response}", response);
-                return await ResponseAsync(response);
+                return await ResponseAsync(response, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -74,14 +74,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna uma lista de todos os colaboradores.</returns>
         [HttpGet]
         [Route("api/Colaborador/ListarColaborador")]
-        public async Task<IActionResult> ListarColaborador()
+        public async Task<IActionResult> ListarColaborador(CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarColaborador");
                 var request = new ListarColaboradorRequest();
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarColaborador - Response: {@response}", result);
                 return Ok(result);
             }
@@ -92,20 +92,20 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
         /// <summary>
-        /// Recupera um colaborador especÃ­fico pelo seu ID.
+        /// Recupera um colaborador específico pelo seu ID.
         /// </summary>
         /// <param name="id">O ID do colaborador que se deseja recuperar.</param>
         /// <returns>Retorna o colaborador que corresponde ao ID fornecido.</returns>
         [HttpGet]
         [Route("api/Colaborador/ListarColaboradorPorId/{id:Guid}")]
-        public async Task<IActionResult> ListarColaboradorPorId(Guid id)
+        public async Task<IActionResult> ListarColaboradorPorId(Guid id, CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarColaboradorPorId");
                 var request = new ListarColaboradorPorIdRequest(id);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarColaboradorPorId - Response: {@response}", result);
                 return Ok(result);
             }
@@ -116,20 +116,20 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
         /// <summary>
-        /// Recupera um colaborador especÃ­fico pelo seu nome.
+        /// Recupera um colaborador específico pelo seu nome.
         /// </summary>
         /// <param name="NomeColaborador">O nome do colaborador que se deseja recuperar.</param>
         /// <returns>Retorna o colaborador que corresponde ao nome fornecido.</returns>
         [HttpGet]
         [Route("api/Colaborador/ListarColaboradorPorNomeColaborador/{NomeColaborador}")]
-        public async Task<IActionResult> ListarColaboradorPorNomeColaborador(string NomeColaborador)
+        public async Task<IActionResult> ListarColaboradorPorNomeColaborador(string NomeColaborador, CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarColaboradorPorNomeColaborador");
                 var request = new ListarColaboradorPorNomeColaboradorRequest(NomeColaborador);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarColaboradorPorNomeColaborador - Response: {@response}", result);
                 return Ok(result);
             }
@@ -140,20 +140,20 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
         /// <summary>
-        /// Altera as informaÃ§Ãµes de um colaborador existente.
+        /// Altera as informações de um colaborador existente.
         /// </summary>
-        /// <param name="request">O objeto contendo as novas informaÃ§Ãµes do colaborador.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de alteraÃ§Ã£o.</returns>
+        /// <param name="request">O objeto contendo as novas informações do colaborador.</param>
+        /// <returns>Retorna a resposta da solicitação de alteração.</returns>
         [HttpPut]
         [Route("api/Colaborador/AlterarColaborador")]
-        public async Task<IActionResult> AlterarColaborador([FromBody] AlterarColaboradorRequest request)
+        public async Task<IActionResult> AlterarColaborador([FromBody] AlterarColaboradorRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("AlterarColaborador");
-                var response = await _mediator.Send(request, CancellationToken.None);
+                var response = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("AlterarColaborador - Response: {@response}", response);
-                return await ResponseAsync(response);
+                return await ResponseAsync(response, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -165,18 +165,18 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// Remove um colaborador do sistema.
         /// </summary>
         /// <param name="id">O ID do colaborador que se deseja remover.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de remoÃ§Ã£o.</returns>
+        /// <returns>Retorna a resposta da solicitação de remoção.</returns>
         [HttpDelete]
         [Route("api/Colaborador/RemoverColaborador/{id:Guid}")]
-        public async Task<IActionResult> RemoverColaborador(Guid id)
+        public async Task<IActionResult> RemoverColaborador(Guid id, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("RemoverColaborador");
-                var request = new RemoverColaboradorResquest(id);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var request = new RemoverColaboradorRequest(id);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("RemoverColaborador - Response: {@response}", result);
-                return await ResponseAsync(result);
+                return await ResponseAsync(result, cancellationToken);
 
             }
             catch (Exception ex)

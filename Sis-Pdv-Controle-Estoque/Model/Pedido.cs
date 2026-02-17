@@ -1,4 +1,4 @@
-﻿namespace Model
+namespace Model
 {
     public class Pedido : EntityBase
     {
@@ -7,14 +7,14 @@
             Colaborador = new Colaborador();
             Cliente = new Cliente();
         }
-        public Pedido(Guid? ColaboradorId, Guid? ClienteId, int status, DateTime dataDoPedido, string formaPagamento, decimal totalPedido)
+        public Pedido(Guid? colaboradorId, Guid? clienteId, int status, DateTime DataDoPedido, string FormaPagamento, decimal TotalPedido)
         {
-            this.ColaboradorId = ColaboradorId;
-            this.ClienteId = ClienteId;
+            this.ColaboradorId = colaboradorId;
+            this.ClienteId = clienteId;
             Status = status;
-            DataDoPedido = dataDoPedido;
-            FormaPagamento = formaPagamento;
-            TotalPedido = totalPedido;
+            this.DataDoPedido = DataDoPedido;
+            this.FormaPagamento = FormaPagamento;
+            this.TotalPedido = TotalPedido;
         }
         public virtual Colaborador? Colaborador { get; set; }
         public virtual Cliente? Cliente { get; set; }
@@ -25,14 +25,14 @@
         public Guid? ColaboradorId { get; set; }
         public Guid? ClienteId { get; set; }
 
-        internal void AlterarPedido(Guid ColaboradorId, Guid? ClienteId, int status, DateTime dataDoPedido, string formaPagamento, decimal totalPedido)
+        internal void AlterarPedido(Guid colaboradorId, Guid? clienteId, int status, DateTime DataDoPedido, string FormaPagamento, decimal TotalPedido)
         {
-            this.ColaboradorId = ColaboradorId;
-            this.ClienteId = ClienteId;
+            this.ColaboradorId = colaboradorId;
+            this.ClienteId = clienteId;
             Status = status;
-            DataDoPedido = dataDoPedido;
-            FormaPagamento = formaPagamento;
-            TotalPedido = totalPedido;
+            this.DataDoPedido = DataDoPedido;
+            this.FormaPagamento = FormaPagamento;
+            this.TotalPedido = TotalPedido;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Interfaces.Repositories
         Task<IEnumerable<FiscalReceipt>> GetPendingReceiptsAsync(CancellationToken cancellationToken = default);
         Task<string> GenerateNextReceiptNumberAsync(CancellationToken cancellationToken = default);
         Task<FiscalReceipt?> BuscarPorIdAsync(Guid id);
-        new Task<FiscalReceipt> AdicionarAsync(FiscalReceipt entity);
+
         Task<FiscalReceipt> AlterarAsync(FiscalReceipt entity);
     }
 }

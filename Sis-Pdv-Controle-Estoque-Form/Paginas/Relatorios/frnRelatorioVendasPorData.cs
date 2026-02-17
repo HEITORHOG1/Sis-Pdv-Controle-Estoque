@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Services.Pedido;
+using Sis_Pdv_Controle_Estoque_Form.Services.Pedido;
 using Sis_Pdv_Controle_Estoque_Form.Extensions;
 using Sis_Pdv_Controle_Estoque_Form.Utils;
 using System.ComponentModel;
@@ -377,8 +377,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios
                 // Formatação para forma de pagamento
                 if (e.ColumnIndex == 1 && e.Value != null) // Coluna de Pagamento
                 {
-                    var formaPagamento = e.Value.ToString().ToUpper();
-                    switch (formaPagamento)
+                    var FormaPagamento = e.Value.ToString().ToUpper();
+                    switch (FormaPagamento)
                     {
                         case "DINHEIRO":
                             e.Value = "💵 Dinheiro";
@@ -392,7 +392,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios
                             e.Value = "📱 PIX";
                             break;
                         default:
-                            e.Value = $"💰 {formaPagamento}";
+                            e.Value = $"💰 {FormaPagamento}";
                             break;
                     }
                     e.FormattingApplied = true;
@@ -875,32 +875,32 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios
         {
             public static void LogInfo(string message, string category)
             {
-                Console.WriteLine($"[INFO] [Relatorio-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[INFO] [Relatorio-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogWarning(string message, string category)
             {
-                Console.WriteLine($"[WARN] [Relatorio-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[WARN] [Relatorio-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
             }
             
             public static void LogError(string message, string category, Exception ex = null)
             {
-                Console.WriteLine($"[ERROR] [Relatorio-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
+                Debug.WriteLine($"[ERROR] [Relatorio-{category}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {message}");
                 if (ex != null)
                 {
-                    Console.WriteLine($"[ERROR] Exception: {ex}");
+                    Debug.WriteLine($"[ERROR] Exception: {ex}");
                 }
             }
             
             public static void LogApiCall(string method, string type, TimeSpan duration, bool success)
             {
                 var status = success ? "SUCCESS" : "FAILED";
-                Console.WriteLine($"[API] [Relatorio-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
+                Debug.WriteLine($"[API] [Relatorio-{method}] {type} - {duration.TotalMilliseconds}ms - {status}");
             }
             
             public static void LogPerformance(string operation, TimeSpan duration)
             {
-                Console.WriteLine($"[PERF] [Relatorio-{operation}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {duration.TotalMilliseconds}ms");
+                Debug.WriteLine($"[PERF] [Relatorio-{operation}] {DateTime.Now:yyyy-MM-dd HH:mm:ss} - {duration.TotalMilliseconds}ms");
             }
         }
         

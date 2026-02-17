@@ -1,4 +1,4 @@
-Ôªøusing Interfaces;
+using Interfaces;
 using MediatR;
 using prmToolkit.NotificationPattern;
 
@@ -6,29 +6,27 @@ namespace Commands.Cliente.ListarClientePorCpfCnpj
 {
     public class ListarClientePorCpfCnpjHandler : Notifiable, IRequestHandler<ListarClientePorCpfCnpjRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryCliente _repositoryCliente;
 
-        public ListarClientePorCpfCnpjHandler(IMediator mediator, IRepositoryCliente repositoryCliente)
+        public ListarClientePorCpfCnpjHandler(IRepositoryCliente repositoryCliente)
         {
-            _mediator = mediator;
             _repositoryCliente = repositoryCliente;
         }
 
-        public async Task<Commands.Response> Handle(ListarClientePorCpfCnpjRequest request, CancellationToken cancellationToken)
+        public Task<Commands.Response> Handle(ListarClientePorCpfCnpjRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new Commands.Response(this);
+                return Task.FromResult(new Commands.Response(this));
             }
 
             var Collection = _repositoryCliente.Listar().Where(x => x.CpfCnpj == request.CpfCnpj);
             if (!Collection.Any())
             {
-                AddNotification("ATEN√á√ÉO", "CATEGORIA N√ÉO ENCONTRADA");
-                return new Commands.Response(this);
+                AddNotification("ATEN«√O", "CATEGORIA N√O ENCONTRADA");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             //Criar meu objeto de resposta
@@ -36,7 +34,7 @@ namespace Commands.Cliente.ListarClientePorCpfCnpj
             //Cria objeto de resposta
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

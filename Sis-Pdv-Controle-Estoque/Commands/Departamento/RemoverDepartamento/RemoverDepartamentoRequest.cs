@@ -2,9 +2,9 @@
 
 namespace Commands.Departamento.RemoverDepartamento
 {
-    public class RemoverDepartamentoResquest : IRequest<Response>
+    public class RemoverDepartamentoRequest : IRequest<Response>
     {
-        public RemoverDepartamentoResquest(Guid id)
+        public RemoverDepartamentoRequest(Guid id)
         {
             Id = id;
         }

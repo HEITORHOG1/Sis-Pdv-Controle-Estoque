@@ -12,10 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Polly" Version="8.6.1" />
-    <PackageReference Include="RabbitMQ.Client" Version="7.1.2" />
-    <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,12 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Dto\Usuario\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="FontAwesome.Sharp">
-      <HintPath>DLL\FontAwesome.Sharp.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

@@ -50,8 +50,8 @@ namespace Services.Stock
                             ProductId = productId,
                             ProductName = product.NomeProduto,
                             RequestedQuantity = requestedQuantity,
-                            AvailableQuantity = product.QuatidadeEstoqueProduto,
-                            ErrorMessage = $"Estoque insuficiente. Disponível: {product.QuatidadeEstoqueProduto}, Solicitado: {requestedQuantity}"
+                            AvailableQuantity = product.QuantidadeEstoqueProduto,
+                            ErrorMessage = $"Estoque insuficiente. Disponível: {product.QuantidadeEstoqueProduto}, Solicitado: {requestedQuantity}"
                         }
                     }
                 };
@@ -94,8 +94,8 @@ namespace Services.Stock
                         ProductId = request.ProductId,
                         ProductName = product.NomeProduto,
                         RequestedQuantity = request.RequestedQuantity,
-                        AvailableQuantity = product.QuatidadeEstoqueProduto,
-                        ErrorMessage = $"Estoque insuficiente para {product.NomeProduto}. Disponível: {product.QuatidadeEstoqueProduto}, Solicitado: {request.RequestedQuantity}"
+                        AvailableQuantity = product.QuantidadeEstoqueProduto,
+                        ErrorMessage = $"Estoque insuficiente para {product.NomeProduto}. Disponível: {product.QuantidadeEstoqueProduto}, Solicitado: {request.RequestedQuantity}"
                     });
                 }
             }
@@ -134,7 +134,7 @@ namespace Services.Stock
                         ProductId = product.Id,
                         ProductName = product.NomeProduto,
                         ProductCode = product.CodBarras,
-                        CurrentStock = product.QuatidadeEstoqueProduto,
+                        CurrentStock = product.QuantidadeEstoqueProduto,
                         ReorderPoint = product.ReorderPoint,
                         MinimumStock = product.MinimumStock,
                         AlertType = StockAlertType.OutOfStock,
@@ -148,11 +148,11 @@ namespace Services.Stock
                         ProductId = product.Id,
                         ProductName = product.NomeProduto,
                         ProductCode = product.CodBarras,
-                        CurrentStock = product.QuatidadeEstoqueProduto,
+                        CurrentStock = product.QuantidadeEstoqueProduto,
                         ReorderPoint = product.ReorderPoint,
                         MinimumStock = product.MinimumStock,
                         AlertType = StockAlertType.LowStock,
-                        Message = $"Produto {product.NomeProduto} está com estoque baixo (atual: {product.QuatidadeEstoqueProduto}, ponto de reposição: {product.ReorderPoint})"
+                        Message = $"Produto {product.NomeProduto} está com estoque baixo (atual: {product.QuantidadeEstoqueProduto}, ponto de reposição: {product.ReorderPoint})"
                     });
                 }
             }

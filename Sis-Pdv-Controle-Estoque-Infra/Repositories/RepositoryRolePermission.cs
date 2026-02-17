@@ -5,16 +5,13 @@ namespace Repositories
 {
     public class RepositoryRolePermission : RepositoryBase<RolePermission, Guid>, IRepositoryRolePermission
     {
-        private readonly PdvContext _context;
-
         public RepositoryRolePermission(PdvContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<IEnumerable<RolePermission>> GetByRoleIdAsync(Guid roleId)
         {
-            return await _context.RolePermissions
+            return await _context.Set<RolePermission>()
                 .Where(rp => rp.RoleId == roleId && !rp.IsDeleted)
                 .Include(rp => rp.Permission)
                 .ToListAsync();
@@ -22,7 +19,7 @@ namespace Repositories
 
         public async Task<IEnumerable<RolePermission>> GetByPermissionIdAsync(Guid permissionId)
         {
-            return await _context.RolePermissions
+            return await _context.Set<RolePermission>()
                 .Where(rp => rp.PermissionId == permissionId && !rp.IsDeleted)
                 .Include(rp => rp.Role)
                 .ToListAsync();
@@ -30,7 +27,7 @@ namespace Repositories
 
         public async Task<bool> RoleHasPermissionAsync(Guid roleId, Guid permissionId)
         {
-            return await _context.RolePermissions
+            return await _context.Set<RolePermission>()
                 .AnyAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId && !rp.IsDeleted);
         }
     }

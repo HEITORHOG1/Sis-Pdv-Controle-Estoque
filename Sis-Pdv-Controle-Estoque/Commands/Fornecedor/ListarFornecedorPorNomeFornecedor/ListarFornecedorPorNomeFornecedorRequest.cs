@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Commands.Fornecedor.ListarFornecedorPorNomeDepartamento
+namespace Commands.Fornecedor.ListarFornecedorPorNomeFornecedor
 {
     public class ListarFornecedorPorNomeFornecedorRequest : IRequest<ListarFornecedorPorNomeFornecedorResponse>
     {

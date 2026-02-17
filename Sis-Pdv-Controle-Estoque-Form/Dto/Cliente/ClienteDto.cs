@@ -1,4 +1,4 @@
-﻿namespace Sis_Pdv_Controle_Estoque_Form.Dto.Cliente
+namespace Sis_Pdv_Controle_Estoque_Form.Dto.Cliente
 {
 
     public class ClienteDto
@@ -8,10 +8,10 @@
 
         }
 
-        public ClienteDto(Guid id, string cpfCnpj, string tipoCliente)
+        public ClienteDto(Guid id, string CpfCnpj, string tipoCliente)
         {
             this.id = id;
-            CpfCnpj = cpfCnpj;
+            CpfCnpj = CpfCnpj;
             this.tipoCliente = tipoCliente;
         }
 

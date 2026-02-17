@@ -9,25 +9,25 @@ namespace Model
         {
         }
 
-        public Cliente(string cpfCnpj, string tipoCliente)
+        public Cliente(string CpfCnpj, string tipoCliente)
         {
-            ValidarCpfCnpj(cpfCnpj);
+            ValidarCpfCnpj(CpfCnpj);
             ValidarTipoCliente(tipoCliente);
             
-            CpfCnpj = cpfCnpj;
+            this.CpfCnpj = CpfCnpj;
             TipoCliente = tipoCliente;
         }
         
         public string CpfCnpj { get; set; }
         public string TipoCliente { get; set; }
         
-        private static void ValidarCpfCnpj(string cpfCnpj)
+        private static void ValidarCpfCnpj(string CpfCnpj)
         {
-            if (string.IsNullOrWhiteSpace(cpfCnpj))
+            if (string.IsNullOrWhiteSpace(CpfCnpj))
                 throw new DomainException("CPF/CNPJ é obrigatório");
             
             // Remove caracteres não numéricos
-            var apenasNumeros = new string(cpfCnpj.Where(char.IsDigit).ToArray());
+            var apenasNumeros = new string(CpfCnpj.Where(char.IsDigit).ToArray());
             
             if (apenasNumeros.Length != 11 && apenasNumeros.Length != 14)
                 throw new DomainException("CPF/CNPJ inválido. Deve conter 11 dígitos (CPF) ou 14 dígitos (CNPJ)");
@@ -39,12 +39,12 @@ namespace Model
                 throw new DomainException("Tipo de cliente é obrigatório");
         }
         
-        public void AtualizarDados(string cpfCnpj, string tipoCliente)
+        public void AtualizarDados(string CpfCnpj, string tipoCliente)
         {
-            ValidarCpfCnpj(cpfCnpj);
+            ValidarCpfCnpj(CpfCnpj);
             ValidarTipoCliente(tipoCliente);
             
-            CpfCnpj = cpfCnpj;
+            this.CpfCnpj = CpfCnpj;
             TipoCliente = tipoCliente;
         }
     }

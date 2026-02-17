@@ -1,26 +1,24 @@
-ï»¿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.ProdutoPedido.ListarProdutoPedidoPorId
 {
     public class ListarProdutoPedidoPorIdHandler : Notifiable, IRequestHandler<ListarProdutoPedidoPorIdRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryProdutoPedido _repositoryProdutoPedido;
 
-        public ListarProdutoPedidoPorIdHandler(IMediator mediator, IRepositoryProdutoPedido repositoryProdutoPedido)
+        public ListarProdutoPedidoPorIdHandler(IRepositoryProdutoPedido repositoryProdutoPedido)
         {
-            _mediator = mediator;
             _repositoryProdutoPedido = repositoryProdutoPedido;
         }
 
-        public async Task<Commands.Response> Handle(ListarProdutoPedidoPorIdRequest request, CancellationToken cancellationToken)
+        public Task<Commands.Response> Handle(ListarProdutoPedidoPorIdRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
-                return new Commands.Response(this);
+                AddNotification("Request", "A requisição não pode ser nula.");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             var Collection =
@@ -28,15 +26,15 @@ namespace Commands.ProdutoPedido.ListarProdutoPedidoPorId
 
             if (Collection == null)
             {
-                AddNotification("Request", "");
-                return new Commands.Response(this);
+                AddNotification("Request", "A requisição não pode ser nula.");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             //Cria objeto de resposta
             var response = new Commands.Response(this, Collection.Result);
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

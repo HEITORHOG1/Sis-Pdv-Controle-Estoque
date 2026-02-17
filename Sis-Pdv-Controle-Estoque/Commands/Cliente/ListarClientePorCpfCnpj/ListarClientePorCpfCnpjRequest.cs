@@ -1,12 +1,12 @@
-﻿using MediatR;
+using MediatR;
 
 namespace Commands.Cliente.ListarClientePorCpfCnpj
 {
     public class ListarClientePorCpfCnpjRequest : IRequest<Commands.Response>
     {
-        public ListarClientePorCpfCnpjRequest(string cpfCnpj)
+        public ListarClientePorCpfCnpjRequest(string CpfCnpj)
         {
-            CpfCnpj = cpfCnpj;
+            CpfCnpj = CpfCnpj;
         }
 
         public string CpfCnpj { get; set; }

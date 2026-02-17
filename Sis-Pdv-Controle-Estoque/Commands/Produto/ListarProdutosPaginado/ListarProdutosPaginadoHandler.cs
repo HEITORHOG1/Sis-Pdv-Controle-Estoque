@@ -56,13 +56,14 @@ namespace Commands.Produto.ListarProdutosPaginado
                 }
 
                 // Get total count
-                var totalCount = await _repositoryProduto.ContarAsync(whereExpression);
+                var totalCount = await _repositoryProduto.ContarAsync(whereExpression, cancellationToken);
 
                 // Get paginated results
                 var produtos = await _repositoryProduto.ListarPaginadoAsync(
                     request.PageNumber, 
                     request.PageSize, 
                     whereExpression,
+                    cancellationToken,
                     p => p.Categoria);
 
                 // Create paginated result

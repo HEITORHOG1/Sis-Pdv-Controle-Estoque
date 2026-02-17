@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 
 namespace Commands.Usuarios.AlterarUsuario
 {
@@ -7,6 +7,6 @@ namespace Commands.Usuarios.AlterarUsuario
         public string IdLogin { get; set; }
         public string Login { get; set; }
         public string Senha { get; set; }
-        public bool statusAtivo { get; set; }
+        public bool StatusAtivo { get; set; }
     }
 }

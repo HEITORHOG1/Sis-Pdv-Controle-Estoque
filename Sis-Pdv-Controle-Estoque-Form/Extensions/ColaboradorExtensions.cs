@@ -15,7 +15,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
             return new ColaboradorDto
             {
                 id = apiResponse.id ?? string.Empty,
-                nomeColaborador = apiResponse.nomeColaborador ?? string.Empty,
+                NomeColaborador = apiResponse.NomeColaborador ?? string.Empty,
                 departamentoId = apiResponse.Departamento?.Id ?? string.Empty,
                 cpfColaborador = apiResponse.cpfColaborador ?? string.Empty,
                 cargoColaborador = apiResponse.cargoColaborador ?? string.Empty,
@@ -25,7 +25,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 idlogin = apiResponse.usuario?.id ?? string.Empty,
                 login = apiResponse.usuario?.login ?? string.Empty,
                 senha = apiResponse.usuario?.senha ?? string.Empty,
-                statusAtivo = apiResponse.usuario?.statusAtivo ?? false
+                StatusAtivo = apiResponse.usuario?.StatusAtivo ?? false
             };
         }
 
@@ -41,7 +41,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Valida se uma resposta da API é válida
+        /// Valida se uma resposta da API ï¿½ vï¿½lida
         /// </summary>
         public static bool IsValidResponse(this ColaboradorResponse response)
         {
@@ -49,7 +49,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Valida se uma lista de respostas da API é válida
+        /// Valida se uma lista de respostas da API ï¿½ vï¿½lida
         /// </summary>
         public static bool IsValidResponse(this ColaboradorResponseList response)
         {
@@ -57,7 +57,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém as mensagens de erro de uma resposta
+        /// Obtï¿½m as mensagens de erro de uma resposta
         /// </summary>
         public static List<string> GetErrorMessages(this ColaboradorResponse response)
         {
@@ -72,7 +72,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém as mensagens de erro de uma lista de respostas
+        /// Obtï¿½m as mensagens de erro de uma lista de respostas
         /// </summary>
         public static List<string> GetErrorMessages(this ColaboradorResponseList response)
         {
@@ -87,14 +87,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Formata CPF para exibição
+        /// Formata CPF para exibiï¿½ï¿½o
         /// </summary>
         public static string FormatCPF(this string cpf)
         {
             if (string.IsNullOrWhiteSpace(cpf))
                 return string.Empty;
 
-            // Remove formatação existente
+            // Remove formataï¿½ï¿½o existente
             var numbersOnly = new string(cpf.Where(char.IsDigit).ToArray());
 
             if (numbersOnly.Length == 11)
@@ -102,18 +102,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 return $"{numbersOnly.Substring(0, 3)}.{numbersOnly.Substring(3, 3)}.{numbersOnly.Substring(6, 3)}-{numbersOnly.Substring(9, 2)}";
             }
 
-            return cpf; // Retorna original se não for possível formatar
+            return cpf; // Retorna original se nï¿½o for possï¿½vel formatar
         }
 
         /// <summary>
-        /// Formata telefone para exibição
+        /// Formata telefone para exibiï¿½ï¿½o
         /// </summary>
         public static string FormatTelefone(this string telefone)
         {
             if (string.IsNullOrWhiteSpace(telefone))
                 return string.Empty;
 
-            // Remove formatação existente
+            // Remove formataï¿½ï¿½o existente
             var numbersOnly = new string(telefone.Where(char.IsDigit).ToArray());
 
             if (numbersOnly.Length == 11)
@@ -125,19 +125,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 return $"({numbersOnly.Substring(0, 2)}) {numbersOnly.Substring(2, 4)}-{numbersOnly.Substring(6, 4)}";
             }
 
-            return telefone; // Retorna original se não for possível formatar
+            return telefone; // Retorna original se nï¿½o for possï¿½vel formatar
         }
 
         /// <summary>
-        /// Verifica se o colaborador está ativo
+        /// Verifica se o colaborador estï¿½ ativo
         /// </summary>
         public static bool EstaAtivo(this ColaboradorDto colaborador)
         {
-            return colaborador?.statusAtivo == true;
+            return colaborador?.StatusAtivo == true;
         }
 
         /// <summary>
-        /// Obtém status formatado
+        /// Obtï¿½m status formatado
         /// </summary>
         public static string GetStatusFormatado(this ColaboradorDto colaborador)
         {
@@ -145,7 +145,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém informações de contato formatadas
+        /// Obtï¿½m informaï¿½ï¿½es de contato formatadas
         /// </summary>
         public static string GetContatoCompleto(this ColaboradorDto colaborador)
         {
@@ -173,17 +173,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Verifica se o colaborador pode ser excluído (validações de negócio)
+        /// Verifica se o colaborador pode ser excluï¿½do (validaï¿½ï¿½es de negï¿½cio)
         /// </summary>
         public static bool PodeSerExcluido(this ColaboradorDto colaborador)
         {
-            // Adicione aqui regras de negócio específicas
-            // Por exemplo: não pode excluir se tem vendas, se é admin único, etc.
+            // Adicione aqui regras de negï¿½cio especï¿½ficas
+            // Por exemplo: nï¿½o pode excluir se tem vendas, se ï¿½ admin ï¿½nico, etc.
             return colaborador != null;
         }
 
         /// <summary>
-        /// Mascara senha para exibição
+        /// Mascara senha para exibiï¿½ï¿½o
         /// </summary>
         public static string GetSenhaMascarada(this ColaboradorDto colaborador)
         {
@@ -194,7 +194,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Verifica se é administrador
+        /// Verifica se ï¿½ administrador
         /// </summary>
         public static bool EhAdministrador(this ColaboradorDto colaborador)
         {
@@ -207,14 +207,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Gera nome de usuário sugerido baseado no nome
+        /// Gera nome de usuï¿½rio sugerido baseado no nome
         /// </summary>
         public static string GerarLoginSugerido(this ColaboradorDto colaborador)
         {
-            if (string.IsNullOrWhiteSpace(colaborador?.nomeColaborador))
+            if (string.IsNullOrWhiteSpace(colaborador?.NomeColaborador))
                 return string.Empty;
 
-            var nomes = colaborador.nomeColaborador.Trim().Split(' ');
+            var nomes = colaborador.NomeColaborador.Trim().Split(' ');
             if (nomes.Length == 1)
             {
                 return nomes[0].ToLower();
@@ -224,7 +224,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 return $"{nomes[0]}.{nomes[nomes.Length - 1]}".ToLower();
             }
 
-            return colaborador.nomeColaborador.Replace(" ", ".").ToLower();
+            return colaborador.NomeColaborador.Replace(" ", ".").ToLower();
         }
 
         /// <summary>
@@ -232,10 +232,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         /// </summary>
         public static string GerarEmailCorporativoSugerido(this ColaboradorDto colaborador, string dominioEmpresa = "empresa.com.br")
         {
-            if (string.IsNullOrWhiteSpace(colaborador?.nomeColaborador))
+            if (string.IsNullOrWhiteSpace(colaborador?.NomeColaborador))
                 return string.Empty;
 
-            var nomes = colaborador.nomeColaborador.Trim().ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var nomes = colaborador.NomeColaborador.Trim().ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
             
             if (nomes.Length == 1)
             {
@@ -250,7 +250,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
                 return $"{primeiroNome}.{ultimoNome}@{dominioEmpresa}";
             }
 
-            return $"{RemoverAcentos(colaborador.nomeColaborador.Replace(" ", ".").ToLower())}@{dominioEmpresa}";
+            return $"{RemoverAcentos(colaborador.NomeColaborador.Replace(" ", ".").ToLower())}@{dominioEmpresa}";
         }
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Valida se os emails são diferentes
+        /// Valida se os emails sï¿½o diferentes
         /// </summary>
         public static bool EmailsSaoDiferentes(this ColaboradorDto colaborador)
         {
@@ -292,7 +292,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém sugestões de domínios corporativos comuns
+        /// Obtï¿½m sugestï¿½es de domï¿½nios corporativos comuns
         /// </summary>
         public static List<string> GetDominiosCorporativosComuns()
         {

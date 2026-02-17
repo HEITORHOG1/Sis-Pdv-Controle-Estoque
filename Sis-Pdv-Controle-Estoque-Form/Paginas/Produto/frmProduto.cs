@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Produto;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Produto;
 using Sis_Pdv_Controle_Estoque_Form.Services.Categoria;
 using Sis_Pdv_Controle_Estoque_Form.Services.Fornecedor;
 using Sis_Pdv_Controle_Estoque_Form.Services.Produto;
@@ -27,7 +27,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             categoriaService = new CategoriaService();
             produtosList = new BindingList<ProdutoDto>();
             
-            ProdutoLogger.LogInfo("Formulário de cadastro de produto inicializado", "FormLoad");
+            ProdutoLogger.LogInfo("Formul�rio de cadastro de produto inicializado", "FormLoad");
         }
 
         private async void frmProduto_Load(object sender, EventArgs e)
@@ -66,7 +66,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                 if (response.IsValidResponse() && response.data != null && response.data.Count > 0)
                 {
-                    // Criar uma lista com item padrão e dados
+                    // Criar uma lista com item padr�o e dados
                     var lista = new List<ComboItem>
                     {
                         new ComboItem { Id = Guid.Empty.ToString(), Nome = "Selecione uma categoria" }
@@ -80,7 +80,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     cmbCategoria.DisplayMember = "Nome";
                     cmbCategoria.ValueMember = "Id";
                     cmbCategoria.DataSource = lista;
-                    cmbCategoria.SelectedIndex = 0; // Seleciona o item padrão
+                    cmbCategoria.SelectedIndex = 0; // Seleciona o item padr�o
                     
                     ProdutoLogger.LogInfo($"Combo categoria carregado com {response.data.Count} itens", "CarregarCategoria");
                 }
@@ -88,7 +88,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 {
                     var erros = response.GetErrorMessages().FormatErrorMessages();
                     ProdutoLogger.LogError($"Erro ao carregar categorias: {erros}", "CarregarCategoria");
-                    MessageBox.Show($"Erro ao carregar categorias:\n• {erros}", "Erro", 
+                    MessageBox.Show($"Erro ao carregar categorias:\n� {erros}", "Erro", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -113,12 +113,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                 if (response.IsValidResponse() && response.data != null && response.data.Count > 0)
                 {
-                    // Criar lista com item padrão e dados
+                    // Criar lista com item padr�o e dados
                     var lista = new List<ComboItem>
                     {
                         new ComboItem { Id = Guid.Empty.ToString(), Nome = "Selecione um fornecedor" }
                     };
-                    lista.AddRange(response.data.Select(f => new ComboItem { Id = f.id, Nome = f.nomeFantasia }));
+                    lista.AddRange(response.data.Select(f => new ComboItem { Id = f.id, Nome = f.NomeFantasia }));
 
                     // Prevenir conflito com itens adicionados no Designer
                     cmbFornecedor.DataSource = null;
@@ -127,7 +127,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     cmbFornecedor.DisplayMember = "Nome";
                     cmbFornecedor.ValueMember = "Id";
                     cmbFornecedor.DataSource = lista;
-                    cmbFornecedor.SelectedIndex = 0; // Selecionar o item padrão
+                    cmbFornecedor.SelectedIndex = 0; // Selecionar o item padr�o
                     
                     ProdutoLogger.LogInfo($"Combo fornecedor carregado com {response.data.Count} itens", "CarregarFornecedor");
                 }
@@ -135,7 +135,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 {
                     var erros = response.GetErrorMessages().FormatErrorMessages();
                     ProdutoLogger.LogError($"Erro ao carregar fornecedores: {erros}", "CarregarFornecedor");
-                    MessageBox.Show($"Erro ao carregar fornecedores:\n• {erros}", "Erro", 
+                    MessageBox.Show($"Erro ao carregar fornecedores:\n� {erros}", "Erro", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -178,15 +178,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     dgvProduto.DataSource = null;
                     dgvProduto.DataSource = produtosList;
                     DefinirCabecalhos(new List<string>() {
-                        "ID", "Cód barras", "Nome", "Descrição", "P. Custo", "P. Venda",
+                        "ID", "C�d barras", "Nome", "Descri��o", "P. Custo", "P. Venda",
                         "Margem", "Dt. Fabri.", "Dt. Venci.", "Qtd.", "Fornecedor", "Categoria", "Ativo"
                     });
 
-                    // Oculta colunas desnecessárias
+                    // Oculta colunas desnecess�rias
                     if (dgvProduto.Columns["Id"] != null)
                         dgvProduto.Columns["Id"].Visible = false;
 
-                    // Formata colunas de preço
+                    // Formata colunas de pre�o
                     FormatarColunas();
                     
                     // Aplica cores baseadas em alertas
@@ -194,13 +194,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                     dgvProduto.Refresh();
                     
-                    ProdutoLogger.LogInfo($"Listagem concluída com {produtosList.Count} produtos", "Listagem");
+                    ProdutoLogger.LogInfo($"Listagem conclu�da com {produtosList.Count} produtos", "Listagem");
                 }
                 else
                 {
                     var erros = response.GetErrorMessages().FormatErrorMessages();
                     ProdutoLogger.LogError($"Erro na listagem: {erros}", "Listagem");
-                    MessageBox.Show($"Erro ao consultar produtos:\n• {erros}", "Erro", 
+                    MessageBox.Show($"Erro ao consultar produtos:\n� {erros}", "Erro", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -225,7 +225,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             {
                 if (string.IsNullOrWhiteSpace(codigoBarras))
                 {
-                    MessageBox.Show("Por favor, digite um código de barras válido.", "Campo Obrigatório", 
+                    MessageBox.Show("Por favor, digite um c�digo de barras v�lido.", "Campo Obrigat�rio", 
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -254,28 +254,28 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     dgvProduto.DataSource = null;
                     dgvProduto.DataSource = produtosList;
                     DefinirCabecalhos(new List<string>() {
-                        "ID", "Cód barras", "Nome", "Descrição", "P. Custo", "P. Venda",
+                        "ID", "C�d barras", "Nome", "Descri��o", "P. Custo", "P. Venda",
                         "Margem", "Dt. Fabri.", "Dt. Venci.", "Qtd.", "Fornecedor", "Categoria", "Ativo"
                     });
 
                     FormatarColunas();
                     AplicarCoresAlertas();
                     
-                    ProdutoLogger.LogInfo($"Busca por código encontrou {response.data.Count} produto(s)", "BuscaCodigo");
+                    ProdutoLogger.LogInfo($"Busca por c�digo encontrou {response.data.Count} produto(s)", "BuscaCodigo");
                 }
                 else
                 {
                     var erros = response.GetErrorMessages().FormatErrorMessages();
-                    ProdutoLogger.LogWarning($"Produto não encontrado para código: {codigoBarras}", "BuscaCodigo");
-                    MessageBox.Show($"Nenhum produto encontrado para o código: {codigoBarras}", "Produto Não Encontrado", 
+                    ProdutoLogger.LogWarning($"Produto n�o encontrado para c�digo: {codigoBarras}", "BuscaCodigo");
+                    MessageBox.Show($"Nenhum produto encontrado para o c�digo: {codigoBarras}", "Produto N�o Encontrado", 
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
                 sw.Stop();
-                ProdutoLogger.LogError($"Erro ao buscar produto por código: {codigoBarras}", "BuscaCodigo", ex);
-                MessageBox.Show($"Erro ao consultar produto por código de barras: {ex.Message}", "Erro", 
+                ProdutoLogger.LogError($"Erro ao buscar produto por c�digo: {codigoBarras}", "BuscaCodigo", ex);
+                MessageBox.Show($"Erro ao consultar produto por c�digo de barras: {ex.Message}", "Erro", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
@@ -301,44 +301,44 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 isLoading = true;
                 SetLoadingState(true);
 
-                // Debug: Verificar valores dos combos antes da conversão
+                // Debug: Verificar valores dos combos antes da convers�o
                 ProdutoLogger.LogInfo($"Debug ComboBoxes - Fornecedor SelectedValue: {cmbFornecedor.SelectedValue}, " +
                                     $"Categoria SelectedValue: {cmbCategoria.SelectedValue}", "DebugCombos");
 
                 // Converte e valida GUIDs selecionados
                 if (!Guid.TryParse(cmbFornecedor.SelectedValue?.ToString(), out var fornecedorId) || fornecedorId == Guid.Empty)
                 {
-                    MessageBox.Show("Selecione um fornecedor válido.", "Campo Obrigatório", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Selecione um fornecedor v�lido.", "Campo Obrigat�rio", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     cmbFornecedor.Focus();
                     return;
                 }
 
                 if (!Guid.TryParse(cmbCategoria.SelectedValue?.ToString(), out var categoriaId) || categoriaId == Guid.Empty)
                 {
-                    MessageBox.Show("Selecione uma categoria válida.", "Campo Obrigatório", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Selecione uma categoria v�lida.", "Campo Obrigat�rio", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     cmbCategoria.Focus();
                     return;
                 }
 
                 var dto = new ProdutoDto()
                 {
-                    codBarras = txbCodigoBarras.Text.Trim(),
+                    CodBarras = txbCodigoBarras.Text.Trim(),
                     FornecedorId = fornecedorId,
                     CategoriaId = categoriaId,
-                    nomeProduto = txbNome.Text.Trim(),
-                    descricaoProduto = rtbDescricao.Text.Trim(),
-                    precoCusto = decimal.Parse(txbPrecoCusto.Text),
-                    precoVenda = decimal.Parse(txbPrecoDeVenda.Text),
-                    margemLucro = decimal.Parse(txbMargemDeLucro.Text),
-                    dataFabricao = GetDataFabricacao(),
-                    dataVencimento = GetDataVencimento(),
-                    quatidadeEstoqueProduto = int.Parse(txbQuantidadeEstoque.Text),
-                    statusAtivo = rbProdutoAtivo.Checked ? 1 : 0
+                    NomeProduto = txbNome.Text.Trim(),
+                    DescricaoProduto = rtbDescricao.Text.Trim(),
+                    PrecoCusto = decimal.Parse(txbPrecoCusto.Text),
+                    PrecoVenda = decimal.Parse(txbPrecoDeVenda.Text),
+                    MargemLucro = decimal.Parse(txbMargemDeLucro.Text),
+                    DataFabricao = GetDataFabricacao(),
+                    DataVencimento = GetDataVencimento(),
+                    QuantidadeEstoqueProduto = int.Parse(txbQuantidadeEstoque.Text),
+                    StatusAtivo = rbProdutoAtivo.Checked ? 1 : 0
                 };
 
                 // Log dos dados antes do envio
-                ProdutoLogger.LogInfo($"Dados do produto antes do envio - Nome: {dto.nomeProduto}, " +
-                                    $"Código: {dto.codBarras}, FornecedorId: {dto.FornecedorId}, " +
+                ProdutoLogger.LogInfo($"Dados do produto antes do envio - Nome: {dto.NomeProduto}, " +
+                                    $"C�digo: {dto.CodBarras}, FornecedorId: {dto.FornecedorId}, " +
                                     $"CategoriaId: {dto.CategoriaId}", "CadastroDebug");
 
                 // Normaliza os dados
@@ -348,19 +348,19 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 var errosValidacao = dto.Validar();
                 if (errosValidacao.Any())
                 {
-                    var mensagem = $"Erros de validação:\n• {string.Join("\n• ", errosValidacao)}";
-                    ProdutoLogger.LogValidationError("Produto", mensagem, dto.nomeProduto);
-                    MessageBox.Show(mensagem, "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    var mensagem = $"Erros de valida��o:\n� {string.Join("\n� ", errosValidacao)}";
+                    ProdutoLogger.LogValidationError("Produto", mensagem, dto.NomeProduto);
+                    MessageBox.Show(mensagem, "Valida��o", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                ProdutoLogger.LogOperation("CadastroIniciado", "", dto.nomeProduto);
+                ProdutoLogger.LogOperation("CadastroIniciado", "", dto.NomeProduto);
 
-                // Verifica se já existe produto com o mesmo código de barras
-                if (await ProdutoJaExiste(dto.codBarras))
+                // Verifica se j� existe produto com o mesmo c�digo de barras
+                if (await ProdutoJaExiste(dto.CodBarras))
                 {
-                    ProdutoLogger.LogWarning($"Tentativa de cadastro de produto duplicado: {dto.codBarras}", "Cadastro");
-                    MessageBox.Show("Já existe um produto com este código de barras.", "Produto Duplicado", 
+                    ProdutoLogger.LogWarning($"Tentativa de cadastro de produto duplicado: {dto.CodBarras}", "Cadastro");
+                    MessageBox.Show("J� existe um produto com este c�digo de barras.", "Produto Duplicado", 
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -373,11 +373,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 if (response.IsValidResponse())
                 {
                     LimparCampos();
-                    var mensagem = $"Produto '{response.data.nomeProduto}' inserido com sucesso!";
+                    var mensagem = $"Produto '{response.data.NomeProduto}' inserido com sucesso!";
                     
-                    ProdutoLogger.LogOperation("CadastroRealizado", response.data.Id.ToString(), response.data.nomeProduto, response.data.codBarras);
-                    ProdutoLogger.LogEstoque(response.data.nomeProduto, 0, response.data.quatidadeEstoqueProduto, "Cadastro");
-                    ProdutoLogger.LogMargemLucro(response.data.nomeProduto, response.data.precoCusto, response.data.precoVenda, response.data.margemLucro);
+                    ProdutoLogger.LogOperation("CadastroRealizado", response.data.Id.ToString(), response.data.NomeProduto, response.data.CodBarras);
+                    ProdutoLogger.LogEstoque(response.data.NomeProduto, 0, response.data.QuantidadeEstoqueProduto, "Cadastro");
+                    ProdutoLogger.LogMargemLucro(response.data.NomeProduto, response.data.PrecoCusto, response.data.PrecoVenda, response.data.MargemLucro);
                     
                     MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await Consultar();
@@ -386,7 +386,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 {
                     var erros = response.GetErrorMessages().FormatErrorMessages();
                     ProdutoLogger.LogError($"Erro no cadastro: {erros}", "Cadastro");
-                    MessageBox.Show($"Erro ao cadastrar produto:\n• {erros}", "Erro", 
+                    MessageBox.Show($"Erro ao cadastrar produto:\n� {erros}", "Erro", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -423,14 +423,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 // Converte e valida GUIDs selecionados
                 if (!Guid.TryParse(cmbFornecedor.SelectedValue?.ToString(), out var fornecedorIdAlt) || fornecedorIdAlt == Guid.Empty)
                 {
-                    MessageBox.Show("Selecione um fornecedor válido.", "Campo Obrigatório", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Selecione um fornecedor v�lido.", "Campo Obrigat�rio", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     cmbFornecedor.Focus();
                     return;
                 }
 
                 if (!Guid.TryParse(cmbCategoria.SelectedValue?.ToString(), out var categoriaIdAlt) || categoriaIdAlt == Guid.Empty)
                 {
-                    MessageBox.Show("Selecione uma categoria válida.", "Campo Obrigatório", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Selecione uma categoria v�lida.", "Campo Obrigat�rio", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     cmbCategoria.Focus();
                     return;
                 }
@@ -438,18 +438,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 var dto = new ProdutoDto()
                 {
                     Id = Guid.Parse(txbId.Text),
-                    codBarras = txbCodigoBarras.Text.Trim(),
+                    CodBarras = txbCodigoBarras.Text.Trim(),
                     FornecedorId = fornecedorIdAlt,
                     CategoriaId = categoriaIdAlt,
-                    nomeProduto = txbNome.Text.Trim(),
-                    descricaoProduto = rtbDescricao.Text.Trim(),
-                    precoCusto = decimal.Parse(txbPrecoCusto.Text),
-                    precoVenda = decimal.Parse(txbPrecoDeVenda.Text),
-                    margemLucro = decimal.Parse(txbMargemDeLucro.Text),
-                    dataFabricao = GetDataFabricacao(),
-                    dataVencimento = GetDataVencimento(),
-                    quatidadeEstoqueProduto = int.Parse(txbQuantidadeEstoque.Text),
-                    statusAtivo = rbProdutoAtivo.Checked ? 1 : 0
+                    NomeProduto = txbNome.Text.Trim(),
+                    DescricaoProduto = rtbDescricao.Text.Trim(),
+                    PrecoCusto = decimal.Parse(txbPrecoCusto.Text),
+                    PrecoVenda = decimal.Parse(txbPrecoDeVenda.Text),
+                    MargemLucro = decimal.Parse(txbMargemDeLucro.Text),
+                    DataFabricao = GetDataFabricacao(),
+                    DataVencimento = GetDataVencimento(),
+                    QuantidadeEstoqueProduto = int.Parse(txbQuantidadeEstoque.Text),
+                    StatusAtivo = rbProdutoAtivo.Checked ? 1 : 0
                 };
 
                 // Normaliza os dados
@@ -459,13 +459,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 var errosValidacao = dto.Validar();
                 if (errosValidacao.Any())
                 {
-                    var mensagem = $"Erros de validação:\n• {string.Join("\n• ", errosValidacao)}";
-                    ProdutoLogger.LogValidationError("Produto", mensagem, dto.nomeProduto);
-                    MessageBox.Show(mensagem, "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    var mensagem = $"Erros de valida��o:\n� {string.Join("\n� ", errosValidacao)}";
+                    ProdutoLogger.LogValidationError("Produto", mensagem, dto.NomeProduto);
+                    MessageBox.Show(mensagem, "Valida��o", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                ProdutoLogger.LogOperation("AlteracaoIniciada", dto.Id.ToString(), dto.nomeProduto, dto.codBarras);
+                ProdutoLogger.LogOperation("AlteracaoIniciada", dto.Id.ToString(), dto.NomeProduto, dto.CodBarras);
 
                 var response = await produtoService.AlterarProduto(dto);
 
@@ -475,17 +475,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 if (response.IsValidResponse())
                 {
                     LimparCampos();
-                    var mensagem = $"Produto '{response.data.nomeProduto}' alterado com sucesso!";
+                    var mensagem = $"Produto '{response.data.NomeProduto}' alterado com sucesso!";
                     
-                    ProdutoLogger.LogOperation("AlteracaoRealizada", response.data.Id.ToString(), response.data.nomeProduto, response.data.codBarras);
+                    ProdutoLogger.LogOperation("AlteracaoRealizada", response.data.Id.ToString(), response.data.NomeProduto, response.data.CodBarras);
                     MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await Consultar();
                 }
                 else
                 {
                     var erros = response.GetErrorMessages().FormatErrorMessages();
-                    ProdutoLogger.LogError($"Erro na alteração: {erros}", "Alteracao");
-                    MessageBox.Show($"Erro ao alterar produto:\n• {erros}", "Erro", 
+                    ProdutoLogger.LogError($"Erro na altera��o: {erros}", "Alteracao");
+                    MessageBox.Show($"Erro ao alterar produto:\n� {erros}", "Erro", 
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
@@ -505,10 +505,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private bool ValidarCamposCadastro()
         {
-            // Validação Código de Barras
+            // Valida��o C�digo de Barras
             if (string.IsNullOrWhiteSpace(txbCodigoBarras.Text))
             {
-                MessageBox.Show("Informe o código de barras do produto.", "Campo Obrigatório",
+                MessageBox.Show("Informe o c�digo de barras do produto.", "Campo Obrigat�rio",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txbCodigoBarras.Focus();
                 return false;
@@ -517,78 +517,78 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             var codigo = txbCodigoBarras.Text.Trim();
             if (!Regex.IsMatch(codigo, @"^[0-9]{8,20}$"))
             {
-                MessageBox.Show("Código de barras deve conter apenas números e ter entre 8 e 20 dígitos.",
-                    "Código Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("C�digo de barras deve conter apenas n�meros e ter entre 8 e 20 d�gitos.",
+                    "C�digo Inv�lido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txbCodigoBarras.Focus();
                 return false;
             }
 
-            // Validação Fornecedor
+            // Valida��o Fornecedor
             if (cmbFornecedor.SelectedValue == null || 
                 cmbFornecedor.SelectedValue.ToString() == Guid.Empty.ToString())
             {
-                MessageBox.Show("Selecione um fornecedor.", "Campo Obrigatório",
+                MessageBox.Show("Selecione um fornecedor.", "Campo Obrigat�rio",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cmbFornecedor.Focus();
                 return false;
             }
 
-            // Validação Categoria
+            // Valida��o Categoria
             if (cmbCategoria.SelectedValue == null || 
                 cmbCategoria.SelectedValue.ToString() == Guid.Empty.ToString())
             {
-                MessageBox.Show("Selecione uma categoria.", "Campo Obrigatório",
+                MessageBox.Show("Selecione uma categoria.", "Campo Obrigat�rio",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cmbCategoria.Focus();
                 return false;
             }
 
-            // Validação Nome
+            // Valida��o Nome
             if (string.IsNullOrWhiteSpace(txbNome.Text))
             {
-                MessageBox.Show("Informe o nome do produto.", "Campo Obrigatório",
+                MessageBox.Show("Informe o nome do produto.", "Campo Obrigat�rio",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txbNome.Focus();
                 return false;
             }
 
-            // Validação Preço de Custo
-            if (!decimal.TryParse(txbPrecoCusto.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out decimal precoCusto) || precoCusto <= 0)
+            // Valida��o Pre�o de Custo
+            if (!decimal.TryParse(txbPrecoCusto.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out decimal PrecoCusto) || PrecoCusto <= 0)
             {
-                MessageBox.Show("Informe um preço de custo válido maior que zero.", "Valor Inválido",
+                MessageBox.Show("Informe um pre�o de custo v�lido maior que zero.", "Valor Inv�lido",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txbPrecoCusto.Focus();
                 return false;
             }
 
-            // Validação Preço de Venda
-            if (!decimal.TryParse(txbPrecoDeVenda.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out decimal precoVenda) || precoVenda <= 0)
+            // Valida��o Pre�o de Venda
+            if (!decimal.TryParse(txbPrecoDeVenda.Text, NumberStyles.Number, CultureInfo.CurrentCulture, out decimal PrecoVenda) || PrecoVenda <= 0)
             {
-                MessageBox.Show("Informe um preço de venda válido maior que zero.", "Valor Inválido",
+                MessageBox.Show("Informe um pre�o de venda v�lido maior que zero.", "Valor Inv�lido",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txbPrecoDeVenda.Focus();
                 return false;
             }
 
-            // Validação: Preço de venda deve ser maior que custo
-            if (precoVenda <= precoCusto)
+            // Valida��o: Pre�o de venda deve ser maior que custo
+            if (PrecoVenda <= PrecoCusto)
             {
-                MessageBox.Show("O preço de venda deve ser maior que o preço de custo.", "Validação de Negócio",
+                MessageBox.Show("O pre�o de venda deve ser maior que o pre�o de custo.", "Valida��o de Neg�cio",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txbPrecoDeVenda.Focus();
                 return false;
             }
 
-            // Validação Quantidade
+            // Valida��o Quantidade
             if (!int.TryParse(txbQuantidadeEstoque.Text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int quantidade) || quantidade < 0)
             {
-                MessageBox.Show("Informe uma quantidade em estoque válida (maior ou igual a zero).", "Valor Inválido",
+                MessageBox.Show("Informe uma quantidade em estoque v�lida (maior ou igual a zero).", "Valor Inv�lido",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txbQuantidadeEstoque.Focus();
                 return false;
             }
 
-            // Validação Datas para produtos perecíveis
+            // Valida��o Datas para produtos perec�veis
             if (rbPerecivel.Checked)
             {
                 var formats = new[] { "dd/MM/yyyy", "d/M/yyyy" };
@@ -596,7 +596,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                 if (!DateTime.TryParseExact(msktDataFabricacao.Text.Trim(), formats, culture, DateTimeStyles.None, out var dataFab))
                 {
-                    MessageBox.Show("Informe uma data de fabricação válida (dd/MM/aaaa) para produtos perecíveis.", "Data Inválida",
+                    MessageBox.Show("Informe uma data de fabrica��o v�lida (dd/MM/aaaa) para produtos perec�veis.", "Data Inv�lida",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     msktDataFabricacao.Focus();
                     return false;
@@ -604,16 +604,16 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                 if (!DateTime.TryParseExact(msktDataVencimento.Text.Trim(), formats, culture, DateTimeStyles.None, out var dataVenc))
                 {
-                    MessageBox.Show("Informe uma data de vencimento válida para produtos perecíveis.", "Data Inválida",
+                    MessageBox.Show("Informe uma data de vencimento v�lida para produtos perec�veis.", "Data Inv�lida",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     msktDataVencimento.Focus();
                     return false;
                 }
 
-                // Valida regras de negócio
+                // Valida regras de neg�cio
                 if (dataVenc <= dataFab)
                 {
-                    MessageBox.Show("A data de vencimento deve ser posterior à data de fabricação.", "Validação de Data",
+                    MessageBox.Show("A data de vencimento deve ser posterior � data de fabrica��o.", "Valida��o de Data",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     msktDataVencimento.Focus();
                     return false;
@@ -621,16 +621,16 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                 if (dataVenc <= DateTime.Today)
                 {
-                    MessageBox.Show("Não é possível cadastrar produto com data de vencimento expirada.", "Produto Vencido",
+                    MessageBox.Show("N�o � poss�vel cadastrar produto com data de vencimento expirada.", "Produto Vencido",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     msktDataVencimento.Focus();
                     return false;
                 }
 
-                // Opcional: fabricação não pode ser futura
+                // Opcional: fabrica��o n�o pode ser futura
                 if (dataFab > DateTime.Today)
                 {
-                    MessageBox.Show("A data de fabricação não pode ser futura.", "Data Inválida",
+                    MessageBox.Show("A data de fabrica��o n�o pode ser futura.", "Data Inv�lida",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     msktDataFabricacao.Focus();
                     return false;
@@ -644,8 +644,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
         {
             if (string.IsNullOrEmpty(txbId.Text) || txbId.Text == "IdProduto")
             {
-                ProdutoLogger.LogWarning($"Tentativa de {acao} sem seleção", "Validacao");
-                MessageBox.Show($"Selecione um produto para {acao}.", "Seleção Necessária", 
+                ProdutoLogger.LogWarning($"Tentativa de {acao} sem sele��o", "Validacao");
+                MessageBox.Show($"Selecione um produto para {acao}.", "Sele��o Necess�ria", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
@@ -662,7 +662,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
             catch (Exception ex)
             {
-                ProdutoLogger.LogWarning($"Erro ao verificar duplicação de código: {ex.Message}", "VerificacaoDuplicacao");
+                ProdutoLogger.LogWarning($"Erro ao verificar duplica��o de c�digo: {ex.Message}", "VerificacaoDuplicacao");
                 return false;
             }
         }
@@ -691,22 +691,22 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private void FormatarColunas()
         {
-            // Formatar colunas de preço
-            if (dgvProduto.Columns["precoCusto"] != null)
-                dgvProduto.Columns["precoCusto"].DefaultCellStyle.Format = "C2";
+            // Formatar colunas de pre�o
+            if (dgvProduto.Columns["PrecoCusto"] != null)
+                dgvProduto.Columns["PrecoCusto"].DefaultCellStyle.Format = "C2";
             
-            if (dgvProduto.Columns["precoVenda"] != null)
-                dgvProduto.Columns["precoVenda"].DefaultCellStyle.Format = "C2";
+            if (dgvProduto.Columns["PrecoVenda"] != null)
+                dgvProduto.Columns["PrecoVenda"].DefaultCellStyle.Format = "C2";
             
-            if (dgvProduto.Columns["margemLucro"] != null)
-                dgvProduto.Columns["margemLucro"].DefaultCellStyle.Format = "F2";
+            if (dgvProduto.Columns["MargemLucro"] != null)
+                dgvProduto.Columns["MargemLucro"].DefaultCellStyle.Format = "F2";
 
             // Formatar datas
-            if (dgvProduto.Columns["dataFabricao"] != null)
-                dgvProduto.Columns["dataFabricao"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            if (dgvProduto.Columns["DataFabricao"] != null)
+                dgvProduto.Columns["DataFabricao"].DefaultCellStyle.Format = "dd/MM/yyyy";
             
-            if (dgvProduto.Columns["dataVencimento"] != null)
-                dgvProduto.Columns["dataVencimento"].DefaultCellStyle.Format = "dd/MM/yyyy";
+            if (dgvProduto.Columns["DataVencimento"] != null)
+                dgvProduto.Columns["DataVencimento"].DefaultCellStyle.Format = "dd/MM/yyyy";
         }
 
         private void AplicarCoresAlertas()
@@ -717,7 +717,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 {
                     var cor = produto.GetCorAlerta();
                     
-                    // Aplica cor apenas se não for verde (normal)
+                    // Aplica cor apenas se n�o for verde (normal)
                     if (cor != System.Drawing.Color.Green)
                     {
                         row.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(30, cor);
@@ -746,7 +746,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     var produto = produtosList[e.RowIndex];
                     PreencherCamposEdicao(produto);
                     
-                    ProdutoLogger.LogOperation("ProdutoSelecionado", produto.Id.ToString(), produto.nomeProduto, produto.codBarras);
+                    ProdutoLogger.LogOperation("ProdutoSelecionado", produto.Id.ToString(), produto.NomeProduto, produto.CodBarras);
                 }
             }
             catch (Exception ex)
@@ -760,13 +760,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
         private void PreencherCamposEdicao(ProdutoDto produto)
         {
             txbId.Text = produto.Id.ToString();
-            txbCodigoBarras.Text = produto.codBarras;
-            txbNome.Text = produto.nomeProduto;
-            rtbDescricao.Text = produto.descricaoProduto;
-            txbPrecoCusto.Text = produto.precoCusto.ToString("F2");
-            txbPrecoDeVenda.Text = produto.precoVenda.ToString("F2");
-            txbMargemDeLucro.Text = produto.margemLucro.ToString("F2");
-            txbQuantidadeEstoque.Text = produto.quatidadeEstoqueProduto.ToString();
+            txbCodigoBarras.Text = produto.CodBarras;
+            txbNome.Text = produto.NomeProduto;
+            rtbDescricao.Text = produto.DescricaoProduto;
+            txbPrecoCusto.Text = produto.PrecoCusto.ToString("F2");
+            txbPrecoDeVenda.Text = produto.PrecoVenda.ToString("F2");
+            txbMargemDeLucro.Text = produto.MargemLucro.ToString("F2");
+            txbQuantidadeEstoque.Text = produto.QuantidadeEstoqueProduto.ToString();
 
             // Seleciona fornecedor
             if (produto.FornecedorId != Guid.Empty)
@@ -781,9 +781,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
 
             // Define datas
-            if (produto.dataFabricao > DateTime.MinValue)
+            if (produto.DataFabricao > DateTime.MinValue)
             {
-                msktDataFabricacao.Text = produto.dataFabricao.ToString("dd/MM/yyyy");
+                msktDataFabricacao.Text = produto.DataFabricao.ToString("dd/MM/yyyy");
                 rbPerecivel.Checked = true;
             }
             else
@@ -792,9 +792,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 rbNaoPerecivel.Checked = true;
             }
 
-            if (produto.dataVencimento > DateTime.MinValue)
+            if (produto.DataVencimento > DateTime.MinValue)
             {
-                msktDataVencimento.Text = produto.dataVencimento.ToString("dd/MM/yyyy");
+                msktDataVencimento.Text = produto.DataVencimento.ToString("dd/MM/yyyy");
             }
             else
             {
@@ -802,8 +802,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
 
             // Define status
-            rbProdutoAtivo.Checked = produto.statusAtivo == 1;
-            rbProdutoInativo.Checked = produto.statusAtivo != 1;
+            rbProdutoAtivo.Checked = produto.StatusAtivo == 1;
+            rbProdutoInativo.Checked = produto.StatusAtivo != 1;
 
             btnAdicionar.Enabled = false;
 
@@ -845,7 +845,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 msktDataFabricacao.Enabled = true;
                 msktDataVencimento.Enabled = true;
                 
-                // Define data de fabricação padrão como hoje se estiver vazia
+                // Define data de fabrica��o padr�o como hoje se estiver vazia
                 if (string.IsNullOrWhiteSpace(msktDataFabricacao.Text))
                 {
                     msktDataFabricacao.Text = DateTime.Now.ToString("dd/MM/yyyy");
@@ -866,7 +866,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private async void txbCodigoBarras_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Permite apenas números
+            // Permite apenas n�meros
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
             {
                 e.Handled = true;
@@ -875,13 +875,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private async void txbPrecoCusto_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Permite números, vírgula e backspace
+            // Permite n�meros, v�rgula e backspace
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
             {
                 e.Handled = true;
             }
 
-            // Permite apenas uma vírgula
+            // Permite apenas uma v�rgula
             if (e.KeyChar == ',' && ((TextBox)sender).Text.Contains(','))
             {
                 e.Handled = true;
@@ -890,13 +890,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private async void txbPrecoDeVenda_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Permite números, vírgula e backspace
+            // Permite n�meros, v�rgula e backspace
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
             {
                 e.Handled = true;
             }
 
-            // Permite apenas uma vírgula
+            // Permite apenas uma v�rgula
             if (e.KeyChar == ',' && ((TextBox)sender).Text.Contains(','))
             {
                 e.Handled = true;
@@ -928,15 +928,15 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     return;
                 }
 
-                if (decimal.TryParse(txbPrecoDeVenda.Text, out decimal precoVenda) &&
-                    decimal.TryParse(txbPrecoCusto.Text, out decimal precoCusto) &&
-                    precoCusto > 0)
+                if (decimal.TryParse(txbPrecoDeVenda.Text, out decimal PrecoVenda) &&
+                    decimal.TryParse(txbPrecoCusto.Text, out decimal PrecoCusto) &&
+                    PrecoCusto > 0)
                 {
-                    decimal margem = ((precoVenda / precoCusto) - 1) * 100;
+                    decimal margem = ((PrecoVenda / PrecoCusto) - 1) * 100;
                     txbMargemDeLucro.Text = margem.ToString("F2");
 
                     // Log da margem calculada
-                    ProdutoLogger.LogMargemLucro(txbNome.Text, precoCusto, precoVenda, margem);
+                    ProdutoLogger.LogMargemLucro(txbNome.Text, PrecoCusto, PrecoVenda, margem);
 
                     // Alerta para margem muito baixa
                     if (margem < 10)
@@ -1019,26 +1019,26 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             }
         }
 
-        // Event handlers para sugestões automáticas
+        // Event handlers para sugest�es autom�ticas
         private void txbNome_Leave(object sender, EventArgs e)
         {
-            // Gera código de barras se estiver vazio
+            // Gera c�digo de barras se estiver vazio
             if (string.IsNullOrWhiteSpace(txbCodigoBarras.Text) && !string.IsNullOrWhiteSpace(txbNome.Text))
             {
-                var dto = new ProdutoDto { nomeProduto = txbNome.Text };
+                var dto = new ProdutoDto { NomeProduto = txbNome.Text };
                 var categoria = cmbCategoria.Text;
                 txbCodigoBarras.Text = dto.GerarCodigoBarrasSugerido(categoria);
                 
-                ProdutoLogger.LogInfo($"Código de barras gerado automaticamente: {txbCodigoBarras.Text} para produto: {txbNome.Text}", "GeracaoCodigo");
+                ProdutoLogger.LogInfo($"C�digo de barras gerado automaticamente: {txbCodigoBarras.Text} para produto: {txbNome.Text}", "GeracaoCodigo");
             }
         }
 
         private void cmbCategoria_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Atualiza código de barras se necessário
+            // Atualiza c�digo de barras se necess�rio
             if (!string.IsNullOrWhiteSpace(txbNome.Text) && string.IsNullOrWhiteSpace(txbCodigoBarras.Text))
             {
-                var dto = new ProdutoDto { nomeProduto = txbNome.Text };
+                var dto = new ProdutoDto { NomeProduto = txbNome.Text };
                 var categoria = cmbCategoria.Text;
                 txbCodigoBarras.Text = dto.GerarCodigoBarrasSugerido(categoria);
             }
@@ -1046,7 +1046,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private void txbCodigoBarras_Leave(object sender, EventArgs e)
         {
-            // Valida código de barras em tempo real
+            // Valida c�digo de barras em tempo real
             if (!string.IsNullOrWhiteSpace(txbCodigoBarras.Text))
             {
                 var codigo = txbCodigoBarras.Text.Trim();
@@ -1056,8 +1056,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 
                 if (!valido)
                 {
-                    MessageBox.Show("Código de barras deve conter apenas números e ter entre 8 e 20 dígitos.", 
-                        "Código Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("C�digo de barras deve conter apenas n�meros e ter entre 8 e 20 d�gitos.", 
+                        "C�digo Inv�lido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txbCodigoBarras.Focus();
                 }
             }
@@ -1077,13 +1077,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 
                 if (diasRestantes <= 0)
                 {
-                    MessageBox.Show("ATENÇÃO: Este produto já está vencido!", 
+                    MessageBox.Show("ATEN��O: Este produto j� est� vencido!", 
                         "Produto Vencido", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else if (diasRestantes <= 7)
                 {
-                    MessageBox.Show($"ATENÇÃO: Este produto vence em {diasRestantes} dias!", 
-                        "Vencimento Próximo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"ATEN��O: Este produto vence em {diasRestantes} dias!", 
+                        "Vencimento Pr�ximo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
@@ -1093,7 +1093,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
             ProdutoLogger.LogOperation("FormularioFechado");
         }
 
-        // Métodos auxiliares para relatórios e exportação
+        // M�todos auxiliares para relat�rios e exporta��o
         public void ExportarProdutos()
         {
             try
@@ -1116,8 +1116,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                     }
                     else
                     {
-                        // Implementar exportação Excel se necessário
-                        MessageBox.Show("Exportação Excel ainda não implementada.", "Info", 
+                        // Implementar exporta��o Excel se necess�rio
+                        MessageBox.Show("Exporta��o Excel ainda n�o implementada.", "Info", 
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -1137,16 +1137,16 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
             foreach (var produto in produtos)
             {
-                csv.AppendLine($"{produto.codBarras},{produto.nomeProduto},{produto.descricaoProduto}," +
-                              $"{produto.precoCusto:F2},{produto.precoVenda:F2},{produto.margemLucro:F2}," +
-                              $"{produto.quatidadeEstoqueProduto},{produto.CategoriaId},{produto.FornecedorId}," +
+                csv.AppendLine($"{produto.CodBarras},{produto.NomeProduto},{produto.DescricaoProduto}," +
+                              $"{produto.PrecoCusto:F2},{produto.PrecoVenda:F2},{produto.MargemLucro:F2}," +
+                              $"{produto.QuantidadeEstoqueProduto},{produto.CategoriaId},{produto.FornecedorId}," +
                               $"{produto.GetStatusFormatado()}");
             }
 
             File.WriteAllText(arquivo, csv.ToString(), System.Text.Encoding.UTF8);
             
             ProdutoLogger.LogExportacao(arquivo, produtos.Count, "CSV");
-            MessageBox.Show($"Produtos exportados com sucesso!\nArquivo: {arquivo}", "Exportação Concluída", 
+            MessageBox.Show($"Produtos exportados com sucesso!\nArquivo: {arquivo}", "Exporta��o Conclu�da", 
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -1160,27 +1160,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 
                 if (produtosBaixoEstoque.Any())
                 {
-                    var relatorio = "RELATÓRIO - PRODUTOS COM ESTOQUE BAIXO\n";
+                    var relatorio = "RELAT�RIO - PRODUTOS COM ESTOQUE BAIXO\n";
                     relatorio += $"Data: {DateTime.Now:dd/MM/yyyy HH:mm}\n";
-                    relatorio += $"Limite mínimo: {limiteMinimo} unidades\n\n";
+                    relatorio += $"Limite m�nimo: {limiteMinimo} unidades\n\n";
                     
-                    foreach (var produto in produtosBaixoEstoque.OrderBy(p => p.quatidadeEstoqueProduto))
+                    foreach (var produto in produtosBaixoEstoque.OrderBy(p => p.QuantidadeEstoqueProduto))
                     {
-                        relatorio += $"• {produto.nomeProduto} - Código: {produto.codBarras} - Estoque: {produto.quatidadeEstoqueProduto}\n";
+                        relatorio += $"� {produto.NomeProduto} - C�digo: {produto.CodBarras} - Estoque: {produto.QuantidadeEstoqueProduto}\n";
                     }
                     
-                    MessageBox.Show(relatorio, "Relatório de Estoque Baixo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(relatorio, "Relat�rio de Estoque Baixo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("Nenhum produto com estoque abaixo do limite encontrado.", "Relatório", 
+                    MessageBox.Show("Nenhum produto com estoque abaixo do limite encontrado.", "Relat�rio", 
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                ProdutoLogger.LogError("Erro ao gerar relatório de estoque baixo", "Relatorio", ex);
-                MessageBox.Show($"Erro ao gerar relatório: {ex.Message}", "Erro", 
+                ProdutoLogger.LogError("Erro ao gerar relat�rio de estoque baixo", "Relatorio", ex);
+                MessageBox.Show($"Erro ao gerar relat�rio: {ex.Message}", "Erro", 
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

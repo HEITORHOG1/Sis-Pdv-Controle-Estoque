@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Validators;
 
 namespace Commands.Pedidos.AdicionarPedido
@@ -7,7 +7,8 @@ namespace Commands.Pedidos.AdicionarPedido
     {
         private readonly string[] _formasPagamentoValidas = 
         {
-            "Dinheiro", "Cartão de Crédito", "Cartão de Débito", "PIX", "Boleto", "Transferência"
+            "Dinheiro", "Cartão de Crédito", "Cartão de Débito", "PIX", "Boleto", "Transferência",
+            "Cartao de Credito", "Cartao de Debito", "Transferencia"
         };
 
         public AdicionarPedidoRequestValidator()
@@ -23,17 +24,17 @@ namespace Commands.Pedidos.AdicionarPedido
             RuleFor(request => request.Status)
                 .InclusiveBetween(0, 2).WithMessage("O Status deve ser 0 (pendente), 1 (finalizado) ou 2 (cancelado).");
 
-            RuleFor(request => request.dataDoPedido)
+            RuleFor(request => request.DataDoPedido)
                 .NotEmpty().WithMessage("A data do pedido é obrigatória.")
                 .MustBeValidBusinessDate()
                 .LessThanOrEqualTo(DateTime.Now).WithMessage("A data do pedido não pode ser no futuro.")
                 .GreaterThan(DateTime.Now.AddDays(-30)).WithMessage("A data do pedido não pode ser muito antiga.");
 
-            RuleFor(request => request.formaPagamento)
+            RuleFor(request => request.FormaPagamento)
                 .NotEmpty().WithMessage("A forma de pagamento é obrigatória.")
                 .Must(BeValidPaymentMethod).WithMessage($"Forma de pagamento deve ser uma das seguintes: {string.Join(", ", _formasPagamentoValidas)}");
 
-            RuleFor(request => request.totalPedido)
+            RuleFor(request => request.TotalPedido)
                 .MustBeValidPrice()
                 .GreaterThan(0).WithMessage("O total do pedido deve ser maior que zero.")
                 .LessThan(100000).WithMessage("Total do pedido muito alto, verifique o valor.");
@@ -43,9 +44,9 @@ namespace Commands.Pedidos.AdicionarPedido
                 .When(request => request.Id != Guid.Empty);
         }
 
-        private bool BeValidPaymentMethod(string formaPagamento)
+        private bool BeValidPaymentMethod(string FormaPagamento)
         {
-            return _formasPagamentoValidas.Contains(formaPagamento, StringComparer.OrdinalIgnoreCase);
+            return _formasPagamentoValidas.Contains(FormaPagamento, StringComparer.OrdinalIgnoreCase);
         }
     }
 }

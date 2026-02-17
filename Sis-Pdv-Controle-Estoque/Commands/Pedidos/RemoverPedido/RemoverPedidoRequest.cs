@@ -2,9 +2,9 @@
 
 namespace Commands.Pedidos.RemoverPedido
 {
-    public class RemoverPedidoResquest : IRequest<Response>
+    public class RemoverPedidoRequest : IRequest<Response>
     {
-        public RemoverPedidoResquest(Guid id)
+        public RemoverPedidoRequest(Guid id)
         {
             Id = id;
         }

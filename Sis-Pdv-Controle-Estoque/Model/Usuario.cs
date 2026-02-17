@@ -9,11 +9,11 @@ namespace Model
             UserRoles = new HashSet<UserRole>();
         }
 
-        public Usuario(string login, string senha, bool statusAtivo, Guid id)
+        public Usuario(string login, string senha, bool StatusAtivo, Guid id)
         {
             Login = login;
             Senha = senha;
-            StatusAtivo = statusAtivo;
+            this.StatusAtivo = StatusAtivo;
             Id = id;
             UserRoles = new HashSet<UserRole>();
         }

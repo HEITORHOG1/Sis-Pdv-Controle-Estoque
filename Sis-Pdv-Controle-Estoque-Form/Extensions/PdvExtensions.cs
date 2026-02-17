@@ -4,7 +4,7 @@ using Sis_Pdv_Controle_Estoque_Form.Dto.Produto;
 namespace Sis_Pdv_Controle_Estoque_Form.Extensions
 {
     /// <summary>
-    /// Extensões específicas para operações do PDV
+    /// Extensï¿½es especï¿½ficas para operaï¿½ï¿½es do PDV
     /// </summary>
     public static class PdvExtensions
     {
@@ -15,13 +15,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         {
             return new ItemCarrinhoDto
             {
-                CodigoBarras = produto.codBarras ?? string.Empty,
-                Descricao = produto.nomeProduto ?? string.Empty,
-                PrecoUnitario = produto.precoVenda,
+                CodigoBarras = produto.CodBarras ?? string.Empty,
+                Descricao = produto.NomeProduto ?? string.Empty,
+                PrecoUnitario = produto.PrecoVenda,
                 Quantidade = quantidade,
                 ProdutoId = produto.Id,
-                EstoqueDisponivel = produto.quatidadeEstoqueProduto,
-                DataVencimento = produto.dataVencimento > DateTime.MinValue ? produto.dataVencimento : null
+                EstoqueDisponivel = produto.QuantidadeEstoqueProduto,
+                DataVencimento = produto.DataVencimento > DateTime.MinValue ? produto.DataVencimento : null
             };
         }
 
@@ -31,36 +31,36 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         public static bool PodeSerVendido(this Data produto)
         {
             // Produto ativo
-            if (produto.statusAtivo != 1) return false;
+            if (produto.StatusAtivo != 1) return false;
             
-            // Tem estoque disponível
-            if (produto.quatidadeEstoqueProduto <= 0) return false;
+            // Tem estoque disponï¿½vel
+            if (produto.QuantidadeEstoqueProduto <= 0) return false;
             
-            // Não está vencido
-            if (produto.dataVencimento > DateTime.MinValue && produto.dataVencimento <= DateTime.Now)
+            // Nï¿½o estï¿½ vencido
+            if (produto.DataVencimento > DateTime.MinValue && produto.DataVencimento <= DateTime.Now)
                 return false;
             
             return true;
         }
 
         /// <summary>
-        /// Obtém alertas do produto para venda
+        /// Obtï¿½m alertas do produto para venda
         /// </summary>
         public static List<string> GetAlertasVenda(this Data produto)
         {
             var alertas = new List<string>();
             
-            if (produto.statusAtivo != 1)
+            if (produto.StatusAtivo != 1)
                 alertas.Add("Produto inativo");
             
-            if (produto.quatidadeEstoqueProduto <= 0)
+            if (produto.QuantidadeEstoqueProduto <= 0)
                 alertas.Add("Produto sem estoque");
-            else if (produto.quatidadeEstoqueProduto <= 10)
-                alertas.Add($"Estoque baixo ({produto.quatidadeEstoqueProduto} unidades)");
+            else if (produto.QuantidadeEstoqueProduto <= 10)
+                alertas.Add($"Estoque baixo ({produto.QuantidadeEstoqueProduto} unidades)");
             
-            if (produto.dataVencimento > DateTime.MinValue)
+            if (produto.DataVencimento > DateTime.MinValue)
             {
-                var diasVencimento = (produto.dataVencimento - DateTime.Now).Days;
+                var diasVencimento = (produto.DataVencimento - DateTime.Now).Days;
                 if (diasVencimento <= 0)
                     alertas.Add("Produto vencido");
                 else if (diasVencimento <= 7)
@@ -71,7 +71,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém cor do alerta para exibição no PDV
+        /// Obtï¿½m cor do alerta para exibiï¿½ï¿½o no PDV
         /// </summary>
         public static System.Drawing.Color GetCorAlertaPdv(this Data produto)
         {
@@ -87,7 +87,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Formata valor monetário para exibição
+        /// Formata valor monetï¿½rio para exibiï¿½ï¿½o
         /// </summary>
         public static string FormatarMoeda(this decimal valor)
         {
@@ -95,7 +95,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Formata quantidade para exibição
+        /// Formata quantidade para exibiï¿½ï¿½o
         /// </summary>
         public static string FormatarQuantidade(this int quantidade)
         {
@@ -105,12 +105,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         /// <summary>
         /// Valida CPF/CNPJ para cliente
         /// </summary>
-        public static bool IsValidCpfCnpj(this string cpfCnpj)
+        public static bool IsValidCpfCnpj(this string CpfCnpj)
         {
-            if (string.IsNullOrWhiteSpace(cpfCnpj))
+            if (string.IsNullOrWhiteSpace(CpfCnpj))
                 return false;
             
-            var numbersOnly = new string(cpfCnpj.Where(char.IsDigit).ToArray());
+            var numbersOnly = new string(CpfCnpj.Where(char.IsDigit).ToArray());
             
             return numbersOnly.Length == 11 ? IsValidCpf(numbersOnly) : 
                    numbersOnly.Length == 14 ? IsValidCnpj(numbersOnly) : false;
@@ -193,25 +193,25 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Verifica se é forma de pagamento à vista
+        /// Verifica se ï¿½ forma de pagamento ï¿½ vista
         /// </summary>
-        public static bool IsFormaPagamentoVista(this string formaPagamento)
+        public static bool IsFormaPagamentoVista(this string FormaPagamento)
         {
             var formasVista = new[] { "DINHEIRO", "PIX", "DEBITO" };
-            return formasVista.Any(f => f.Equals(formaPagamento?.ToUpper()));
+            return formasVista.Any(f => f.Equals(FormaPagamento?.ToUpper()));
         }
 
         /// <summary>
-        /// Verifica se é forma de pagamento parcelada
+        /// Verifica se ï¿½ forma de pagamento parcelada
         /// </summary>
-        public static bool IsFormaPagamentoParcelada(this string formaPagamento)
+        public static bool IsFormaPagamentoParcelada(this string FormaPagamento)
         {
-            return formaPagamento?.ToUpper().Contains("CREDITO") == true ||
-                   formaPagamento?.ToUpper().Contains("PARCEL") == true;
+            return FormaPagamento?.ToUpper().Contains("CREDITO") == true ||
+                   FormaPagamento?.ToUpper().Contains("PARCEL") == true;
         }
 
         /// <summary>
-        /// Gera número de controle da venda
+        /// Gera nï¿½mero de controle da venda
         /// </summary>
         public static string GerarNumeroControle(this VendaDto venda)
         {
@@ -232,7 +232,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém texto do status da venda
+        /// Obtï¿½m texto do status da venda
         /// </summary>
         public static string GetStatusTexto(this VendaDto venda)
         {
@@ -246,7 +246,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém resumo dos itens para cupom
+        /// Obtï¿½m resumo dos itens para cupom
         /// </summary>
         public static string GetResumoItens(this VendaDto venda)
         {
@@ -261,7 +261,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Converte tempo para formato amigável
+        /// Converte tempo para formato amigï¿½vel
         /// </summary>
         public static string ToFriendlyTime(this TimeSpan tempo)
         {
@@ -273,7 +273,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém código de cores para DataGridView
+        /// Obtï¿½m cï¿½digo de cores para DataGridView
         /// </summary>
         public static System.Drawing.Color GetCorStatus(this ItemCarrinhoDto item)
         {
@@ -288,7 +288,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Trunca texto para exibição em grid
+        /// Trunca texto para exibiï¿½ï¿½o em grid
         /// </summary>
         public static string TruncateForDisplay(this string texto, int maxLength = 30)
         {
@@ -307,7 +307,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Valida se operação PDV é válida
+        /// Valida se operaï¿½ï¿½o PDV ï¿½ vï¿½lida
         /// </summary>
         public static bool ValidarOperacaoPdv(this string operacao, List<string> operacoesPermitidas)
         {
@@ -315,11 +315,11 @@ namespace Sis_Pdv_Controle_Estoque_Form.Extensions
         }
 
         /// <summary>
-        /// Obtém ícone para forma de pagamento
+        /// Obtï¿½m ï¿½cone para forma de pagamento
         /// </summary>
-        public static string GetIconeFormaPagamento(this string formaPagamento)
+        public static string GetIconeFormaPagamento(this string FormaPagamento)
         {
-            return formaPagamento?.ToUpper() switch
+            return FormaPagamento?.ToUpper() switch
             {
                 "DINHEIRO" => "??",
                 "CARTAO" or "CREDITO" or "DEBITO" => "??",

@@ -10,14 +10,14 @@ public class ModelTests
     public void Cliente_Constructor_ShouldSetProperties()
     {
         // Arrange
-        var cpfCnpj = "12345678901";
+        var CpfCnpj = "12345678901";
         var tipoCliente = "Físico";
         
         // Act
-        var cliente = new Cliente(cpfCnpj, tipoCliente);
+        var cliente = new Cliente(CpfCnpj, tipoCliente);
         
         // Assert
-        cliente.CpfCnpj.Should().Be(cpfCnpj);
+        cliente.CpfCnpj.Should().Be(CpfCnpj);
         cliente.TipoCliente.Should().Be(tipoCliente);
     }
 
@@ -26,7 +26,7 @@ public class ModelTests
     {
         // Arrange
         var produto = new Produto();
-        produto.QuatidadeEstoqueProduto = 5;
+        produto.QuantidadeEstoqueProduto = 5;
         produto.ReorderPoint = 10;
         
         // Act
@@ -41,7 +41,7 @@ public class ModelTests
     {
         // Arrange
         var produto = new Produto();
-        produto.QuatidadeEstoqueProduto = 0;
+        produto.QuantidadeEstoqueProduto = 0;
         
         // Act
         var result = produto.IsOutOfStock();
@@ -55,7 +55,7 @@ public class ModelTests
     {
         // Arrange
         var produto = new Produto();
-        produto.QuatidadeEstoqueProduto = 100;
+        produto.QuantidadeEstoqueProduto = 100;
         var requestedQuantity = 50;
         
         // Act
@@ -71,16 +71,16 @@ public class ModelTests
         // Arrange
         var login = "testuser";
         var senha = "password123";
-        var statusAtivo = true;
+        var StatusAtivo = true;
         var id = Guid.NewGuid();
         
         // Act
-        var usuario = new Usuario(login, senha, statusAtivo, id);
+        var usuario = new Usuario(login, senha, StatusAtivo, id);
         
         // Assert
         usuario.Login.Should().Be(login);
         usuario.Senha.Should().Be(senha);
-        usuario.StatusAtivo.Should().Be(statusAtivo);
+        usuario.StatusAtivo.Should().Be(StatusAtivo);
         usuario.Id.Should().Be(id);
     }
 }

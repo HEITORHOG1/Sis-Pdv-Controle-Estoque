@@ -1,4 +1,4 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Services.Colaborador;
 using Sis_Pdv_Controle_Estoque_Form.Services.Departamento;
 using Sis_Pdv_Controle_Estoque_Form.Extensions;
@@ -56,7 +56,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                 var colaborador = colaboradoresList[e.RowIndex];
                 PreencherCamposEdicao(colaborador);
                 
-                ColaboradorLogger.LogOperation("ColaboradorSelecionado", colaborador.id, colaborador.nomeColaborador);
+                ColaboradorLogger.LogOperation("ColaboradorSelecionado", colaborador.id, colaborador.NomeColaborador);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
 
                 var dto = new ColaboradorDto()
                 {
-                    nomeColaborador = txtNomeColaborador.Text.Trim(),
+                    NomeColaborador = txtNomeColaborador.Text.Trim(),
                     cargoColaborador = txtCargo.Text.Trim(),
                     cpfColaborador = txtCPF.Text.Trim(),
                     emailCorporativo = txtEmail.Text.Trim(),
@@ -81,7 +81,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                     senha = txtSenha.Text.Trim(),
                     login = txtLogin.Text.Trim(),
                     departamentoId = cbxDepartamento.SelectedValue?.ToString() ?? string.Empty,
-                    statusAtivo = rbAtivo.Checked
+                    StatusAtivo = rbAtivo.Checked
                 };
 
                 // Normaliza os dados
@@ -92,12 +92,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                 if (errosValidacao.Any())
                 {
                     var mensagem = $"Erros de validação:\n• {string.Join("\n• ", errosValidacao)}";
-                    ColaboradorLogger.LogValidationError("Colaborador", mensagem, dto.nomeColaborador);
+                    ColaboradorLogger.LogValidationError("Colaborador", mensagem, dto.NomeColaborador);
                     MessageBox.Show(mensagem, "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                ColaboradorLogger.LogOperation("CadastroIniciado", value: dto.nomeColaborador);
+                ColaboradorLogger.LogOperation("CadastroIniciado", value: dto.NomeColaborador);
 
                 var response = await colaboradorService.AdicionarColaborador(dto);
 
@@ -107,9 +107,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                 if (response.IsValidResponse())
                 {
                     LimparCampos();
-                    var mensagem = $"Colaborador '{response.data.nomeColaborador}' inserido com sucesso!";
+                    var mensagem = $"Colaborador '{response.data.NomeColaborador}' inserido com sucesso!";
                     
-                    ColaboradorLogger.LogOperation("CadastroRealizado", response.data.id, response.data.nomeColaborador);
+                    ColaboradorLogger.LogOperation("CadastroRealizado", response.data.id, response.data.NomeColaborador);
                     
                     MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await Consultar();
@@ -150,7 +150,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                 var dto = new ColaboradorDto()
                 {
                     id = lblId.Text,
-                    nomeColaborador = txtNomeColaborador.Text.Trim(),
+                    NomeColaborador = txtNomeColaborador.Text.Trim(),
                     cargoColaborador = txtCargo.Text.Trim(),
                     cpfColaborador = txtCPF.Text.Trim(),
                     emailCorporativo = txtEmail.Text.Trim(),
@@ -160,7 +160,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                     login = txtLogin.Text.Trim(),
                     departamentoId = cbxDepartamento.SelectedValue?.ToString() ?? string.Empty,
                     idlogin = lblIdLogin.Text,
-                    statusAtivo = rbAtivo.Checked
+                    StatusAtivo = rbAtivo.Checked
                 };
 
                 // Normaliza os dados
@@ -171,12 +171,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                 if (errosValidacao.Any())
                 {
                     var mensagem = $"Erros de validação:\n• {string.Join("\n• ", errosValidacao)}";
-                    ColaboradorLogger.LogValidationError("Colaborador", mensagem, dto.nomeColaborador);
+                    ColaboradorLogger.LogValidationError("Colaborador", mensagem, dto.NomeColaborador);
                     MessageBox.Show(mensagem, "Validação", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                ColaboradorLogger.LogOperation("AlteracaoIniciada", dto.id, dto.nomeColaborador);
+                ColaboradorLogger.LogOperation("AlteracaoIniciada", dto.id, dto.NomeColaborador);
 
                 var response = await colaboradorService.AlterarColaborador(dto);
 
@@ -186,9 +186,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                 if (response.IsValidResponse())
                 {
                     LimparCampos();
-                    var mensagem = $"Colaborador '{response.data.nomeColaborador}' alterado com sucesso!";
+                    var mensagem = $"Colaborador '{response.data.NomeColaborador}' alterado com sucesso!";
                     
-                    ColaboradorLogger.LogOperation("AlteracaoRealizada", response.data.id, response.data.nomeColaborador);
+                    ColaboradorLogger.LogOperation("AlteracaoRealizada", response.data.id, response.data.NomeColaborador);
                     MessageBox.Show(mensagem, "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     await Consultar();
                 }
@@ -289,7 +289,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                 if (response.IsValidResponse())
                 {
                     cbxDepartamento.DataSource = response.data;
-                    cbxDepartamento.DisplayMember = "nomeDepartamento";
+                    cbxDepartamento.DisplayMember = "NomeDepartamento";
                     cbxDepartamento.ValueMember = "id";
                 }
             }
@@ -420,7 +420,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
         private void PreencherCamposEdicao(ColaboradorDto colaborador)
         {
             lblId.Text = colaborador.id;
-            txtNomeColaborador.Text = colaborador.nomeColaborador;
+            txtNomeColaborador.Text = colaborador.NomeColaborador;
             txtCPF.Text = colaborador.cpfColaborador;
             txtCargo.Text = colaborador.cargoColaborador;
             txtTelefone.Text = colaborador.telefoneColaborador;
@@ -437,8 +437,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
             }
 
             // Define status
-            rbAtivo.Checked = colaborador.statusAtivo;
-            rbInativo.Checked = !colaborador.statusAtivo;
+            rbAtivo.Checked = colaborador.StatusAtivo;
+            rbInativo.Checked = !colaborador.StatusAtivo;
 
             btnAdicionar.Enabled = false;
         }
@@ -554,14 +554,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
             // Gera sugestão de login se o campo estiver vazio
             if (string.IsNullOrWhiteSpace(txtLogin.Text) && !string.IsNullOrWhiteSpace(txtNomeColaborador.Text))
             {
-                var dto = new ColaboradorDto { nomeColaborador = txtNomeColaborador.Text };
+                var dto = new ColaboradorDto { NomeColaborador = txtNomeColaborador.Text };
                 txtLogin.Text = dto.GerarLoginSugerido();
             }
 
             // Gera sugestão de email corporativo se o campo estiver vazio
             if (string.IsNullOrWhiteSpace(txtEmail.Text) && !string.IsNullOrWhiteSpace(txtNomeColaborador.Text))
             {
-                var dto = new ColaboradorDto { nomeColaborador = txtNomeColaborador.Text };
+                var dto = new ColaboradorDto { NomeColaborador = txtNomeColaborador.Text };
                 txtEmail.Text = dto.GerarEmailCorporativoSugerido();
             }
         }
@@ -590,7 +590,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
 
                 if (resultado == DialogResult.Yes)
                 {
-                    var dto = new ColaboradorDto { nomeColaborador = txtNomeColaborador.Text };
+                    var dto = new ColaboradorDto { NomeColaborador = txtNomeColaborador.Text };
                     txtEmail.Text = dto.GerarEmailCorporativoSugerido();
                 }
             }

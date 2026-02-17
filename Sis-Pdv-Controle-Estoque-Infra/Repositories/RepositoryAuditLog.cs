@@ -5,16 +5,13 @@ namespace Repositories
 {
     public class RepositoryAuditLog : RepositoryBase<AuditLog, Guid>, IRepositoryAuditLog
     {
-        private readonly PdvContext _context;
-
         public RepositoryAuditLog(PdvContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task<IEnumerable<AuditLog>> GetByEntityAsync(string entityName, Guid entityId)
         {
-            return await _context.AuditLogs
+            return await _context.Set<AuditLog>()
                 .Where(al => al.EntityName == entityName && al.EntityId == entityId && !al.IsDeleted)
                 .Include(al => al.User)
                 .OrderByDescending(al => al.Timestamp)
@@ -23,7 +20,7 @@ namespace Repositories
 
         public async Task<IEnumerable<AuditLog>> GetByUserAsync(Guid userId, DateTime? fromDate = null, DateTime? toDate = null)
         {
-            var query = _context.AuditLogs
+            var query = _context.Set<AuditLog>()
                 .Where(al => al.UserId == userId && !al.IsDeleted);
 
             if (fromDate.HasValue)

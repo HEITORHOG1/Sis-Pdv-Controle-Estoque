@@ -1,47 +1,45 @@
-﻿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Produto.AdicionarProduto
 {
     public class AdicionarProdutoHandler : Notifiable, IRequestHandler<AdicionarProdutoRequest, Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryProduto _repositoryProduto;
 
-        public AdicionarProdutoHandler(IMediator mediator, IRepositoryProduto repositoryProduto)
+        public AdicionarProdutoHandler(IRepositoryProduto repositoryProduto)
         {
-            _mediator = mediator;
             _repositoryProduto = repositoryProduto;
         }
 
-        public async Task<Response> Handle(AdicionarProdutoRequest request, CancellationToken cancellationToken)
+        public Task<Response> Handle(AdicionarProdutoRequest request, CancellationToken cancellationToken)
         {
             // Validation is now handled by the ValidationBehavior pipeline
 
-            //Verificar se o produto já existe
-            if (_repositoryProduto.Existe(x => x.CodBarras == request.codBarras))
+            //Verificar se o produto j� existe
+            if (_repositoryProduto.Existe(x => x.CodBarras == request.CodBarras))
             {
-                AddNotification("codBarras", "Produto já cadastrado com este código de barras");
-                return new Response(this);
+                AddNotification("CodBarras", "Produto j� cadastrado com este c�digo de barras");
+                return Task.FromResult(new Response(this));
             }
 
             Model.Produto Produto = new(
-                                request.codBarras,
-                                request.nomeProduto,
-                                request.descricaoProduto,
-                                request.precoCusto,
-                                request.precoVenda,
-                                request.margemLucro,
-                                request.dataFabricao,
-                                request.dataVencimento,
-                                request.quatidadeEstoqueProduto,
+                                request.CodBarras,
+                                request.NomeProduto,
+                                request.DescricaoProduto,
+                                request.PrecoCusto,
+                                request.PrecoVenda,
+                                request.MargemLucro,
+                                request.DataFabricao,
+                                request.DataVencimento,
+                                request.QuantidadeEstoqueProduto,
                                 request.FornecedorId,
                                 request.CategoriaId,
-                                request.statusAtivo);
+                                request.StatusAtivo);
 
             if (IsInvalid())
             {
-                return new Response(this);
+                return Task.FromResult(new Response(this));
             }
 
             Produto = _repositoryProduto.Adicionar(Produto);
@@ -49,7 +47,7 @@ namespace Commands.Produto.AdicionarProduto
             //Criar meu objeto de resposta
             var response = new Response(this, Produto);
 
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

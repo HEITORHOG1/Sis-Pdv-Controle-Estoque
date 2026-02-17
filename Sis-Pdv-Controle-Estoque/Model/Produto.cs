@@ -1,4 +1,5 @@
 using Model.Exceptions;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Model
 {
@@ -14,43 +15,43 @@ namespace Model
         }
         
         public Produto(
-            string codBarras,
-            string nomeProduto,
-            string descricaoProduto,
-            decimal precoCusto,
-            decimal precoVenda,
-            decimal margemLucro,
-            DateTime dataFabricao,
-            DateTime dataVencimento,
-            int quatidadeEstoqueProduto,
+            string CodBarras,
+            string NomeProduto,
+            string DescricaoProduto,
+            decimal PrecoCusto,
+            decimal PrecoVenda,
+            decimal MargemLucro,
+            DateTime DataFabricao,
+            DateTime DataVencimento,
+            int QuantidadeEstoqueProduto,
             Guid FornecedorId,
             Guid CategoriaId,
-            int statusAtivo,
+            int StatusAtivo,
             decimal minimumStock = 0,
             decimal maximumStock = 0,
             decimal reorderPoint = 0,
             string? location = null)
         {
-            ValidarCodigoBarras(codBarras);
-            ValidarNomeProduto(nomeProduto);
-            ValidarPrecos(precoCusto, precoVenda);
-            ValidarDatas(dataFabricao, dataVencimento);
-            ValidarEstoque(quatidadeEstoqueProduto, minimumStock, maximumStock, reorderPoint);
+            ValidarCodigoBarras(CodBarras);
+            ValidarNomeProduto(NomeProduto);
+            ValidarPrecos(PrecoCusto, PrecoVenda);
+            ValidarDatas(DataFabricao, DataVencimento);
+            ValidarEstoque(QuantidadeEstoqueProduto, minimumStock, maximumStock, reorderPoint);
             ValidarFornecedorId(FornecedorId);
             ValidarCategoriaId(CategoriaId);
             
-            CodBarras = codBarras;
-            NomeProduto = nomeProduto;
-            DescricaoProduto = descricaoProduto;
-            PrecoCusto = precoCusto;
-            PrecoVenda = precoVenda;
-            MargemLucro = margemLucro;
-            DataFabricao = dataFabricao;
-            DataVencimento = dataVencimento;
-            QuatidadeEstoqueProduto = quatidadeEstoqueProduto;
+            this.CodBarras = CodBarras;
+            this.NomeProduto = NomeProduto;
+            this.DescricaoProduto = DescricaoProduto;
+            this.PrecoCusto = PrecoCusto;
+            this.PrecoVenda = PrecoVenda;
+            this.MargemLucro = MargemLucro;
+            this.DataFabricao = DataFabricao;
+            this.DataVencimento = DataVencimento;
+            this.QuantidadeEstoqueProduto = QuantidadeEstoqueProduto;
             this.FornecedorId = FornecedorId;
             this.CategoriaId = CategoriaId;
-            StatusAtivo = statusAtivo;
+            this.StatusAtivo = StatusAtivo;
             MinimumStock = minimumStock;
             MaximumStock = maximumStock;
             ReorderPoint = reorderPoint;
@@ -65,7 +66,8 @@ namespace Model
         public decimal MargemLucro { get; set; }
         public DateTime DataFabricao { get; set; }
         public DateTime DataVencimento { get; set; }
-        public int QuatidadeEstoqueProduto { get; set; }
+        [Column("QuatidadeEstoqueProduto")] // Mantém nome da coluna no DB para compatibilidade
+        public int QuantidadeEstoqueProduto { get; set; }
         public decimal MinimumStock { get; set; }
         public decimal MaximumStock { get; set; }
         public decimal ReorderPoint { get; set; }
@@ -77,49 +79,49 @@ namespace Model
         public int StatusAtivo { get; set; }
         public virtual ICollection<StockMovement> StockMovements { get; set; } = new List<StockMovement>();
 
-        internal void AlterarProduto(Guid id, string codBarras, string nomeProduto, string descricaoProduto,
-            decimal precoCusto, decimal precoVenda, decimal margemLucro, DateTime dataFabricao,
-            DateTime dataVencimento, int quatidadeEstoqueProduto,
-            Guid FornecedorId, Guid CategoriaId, int statusAtivo,
+        internal void AlterarProduto(Guid id, string CodBarras, string NomeProduto, string DescricaoProduto,
+            decimal PrecoCusto, decimal PrecoVenda, decimal MargemLucro, DateTime DataFabricao,
+            DateTime DataVencimento, int QuantidadeEstoqueProduto,
+            Guid FornecedorId, Guid CategoriaId, int StatusAtivo,
             decimal minimumStock = 0, decimal maximumStock = 0, decimal reorderPoint = 0, string? location = null)
         {
             Id = id;
-            CodBarras = codBarras;
-            NomeProduto = nomeProduto;
-            DescricaoProduto = descricaoProduto;
-            PrecoCusto = precoCusto;
-            PrecoVenda = precoVenda;
-            MargemLucro = margemLucro;
-            DataFabricao = dataFabricao;
-            DataVencimento = dataVencimento;
-            QuatidadeEstoqueProduto = quatidadeEstoqueProduto;
+            this.CodBarras = CodBarras;
+            this.NomeProduto = NomeProduto;
+            this.DescricaoProduto = DescricaoProduto;
+            this.PrecoCusto = PrecoCusto;
+            this.PrecoVenda = PrecoVenda;
+            this.MargemLucro = MargemLucro;
+            this.DataFabricao = DataFabricao;
+            this.DataVencimento = DataVencimento;
+            this.QuantidadeEstoqueProduto = QuantidadeEstoqueProduto;
             this.FornecedorId = FornecedorId;
             this.CategoriaId = CategoriaId;
-            StatusAtivo = statusAtivo;
+            this.StatusAtivo = StatusAtivo;
             MinimumStock = minimumStock;
             MaximumStock = maximumStock;
             ReorderPoint = reorderPoint;
             Location = location;
         }
-        internal void AtualizarEstoque(Guid id, int quatidadeEstoqueProduto)
+        internal void AtualizarEstoque(Guid id, int QuantidadeEstoqueProduto)
         {
             Id = id;
-            QuatidadeEstoqueProduto = quatidadeEstoqueProduto;
+            this.QuantidadeEstoqueProduto = QuantidadeEstoqueProduto;
         }
 
         public bool IsLowStock()
         {
-            return QuatidadeEstoqueProduto <= ReorderPoint;
+            return QuantidadeEstoqueProduto <= ReorderPoint;
         }
 
         public bool IsOutOfStock()
         {
-            return QuatidadeEstoqueProduto <= 0;
+            return QuantidadeEstoqueProduto <= 0;
         }
 
         public bool HasSufficientStock(int requestedQuantity)
         {
-            return QuatidadeEstoqueProduto >= requestedQuantity;
+            return QuantidadeEstoqueProduto >= requestedQuantity;
         }
 
         public void UpdateStock(int newQuantity, string reason, Guid? userId = null)
@@ -130,8 +132,8 @@ namespace Model
             if (string.IsNullOrWhiteSpace(reason))
                 throw new DomainException("Motivo da movimentação de estoque é obrigatório");
             
-            var previousStock = QuatidadeEstoqueProduto;
-            QuatidadeEstoqueProduto = newQuantity;
+            var previousStock = QuantidadeEstoqueProduto;
+            QuantidadeEstoqueProduto = newQuantity;
             
             // Create stock movement record
             var movement = new StockMovement(
@@ -150,36 +152,36 @@ namespace Model
         }
         
         // Métodos de validação privados
-        private static void ValidarCodigoBarras(string codBarras)
+        private static void ValidarCodigoBarras(string CodBarras)
         {
-            if (string.IsNullOrWhiteSpace(codBarras))
+            if (string.IsNullOrWhiteSpace(CodBarras))
                 throw new DomainException("Código de barras é obrigatório");
         }
         
-        private static void ValidarNomeProduto(string nomeProduto)
+        private static void ValidarNomeProduto(string NomeProduto)
         {
-            if (string.IsNullOrWhiteSpace(nomeProduto))
+            if (string.IsNullOrWhiteSpace(NomeProduto))
                 throw new DomainException("Nome do produto é obrigatório");
                 
-            if (nomeProduto.Length < 3)
+            if (NomeProduto.Length < 3)
                 throw new DomainException("Nome do produto deve ter no mínimo 3 caracteres");
         }
         
-        private static void ValidarPrecos(decimal precoCusto, decimal precoVenda)
+        private static void ValidarPrecos(decimal PrecoCusto, decimal PrecoVenda)
         {
-            if (precoCusto < 0)
+            if (PrecoCusto < 0)
                 throw new DomainException("Preço de custo não pode ser negativo");
                 
-            if (precoVenda <= 0)
+            if (PrecoVenda <= 0)
                 throw new DomainException("Preço de venda deve ser maior que zero");
                 
-            if (precoVenda < precoCusto)
+            if (PrecoVenda < PrecoCusto)
                 throw new DomainException("Preço de venda não pode ser menor que o preço de custo");
         }
         
-        private static void ValidarDatas(DateTime dataFabricao, DateTime dataVencimento)
+        private static void ValidarDatas(DateTime DataFabricao, DateTime DataVencimento)
         {
-            if (dataVencimento <= dataFabricao)
+            if (DataVencimento <= DataFabricao)
                 throw new DomainException("Data de vencimento deve ser posterior à data de fabricação");
         }
         

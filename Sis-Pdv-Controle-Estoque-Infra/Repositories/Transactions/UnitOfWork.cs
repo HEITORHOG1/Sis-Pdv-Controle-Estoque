@@ -89,7 +89,7 @@ namespace Repositories.Transactions
             }
         }
 
-        public async Task RollbackTransactionAsync()
+        public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
         {
             if (_currentTransaction == null)
             {
@@ -98,7 +98,7 @@ namespace Repositories.Transactions
 
             try
             {
-                await _currentTransaction.RollbackAsync();
+                await _currentTransaction.RollbackAsync(cancellationToken);
                 _logger.LogWarning("Transaction rolled back");
             }
             catch (Exception ex)

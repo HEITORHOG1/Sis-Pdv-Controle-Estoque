@@ -1,10 +1,10 @@
-﻿using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
+using Sis_Pdv_Controle_Estoque_Form.Dto.Departamento;
 
 namespace Sis_Pdv_Controle_Estoque_Form.Dto.Colaborador
 {
     public class Data
     {
-        public string nomeColaborador { get; set; }
+        public string NomeColaborador { get; set; }
         public string departamentoId { get; set; }
         public string cpfColaborador { get; set; }
         public string cargoColaborador { get; set; }
@@ -20,6 +20,6 @@ public class Usuario
 {
     public string login { get; set; }
     public string senha { get; set; }
-    public bool statusAtivo { get; set; }
+    public bool StatusAtivo { get; set; }
     public string id { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿using Model.Base;
+using Model.Base;
 
 namespace Model
 {
@@ -10,22 +10,22 @@ namespace Model
 
         }
 
-        public Categoria(string nomeCategoria)
+        public Categoria(string NomeCategoria)
         {
-            NomeCategoria = nomeCategoria;
+            this.NomeCategoria = NomeCategoria;
         }
 
-        public Categoria(Guid id, string nomeCategoria)
+        public Categoria(Guid id, string NomeCategoria)
         {
             Id = id;
-            NomeCategoria = nomeCategoria;
+            this.NomeCategoria = NomeCategoria;
         }
         public string NomeCategoria { get; set; } = string.Empty;
 
-        public void AlterarCategoria(Guid id, string nomeCategoria)
+        public void AlterarCategoria(Guid id, string NomeCategoria)
         {
             Id = id;
-            NomeCategoria = nomeCategoria;
+            this.NomeCategoria = NomeCategoria;
         }
     }
 }

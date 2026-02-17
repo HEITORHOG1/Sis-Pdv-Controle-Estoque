@@ -1,33 +1,31 @@
-﻿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Produto.ListarProdutoPorNomeProduto
 {
     public class ListarProdutoPorCodBarrasHandler : Notifiable, IRequestHandler<ListarProdutoPorCodBarrasRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryProduto _repositoryProduto;
 
-        public ListarProdutoPorCodBarrasHandler(IMediator mediator, IRepositoryProduto repositoryProduto)
+        public ListarProdutoPorCodBarrasHandler(IRepositoryProduto repositoryProduto)
         {
-            _mediator = mediator;
             _repositoryProduto = repositoryProduto;
         }
 
-        public async Task<Commands.Response> Handle(ListarProdutoPorCodBarrasRequest request, CancellationToken cancellationToken)
+        public Task<Commands.Response> Handle(ListarProdutoPorCodBarrasRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
                 AddNotification("Erro", "Handle");
-                return new Commands.Response(this);
+                return Task.FromResult(new Commands.Response(this));
             }
 
-            var Collection = _repositoryProduto.Listar().Where(x => x.CodBarras == request.codBarras);
+            var Collection = _repositoryProduto.Listar().Where(x => x.CodBarras == request.CodBarras);
             if (!Collection.Any())
             {
-                AddNotification("ATENÇÃO", "PRODUTO NÃO ENCONTRADA");
-                return new Commands.Response(this);
+                AddNotification("ATEN��O", "PRODUTO N�O ENCONTRADA");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             //Criar meu objeto de resposta
@@ -35,7 +33,7 @@ namespace Commands.Produto.ListarProdutoPorNomeProduto
             //Cria objeto de resposta
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

@@ -1,45 +1,43 @@
-ï»¿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Departamento.AdicionarDepartamento
 {
     public class AdicionarDepartamentoHandler : Notifiable, IRequestHandler<AdicionarDepartamentoRequest, Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryDepartamento _repositoryDepartamento;
 
-        public AdicionarDepartamentoHandler(IMediator mediator, IRepositoryDepartamento repositoryDepartamento)
+        public AdicionarDepartamentoHandler(IRepositoryDepartamento repositoryDepartamento)
         {
-            _mediator = mediator;
             _repositoryDepartamento = repositoryDepartamento;
         }
 
-        public async Task<Response> Handle(AdicionarDepartamentoRequest request, CancellationToken cancellationToken)
+        public Task<Response> Handle(AdicionarDepartamentoRequest request, CancellationToken cancellationToken)
         {
             //Validar se o requeste veio preenchido
             if (request == null)
             {
-                AddNotification("NomeDepartamento", "Departamento nÃ£o pode estar em branco... Preencha uma Departamento");
-                return new Response(this);
+                AddNotification("NomeDepartamento", "Departamento não pode estar em branco... Preencha uma Departamento");
+                return Task.FromResult(new Response(this));
             }
             if (request.NomeDepartamento == "")
             {
-                AddNotification("NomeDepartamento", "Departamento nÃ£o pode estar em branco... Preencha uma Departamento");
-                return new Response(this);
+                AddNotification("NomeDepartamento", "Departamento não pode estar em branco... Preencha uma Departamento");
+                return Task.FromResult(new Response(this));
             }
 
-            //Verificar se o usuÃ¡rio jÃ¡ existe
+            //Verificar se o usuário já existe
             if (_repositoryDepartamento.Existe(x => x.NomeDepartamento == request.NomeDepartamento))
             {
                 AddNotification("NomeDepartamento", "Departamento ja Cadastrada");
-                return new Response(this);
+                return Task.FromResult(new Response(this));
             }
 
             Model.Departamento Departamento = new(request.NomeDepartamento);
 
             if (IsInvalid())
             {
-                return new Response(this);
+                return Task.FromResult(new Response(this));
             }
 
             Departamento = _repositoryDepartamento.Adicionar(Departamento);
@@ -50,7 +48,7 @@ namespace Commands.Departamento.AdicionarDepartamento
             //Criar meu objeto de resposta
             var response = new Response(this, Departamento);
 
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

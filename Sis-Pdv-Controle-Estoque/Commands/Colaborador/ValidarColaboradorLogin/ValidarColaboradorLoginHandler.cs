@@ -1,44 +1,27 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+using Interfaces;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Colaborador.ValidarColaboradorLogin
 {
     public class ValidarColaboradorLoginHandler : Notifiable, IRequestHandler<ValidarColaboradorLoginRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryColaborador _repositoryColaborador;
         private readonly IRepositoryDepartamento _repositoryDepartamento;
-        public ValidarColaboradorLoginHandler(IMediator mediator, IRepositoryColaborador repositoryColaborador,
+        public ValidarColaboradorLoginHandler(IRepositoryColaborador repositoryColaborador,
             IRepositoryDepartamento repositoryDepartamento)
         {
-            _mediator = mediator;
             _repositoryColaborador = repositoryColaborador;
             _repositoryDepartamento = repositoryDepartamento;
         }
 
         public async Task<Response> Handle(ValidarColaboradorLoginRequest request, CancellationToken cancellationToken)
         {
-            // Instancia o validador
-            var validator = new ValidarColaboradorLoginRequestValidator();
+            var result = await _repositoryColaborador.ObterPorAsync(
+                x => x.Usuario.Login == request.Login && x.Usuario.Senha == request.Senha,
+                cancellationToken,
+                x => x.Usuario);
 
-            // Valida a requisição
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-            // Se não passou na validação, adiciona as falhas como notificações
-            if (!validationResult.IsValid)
-            {
-                foreach (var error in validationResult.Errors)
-                {
-                    AddNotification(error.PropertyName, error.ErrorMessage);
-                }
-
-                return new Response(this);
-            }
-
-            var result = _repositoryColaborador.Listar()
-                                    .Include(x => x.Usuario)
-                                    .Where(x => x.Usuario.Login == request.Login && x.Usuario.Senha == request.Senha).FirstOrDefault();
             if (result == null)
             {
                 AddNotification("Atenção", "Login não encontrado");
@@ -54,8 +37,7 @@ namespace Commands.Colaborador.ValidarColaboradorLogin
             var response = new Commands.Response(this, result);
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }
-

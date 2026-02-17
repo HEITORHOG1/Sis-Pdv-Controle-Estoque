@@ -13,7 +13,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     [ApiController]
     [Route("api/v1/[controller]")]
     [Authorize]
-    public class PaymentController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ControllerBase
+    public class PaymentController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ApiControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IPaymentService _paymentService;

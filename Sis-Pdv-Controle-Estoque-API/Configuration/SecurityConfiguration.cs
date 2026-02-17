@@ -14,7 +14,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
         public static void ConfigureSecurity(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             // Configure JWT Authentication
-            ConfigureJwtAuthentication(services, configuration);
+            ConfigureJwtAuthentication(services, configuration, environment);
 
             // Configure Authorization Policies
             ConfigureAuthorizationPolicies(services);
@@ -25,7 +25,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
             services.ConfigureCors(environment, configuration);
 
             // Configure HTTPS Redirection
-            if (!environment.IsDevelopment())
+            // Only enable when NOT in Development, Docker, or running behind a reverse proxy (container)
+            var isContainerized = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"))
+                || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOCKER_CONTAINER"));
+            var skipHttps = environment.IsDevelopment() 
+                || environment.IsEnvironment("Docker") 
+                || environment.IsEnvironment("Staging")
+                || isContainerized;
+
+            if (!skipHttps)
             {
                 services.AddHttpsRedirection(options =>
                 {
@@ -45,7 +53,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
             services.AddDataProtection();
         }
 
-        private static void ConfigureJwtAuthentication(IServiceCollection services, IConfiguration configuration)
+        private static void ConfigureJwtAuthentication(IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             var jwtSecret = configuration["Authentication:JwtSecret"] 
                 ?? throw new InvalidOperationException("JWT Secret not configured");
@@ -59,7 +67,12 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
             })
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = true; // Always require HTTPS in production
+                // Only require HTTPS metadata when NOT running in a container or development
+                var requireHttps = !environment.IsDevelopment() 
+                    && !environment.IsEnvironment("Docker")
+                    && !environment.IsEnvironment("Staging")
+                    && string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"));
+                options.RequireHttpsMetadata = requireHttps;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -184,7 +197,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
             app.UseMiddleware<SecurityHeadersMiddleware>();
 
             // HTTPS redirection
-            if (!environment.IsDevelopment())
+            // Only enable when NOT in Development, Docker, Staging, or running in a container
+            var isContainerized = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"))
+                || !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOCKER_CONTAINER"));
+            if (!environment.IsDevelopment() && !environment.IsEnvironment("Docker") && !environment.IsEnvironment("Staging") && !isContainerized)
             {
                 app.UseHsts();
                 app.UseHttpsRedirection();

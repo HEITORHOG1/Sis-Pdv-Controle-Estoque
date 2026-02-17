@@ -14,7 +14,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
         {
             services.AddCors(options =>
             {
-                if (environment.IsDevelopment())
+                if (environment.IsDevelopment() || environment.IsEnvironment("Docker"))
                 {
                     // Development policy - more permissive for testing
                     options.AddPolicy(DevelopmentPolicy, policy =>
@@ -59,7 +59,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Configuration
 
         public static void UseCorsPolicy(this IApplicationBuilder app, IWebHostEnvironment environment)
         {
-            if (environment.IsDevelopment())
+            if (environment.IsDevelopment() || environment.IsEnvironment("Docker"))
             {
                 app.UseCors(DevelopmentPolicy);
             }

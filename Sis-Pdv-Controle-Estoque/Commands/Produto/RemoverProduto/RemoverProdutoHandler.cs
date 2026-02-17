@@ -1,35 +1,33 @@
-ï»¿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.Produto.RemoverProduto
 
 {
-    public class RemoverProdutoHandler : Notifiable, IRequestHandler<RemoverProdutoResquest, Commands.Response>
+    public class RemoverProdutoHandler : Notifiable, IRequestHandler<RemoverProdutoRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryProduto _repositoryProduto;
 
-        public RemoverProdutoHandler(IMediator mediator, IRepositoryProduto repositoryProduto)
+        public RemoverProdutoHandler(IRepositoryProduto repositoryProduto)
         {
-            _mediator = mediator;
             _repositoryProduto = repositoryProduto;
         }
 
-        public async Task<Commands.Response> Handle(RemoverProdutoResquest request, CancellationToken cancellationToken)
+        public Task<Commands.Response> Handle(RemoverProdutoRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
-                return new Commands.Response(this);
+                AddNotification("Request", "A requisição não pode ser nula.");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             Model.Produto Produto = _repositoryProduto.ObterPorId(request.Id);
 
             if (Produto == null)
             {
-                AddNotification("Request", "");
-                return new Commands.Response(this);
+                AddNotification("Request", "A requisição não pode ser nula.");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             _repositoryProduto.Remover(Produto);
@@ -40,7 +38,7 @@ namespace Commands.Produto.RemoverProduto
             var response = new Commands.Response(this, result);
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

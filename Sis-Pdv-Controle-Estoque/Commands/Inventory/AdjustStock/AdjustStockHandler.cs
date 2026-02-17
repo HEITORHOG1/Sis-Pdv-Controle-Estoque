@@ -30,7 +30,7 @@ namespace Commands.Inventory.AdjustStock
                 };
             }
 
-            var previousStock = product.QuatidadeEstoqueProduto;
+            var previousStock = product.QuantidadeEstoqueProduto;
             var quantityDifference = request.NewQuantity - previousStock;
 
             // Create stock movement record
@@ -47,7 +47,7 @@ namespace Commands.Inventory.AdjustStock
             );
 
             // Update product stock
-            product.QuatidadeEstoqueProduto = request.NewQuantity;
+            product.QuantidadeEstoqueProduto = request.NewQuantity;
 
             try
             {

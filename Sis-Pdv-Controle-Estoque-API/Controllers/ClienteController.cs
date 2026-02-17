@@ -1,4 +1,6 @@
-﻿using Commands.Cliente.ListarClientesPaginado;
+using Commands.Cliente.ListarClientesPaginado;
+using Commands.Cliente.AdicionarCliente;
+using Commands.Cliente.ListarClientePorCpfCnpj;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +48,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     [Produces("application/json")]
     [Tags("Customers")]
     [Authorize]
-    public class ClienteController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ControllerBase
+    public class ClienteController : Sis_Pdv_Controle_Estoque_API.Controllers.Base.ApiControllerBase
     {
         private readonly IMediator _mediator;
 
@@ -75,7 +77,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// 
         /// **Example Request:**
         /// ```
-        /// GET /api/v1/cliente/paginated?page=1&amp;pageSize=20&amp;search=João&amp;isActive=true
+        /// GET /api/v1/cliente/paginated?page=1&amp;pageSize=20&amp;search=Jo�o&amp;isActive=true
         /// ```
         /// 
         /// **Example Response:**
@@ -87,7 +89,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         ///     "items": [
         ///       {
         ///         "id": "123e4567-e89b-12d3-a456-426614174000",
-        ///         "nome": "João Silva",
+        ///         "nome": "Jo�o Silva",
         ///         "email": "joao@email.com",
         ///         "telefone": "(11) 99999-9999",
         ///         "cpf": "123.456.789-00",
@@ -121,10 +123,43 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ListarClientesPaginado([FromQuery, Required] ListarClientesPaginadoRequest request)
+        public async Task<IActionResult> ListarClientesPaginado([FromQuery, Required] ListarClientesPaginadoRequest request, CancellationToken cancellationToken)
         {
-            var response = await _mediator.Send(request);
-            return await ResponseAsync(response);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
+        }
+
+        /// <summary>
+        /// Adicionar um novo cliente
+        /// </summary>
+        /// <param name="request">Dados do cliente</param>
+        /// <param name="cancellationToken">Token de cancelamento</param>
+        /// <returns>Cliente criado</returns>
+        [HttpPost]
+        [Route("/api/Cliente/AdicionarCliente")]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AdicionarCliente([FromBody] AdicionarClienteRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
+        }
+
+        /// <summary>
+        /// Buscar cliente por CPF/CNPJ
+        /// </summary>
+        /// <param name="CpfCnpj">CPF ou CNPJ do cliente</param>
+        /// <param name="cancellationToken">Token de cancelamento</param>
+        /// <returns>Dados do cliente</returns>
+        [HttpGet]
+        [Route("/api/Cliente/ListarClientePorNomeCliente/{CpfCnpj}")]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ListarClientePorNomeCliente(string CpfCnpj, CancellationToken cancellationToken)
+        {
+            var request = new ListarClientePorCpfCnpjRequest(CpfCnpj);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
         }
     }
 }

@@ -511,6 +511,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Pagamento em Dinheiro";
             Load += frmDinheiro_Load;
+            Shown += frmDinheiro_Shown;
             KeyDown += frmDinheiro_KeyDown;
             pnHeader.ResumeLayout(false);
             pnHeader.PerformLayout();

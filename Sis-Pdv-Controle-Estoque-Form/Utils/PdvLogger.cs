@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace Sis_Pdv_Controle_Estoque_Form.Utils
 {
     /// <summary>
-    /// Sistema de logs específico para operações do PDV
+    /// Sistema de logs especï¿½fico para operaï¿½ï¿½es do PDV
     /// </summary>
     public static class PdvLogger
     {
@@ -35,20 +35,20 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         }
 
         /// <summary>
-        /// Log de início de venda
+        /// Log de inï¿½cio de venda
         /// </summary>
         public static void LogInicioVenda(Guid vendaId, string operador)
         {
-            var message = $"INÍCIO VENDA - ID: {vendaId}, Operador: {operador}";
+            var message = $"INï¿½CIO VENDA - ID: {vendaId}, Operador: {operador}";
             WriteLog("INFO", "INICIO_VENDA", message);
         }
 
         /// <summary>
-        /// Log de adição de item ao carrinho
+        /// Log de adiï¿½ï¿½o de item ao carrinho
         /// </summary>
         public static void LogAdicionarItem(string codigoBarras, string produto, int quantidade, decimal preco, decimal total)
         {
-            var message = $"ITEM ADICIONADO - Código: {codigoBarras}, Produto: {produto}, Qtd: {quantidade}, Preço: {preco:C2}, Total: {total:C2}";
+            var message = $"ITEM ADICIONADO - Cï¿½digo: {codigoBarras}, Produto: {produto}, Qtd: {quantidade}, Preï¿½o: {preco:C2}, Total: {total:C2}";
             WriteLog("INFO", "ADICIONAR_ITEM", message);
         }
 
@@ -57,18 +57,18 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         /// </summary>
         public static void LogCancelarItem(int codigo, string codigoBarras, string produto, string operador, string motivo = "")
         {
-            var message = $"ITEM CANCELADO - Código: {codigo}, Produto: {produto} ({codigoBarras}), Operador: {operador}";
+            var message = $"ITEM CANCELADO - Cï¿½digo: {codigo}, Produto: {produto} ({codigoBarras}), Operador: {operador}";
             if (!string.IsNullOrEmpty(motivo))
                 message += $", Motivo: {motivo}";
             WriteLog("WARNING", "CANCELAR_ITEM", message);
         }
 
         /// <summary>
-        /// Log de finalização de venda
+        /// Log de finalizaï¿½ï¿½o de venda
         /// </summary>
-        public static void LogFinalizarVenda(Guid vendaId, string formaPagamento, decimal valorTotal, decimal valorRecebido, decimal troco, int itens)
+        public static void LogFinalizarVenda(Guid vendaId, string FormaPagamento, decimal valorTotal, decimal valorRecebido, decimal troco, int itens)
         {
-            var message = $"VENDA FINALIZADA - ID: {vendaId}, Forma: {formaPagamento}, Total: {valorTotal:C2}, Recebido: {valorRecebido:C2}, Troco: {troco:C2}, Itens: {itens}";
+            var message = $"VENDA FINALIZADA - ID: {vendaId}, Forma: {FormaPagamento}, Total: {valorTotal:C2}, Recebido: {valorRecebido:C2}, Troco: {troco:C2}, Itens: {itens}";
             WriteLog("INFO", "FINALIZAR_VENDA", message);
         }
 
@@ -86,22 +86,22 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         /// <summary>
         /// Log de busca de produto
         /// </summary>
-        public static void LogBuscarProduto(string codigoBarras, bool encontrado, string nomeProduto = "")
+        public static void LogBuscarProduto(string codigoBarras, bool encontrado, string NomeProduto = "")
         {
-            var status = encontrado ? "ENCONTRADO" : "NÃO ENCONTRADO";
-            var message = $"BUSCA PRODUTO - Código: {codigoBarras}, Status: {status}";
-            if (!string.IsNullOrEmpty(nomeProduto))
-                message += $", Produto: {nomeProduto}";
+            var status = encontrado ? "ENCONTRADO" : "Nï¿½O ENCONTRADO";
+            var message = $"BUSCA PRODUTO - Cï¿½digo: {codigoBarras}, Status: {status}";
+            if (!string.IsNullOrEmpty(NomeProduto))
+                message += $", Produto: {NomeProduto}";
             
             WriteLog(encontrado ? "INFO" : "WARNING", "BUSCAR_PRODUTO", message);
         }
 
         /// <summary>
-        /// Log de alteração de quantidade
+        /// Log de alteraï¿½ï¿½o de quantidade
         /// </summary>
         public static void LogAlterarQuantidade(string codigoBarras, int quantidadeAnterior, int quantidadeNova, string operador)
         {
-            var message = $"QUANTIDADE ALTERADA - Código: {codigoBarras}, De: {quantidadeAnterior} Para: {quantidadeNova}, Operador: {operador}";
+            var message = $"QUANTIDADE ALTERADA - Cï¿½digo: {codigoBarras}, De: {quantidadeAnterior} Para: {quantidadeNova}, Operador: {operador}";
             WriteLog("INFO", "ALTERAR_QUANTIDADE", message);
         }
 
@@ -117,12 +117,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         }
 
         /// <summary>
-        /// Log de impressão de cupom
+        /// Log de impressï¿½o de cupom
         /// </summary>
         public static void LogImpressaoCupom(Guid vendaId, string tipo, bool sucesso, string erro = "")
         {
             var status = sucesso ? "SUCESSO" : "ERRO";
-            var message = $"IMPRESSÃO CUPOM - ID: {vendaId}, Tipo: {tipo}, Status: {status}";
+            var message = $"IMPRESSï¿½O CUPOM - ID: {vendaId}, Tipo: {tipo}, Status: {status}";
             if (!string.IsNullOrEmpty(erro))
                 message += $", Erro: {erro}";
             
@@ -141,20 +141,20 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         /// <summary>
         /// Log de alertas de vencimento
         /// </summary>
-        public static void LogAlertaVencimento(string codigoBarras, string produto, DateTime dataVencimento, int diasRestantes)
+        public static void LogAlertaVencimento(string codigoBarras, string produto, DateTime DataVencimento, int diasRestantes)
         {
             var status = diasRestantes <= 0 ? "VENCIDO" : $"VENCE EM {diasRestantes} DIAS";
-            var message = $"ALERTA VENCIMENTO - Produto: {produto} ({codigoBarras}), Vencimento: {dataVencimento:dd/MM/yyyy}, Status: {status}";
+            var message = $"ALERTA VENCIMENTO - Produto: {produto} ({codigoBarras}), Vencimento: {DataVencimento:dd/MM/yyyy}, Status: {status}";
             WriteLog("WARNING", "ALERTA_VENCIMENTO", message);
         }
 
         /// <summary>
-        /// Log de autenticação de operador
+        /// Log de autenticaï¿½ï¿½o de operador
         /// </summary>
         public static void LogAutenticacao(string operador, bool sucesso, string ip = "")
         {
             var status = sucesso ? "SUCESSO" : "FALHA";
-            var message = $"AUTENTICAÇÃO - Operador: {operador}, Status: {status}";
+            var message = $"AUTENTICAï¿½ï¿½O - Operador: {operador}, Status: {status}";
             if (!string.IsNullOrEmpty(ip))
                 message += $", IP: {ip}";
             
@@ -177,7 +177,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         /// </summary>
         public static void LogError(string operacao, string mensagem, Exception ex = null)
         {
-            var message = $"ERRO - Operação: {operacao}, Mensagem: {mensagem}";
+            var message = $"ERRO - Operaï¿½ï¿½o: {operacao}, Mensagem: {mensagem}";
             if (ex != null)
             {
                 message += $", Exception: {ex.Message}";
@@ -188,12 +188,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         }
 
         /// <summary>
-        /// Log de operações da API
+        /// Log de operaï¿½ï¿½es da API
         /// </summary>
         public static void LogApiCall(string endpoint, string metodo, TimeSpan duracao, bool sucesso, string detalhes = "")
         {
             var status = sucesso ? "SUCESSO" : "ERRO";
-            var message = $"API CALL - {metodo} {endpoint}, Duração: {duracao.TotalMilliseconds}ms, Status: {status}";
+            var message = $"API CALL - {metodo} {endpoint}, Duraï¿½ï¿½o: {duracao.TotalMilliseconds}ms, Status: {status}";
             if (!string.IsNullOrEmpty(detalhes))
                 message += $", Detalhes: {detalhes}";
             
@@ -207,12 +207,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         {
             var classificacao = duracao.TotalMilliseconds switch
             {
-                < 100 => "RÁPIDA",
+                < 100 => "Rï¿½PIDA",
                 < 1000 => "MODERADA",
                 _ => "LENTA"
             };
             
-            var message = $"PERFORMANCE - Operação: {operacao}, Duração: {duracao.TotalMilliseconds}ms, Classificação: {classificacao}";
+            var message = $"PERFORMANCE - Operaï¿½ï¿½o: {operacao}, Duraï¿½ï¿½o: {duracao.TotalMilliseconds}ms, Classificaï¿½ï¿½o: {classificacao}";
             if (quantidade > 0)
                 message += $", Quantidade: {quantidade}";
             
@@ -220,12 +220,12 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         }
 
         /// <summary>
-        /// Log de integração com SEFAZ
+        /// Log de integraï¿½ï¿½o com SEFAZ
         /// </summary>
         public static void LogSefaz(string operacao, string chaveNfe, bool sucesso, string protocolo = "", string erro = "")
         {
             var status = sucesso ? "SUCESSO" : "ERRO";
-            var message = $"SEFAZ - Operação: {operacao}, Chave NFe: {chaveNfe}, Status: {status}";
+            var message = $"SEFAZ - Operaï¿½ï¿½o: {operacao}, Chave NFe: {chaveNfe}, Status: {status}";
             if (!string.IsNullOrEmpty(protocolo))
                 message += $", Protocolo: {protocolo}";
             if (!string.IsNullOrEmpty(erro))
@@ -235,7 +235,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         }
 
         /// <summary>
-        /// Log de backup e sincronização
+        /// Log de backup e sincronizaï¿½ï¿½o
         /// </summary>
         public static void LogBackup(string tipo, bool sucesso, int registros = 0, string erro = "")
         {
@@ -264,7 +264,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
                 
                 File.AppendAllText(filePath, logEntry + Environment.NewLine);
                 
-                // Também escreve no Debug Output para desenvolvimento
+                // Tambï¿½m escreve no Debug Output para desenvolvimento
                 Debug.WriteLine($"PDV_LOG: {logEntry}");
             }
             catch (Exception ex)
@@ -274,7 +274,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         }
 
         /// <summary>
-        /// Limpa logs antigos (mantém apenas últimos 30 dias)
+        /// Limpa logs antigos (mantï¿½m apenas ï¿½ltimos 30 dias)
         /// </summary>
         public static void LimparLogsAntigos()
         {
@@ -300,7 +300,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
         }
 
         /// <summary>
-        /// Obtém estatísticas dos logs
+        /// Obtï¿½m estatï¿½sticas dos logs
         /// </summary>
         public static Dictionary<string, int> GetEstatisticasLogs(DateTime? dataInicio = null, DateTime? dataFim = null)
         {
@@ -334,7 +334,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Utils
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Erro ao obter estatísticas: {ex.Message}");
+                Debug.WriteLine($"Erro ao obter estatï¿½sticas: {ex.Message}");
             }
             
             return stats;

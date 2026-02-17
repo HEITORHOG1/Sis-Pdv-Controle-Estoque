@@ -1,21 +1,21 @@
-﻿namespace Sis_Pdv_Controle_Estoque_Form.Dto.Produto
+namespace Sis_Pdv_Controle_Estoque_Form.Dto.Produto
 {
     public class Data
     {
         public Guid Id { get; set; }
-        public string codBarras { get; set; }
-        public string nomeProduto { get; set; }
-        public string descricaoProduto { get; set; }
-        public decimal precoCusto { get; set; }
-        public decimal precoVenda { get; set; }
-        public decimal margemLucro { get; set; }
-        public DateTime dataFabricao { get; set; }
-        public DateTime dataVencimento { get; set; }
-        public int quatidadeEstoqueProduto { get; set; }
+        public string CodBarras { get; set; }
+        public string NomeProduto { get; set; }
+        public string DescricaoProduto { get; set; }
+        public decimal PrecoCusto { get; set; }
+        public decimal PrecoVenda { get; set; }
+        public decimal MargemLucro { get; set; }
+        public DateTime DataFabricao { get; set; }
+        public DateTime DataVencimento { get; set; }
+        public int QuantidadeEstoqueProduto { get; set; }
         //public virtual Fornecedor Fornecedor { get; set; }
         public string NomeFornecedor { get; set; }
         // public virtual Categoria Categoria { get; set; }
         public string NomeCategoria { get; set; }
-        public int statusAtivo { get; set; }
+        public int StatusAtivo { get; set; }
     }
 }

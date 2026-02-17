@@ -1,4 +1,4 @@
-﻿using Commands.ProdutoPedido.AdicionarProdutoPedido;
+using Commands.ProdutoPedido.AdicionarProdutoPedido;
 using Commands.ProdutoPedido.AlterarProdutoPedido;
 using Commands.ProdutoPedido.ListarProdutoPedido;
 using Commands.ProdutoPedido.ListarProdutoPedidoPorId;
@@ -10,7 +10,7 @@ using Repositories.Transactions;
 
 namespace Sis_Pdv_Controle_Estoque_API.Controllers
 {
-    public class ProdutoPedidoController : Base.ControllerBase
+    public class ProdutoPedidoController : Base.ApiControllerBase
     {
         private readonly IMediator _mediator;
         private readonly ILogger<ProdutoPedidoController> _logger;
@@ -28,14 +28,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna uma ação com o resultado da operação.</returns>
         [HttpPost]
         [Route("api/ProdutoPedido/AdicionarProdutoPedido")]
-        public async Task<IActionResult> AdicionarProdutoPedido([FromBody] AdicionarProdutoPedidoRequest request)
+        public async Task<IActionResult> AdicionarProdutoPedido([FromBody] AdicionarProdutoPedidoRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("AdicionarProdutoPedido");
-                var response = await _mediator.Send(request, CancellationToken.None);
+                var response = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("AdicionarProdutoPedido - Response: {@response}", response);
-                return await ResponseAsync(response);
+                return await ResponseAsync(response, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -49,14 +49,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna uma ação com uma lista de todos os ProdutoPedidos.</returns>
         [HttpGet]
         [Route("api/ProdutoPedido/ListarProdutoPedido")]
-        public async Task<IActionResult> ListarProdutoPedido()
+        public async Task<IActionResult> ListarProdutoPedido(CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarProdutoPedido");
                 var request = new ListarProdutoPedidoRequest();
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarProdutoPedido - Response: {@response}", result);
                 return Ok(result);
             }
@@ -73,14 +73,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna uma ação com os detalhes do ProdutoPedido solicitado.</returns>
         [HttpGet]
         [Route("api/ProdutoPedido/ListarProdutoPedidoPorId/{id:Guid}")]
-        public async Task<IActionResult> ListarProdutoPedidoPorId(Guid id)
+        public async Task<IActionResult> ListarProdutoPedidoPorId(Guid id, CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarProdutoPedidoPorId");
                 var request = new ListarProdutoPedidoPorIdRequest(id);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarProdutoPedidoPorId - Response: {@response}", result);
                 return Ok(result);
             }
@@ -96,15 +96,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <param name="CpfCnpj">O código de barras do ProdutoPedido a ser recuperado.</param>
         /// <returns>Retorna uma ação com os detalhes do ProdutoPedido solicitado.</returns>
         [HttpGet]
-        [Route("api/ProdutoPedido/ListarProdutoPedidoPorCodigoDeBarras/{codBarras}")]
-        public async Task<IActionResult> ListarProdutoPedidoPorCodigoDeBarras(string CpfCnpj)
+        [Route("api/ProdutoPedido/ListarProdutoPedidoPorCodigoDeBarras/{CodBarras}")]
+        public async Task<IActionResult> ListarProdutoPedidoPorCodigoDeBarras(string CpfCnpj, CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarProdutoPedidoPorCodigoDeBarras");
                 var request = new ListarProdutoPedidoPorCodigoDeBarrasRequest(CpfCnpj);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarProdutoPedidoPorCodigoDeBarras - Response: {@response}", result);
                 return Ok(result);
             }
@@ -121,14 +121,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna uma ação com o resultado da operação.</returns>
         [HttpPut]
         [Route("api/ProdutoPedido/AlterarProdutoPedido")]
-        public async Task<IActionResult> AlterarProdutoPedido([FromBody] AlterarProdutoPedidoRequest request)
+        public async Task<IActionResult> AlterarProdutoPedido([FromBody] AlterarProdutoPedidoRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("AlterarProdutoPedido");
-                var response = await _mediator.Send(request, CancellationToken.None);
+                var response = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("AlterarProdutoPedido - Response: {@response}", response);
-                return await ResponseAsync(response);
+                return await ResponseAsync(response, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -143,15 +143,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna uma ação com o resultado da operação.</returns>
         [HttpDelete]
         [Route("api/ProdutoPedido/RemoverProdutoPedido/{id:Guid}")]
-        public async Task<IActionResult> RemoverProdutoPedido(Guid id)
+        public async Task<IActionResult> RemoverProdutoPedido(Guid id, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("RemoverProdutoPedido");
-                var request = new RemoverProdutoPedidoResquest(id);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var request = new RemoverProdutoPedidoRequest(id);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("RemoverProdutoPedido - Response: {@response}", result);
-                return await ResponseAsync(result);
+                return await ResponseAsync(result, cancellationToken);
 
             }
             catch (Exception ex)
@@ -167,14 +167,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <returns>Retorna uma ação com os produtos do pedido solicitado.</returns>
         [HttpGet]
         [Route("api/ProdutoPedido/ListarProdutosPorPedidoId/{id:Guid}")]
-        public async Task<IActionResult> ListarProdutosPorPedidoId(Guid id)
+        public async Task<IActionResult> ListarProdutosPorPedidoId(Guid id, CancellationToken cancellationToken)
         {
 
             try
             {
                 _logger.LogInformation("ListarProdutosPorPedidoId");
                 var request = new ListarProdutoPedidoPorIdRequest(id);
-                var result = await _mediator.Send(request, CancellationToken.None);
+                var result = await _mediator.Send(request, cancellationToken);
                 _logger.LogInformation("ListarProdutosPorPedidoId - Response: {@response}", result);
                 return Ok(result);
             }

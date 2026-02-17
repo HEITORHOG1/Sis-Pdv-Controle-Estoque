@@ -5,56 +5,39 @@ namespace Commands.Pedidos.AlterarPedido
 {
     public class AlterarPedidoHandler : Notifiable, IRequestHandler<AlterarPedidoRequest, Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryPedido _repositoryPedido;
 
-        public AlterarPedidoHandler(IMediator mediator, IRepositoryPedido repositoryPedido)
+        public AlterarPedidoHandler(IRepositoryPedido repositoryPedido)
         {
-            _mediator = mediator;
             _repositoryPedido = repositoryPedido;
         }
 
         public async Task<Response> Handle(AlterarPedidoRequest request, CancellationToken cancellationToken)
         {
-            // Instancia o validador
-            var validator = new AlterarPedidoRequestValidator();
-
-            // Valida a requisição
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-            // Se não passou na validação, adiciona as falhas como notificações
-            if (!validationResult.IsValid)
-            {
-                foreach (var error in validationResult.Errors)
-                {
-                    AddNotification(error.PropertyName, error.ErrorMessage);
-                }
-
-                return new Response(this);
-            }
 
             Model.Pedido Pedido = new Model.Pedido();
 
             Pedido.AlterarPedido(request.ColaboradorId,
                                         request.ClienteId,
                                         request.Status,
-                                        request.dataDoPedido,
-                                        request.formaPagamento,
-                                        request.totalPedido);
+                                        request.DataDoPedido,
+                                        request.FormaPagamento,
+                                        request.TotalPedido);
 
             var retornoExist = _repositoryPedido.Listar().Where(x => x.Id == request.Id);
             if (!retornoExist.Any())
             {
-                AddNotification("Pedido", "");
+                AddNotification("Pedido", "Pedido nï¿½o encontrado com o ID informado.");
                 return new Response(this);
             }
 
-            Pedido = _repositoryPedido.Editar(Pedido);
+            Pedido = await _repositoryPedido.EditarAsync(Pedido, cancellationToken);
 
             //Criar meu objeto de resposta
             var response = new Response(this, Pedido);
 
-            return await Task.FromResult(response);
+            return response;
         }
     }
 }
+

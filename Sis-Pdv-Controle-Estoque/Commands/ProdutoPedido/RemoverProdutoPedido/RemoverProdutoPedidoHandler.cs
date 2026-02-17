@@ -1,35 +1,33 @@
-ï»¿using MediatR;
+using MediatR;
 using prmToolkit.NotificationPattern;
 
 namespace Commands.ProdutoPedido.RemoverProdutoPedido
 
 {
-    public class RemoverProdutoPedidoHandler : Notifiable, IRequestHandler<RemoverProdutoPedidoResquest, Commands.Response>
+    public class RemoverProdutoPedidoHandler : Notifiable, IRequestHandler<RemoverProdutoPedidoRequest, Commands.Response>
     {
-        private readonly IMediator _mediator;
         private readonly IRepositoryProdutoPedido _repositoryProdutoPedido;
 
-        public RemoverProdutoPedidoHandler(IMediator mediator, IRepositoryProdutoPedido repositoryProdutoPedido)
+        public RemoverProdutoPedidoHandler(IRepositoryProdutoPedido repositoryProdutoPedido)
         {
-            _mediator = mediator;
             _repositoryProdutoPedido = repositoryProdutoPedido;
         }
 
-        public async Task<Commands.Response> Handle(RemoverProdutoPedidoResquest request, CancellationToken cancellationToken)
+        public Task<Commands.Response> Handle(RemoverProdutoPedidoRequest request, CancellationToken cancellationToken)
         {
             //Valida se o objeto request esta nulo
             if (request == null)
             {
-                AddNotification("Request", "");
-                return new Commands.Response(this);
+                AddNotification("Request", "A requisição não pode ser nula.");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             Model.ProdutoPedido ProdutoPedido = _repositoryProdutoPedido.ObterPorId(request.Id);
 
             if (ProdutoPedido == null)
             {
-                AddNotification("Request", "");
-                return new Commands.Response(this);
+                AddNotification("Request", "A requisição não pode ser nula.");
+                return Task.FromResult(new Commands.Response(this));
             }
 
             _repositoryProdutoPedido.Remover(ProdutoPedido);
@@ -40,7 +38,7 @@ namespace Commands.ProdutoPedido.RemoverProdutoPedido
             var response = new Commands.Response(this, result);
 
             ////Retorna o resultado
-            return await Task.FromResult(response);
+            return Task.FromResult(response);
         }
     }
 }

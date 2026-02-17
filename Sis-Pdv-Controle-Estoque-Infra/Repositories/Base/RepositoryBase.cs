@@ -21,19 +21,24 @@ namespace Repositories.Base
             return Listar(includeProperties).Where(where);
         }
 
+        public async Task<IEnumerable<TEntidade>> ListarPorAsync(Expression<Func<TEntidade, bool>> where, CancellationToken cancellationToken = default, params Expression<Func<TEntidade, object>>[] includeProperties)
+        {
+            return await Listar(includeProperties).Where(where).ToListAsync(cancellationToken);
+        }
+
         public IQueryable<TEntidade> ListarEOrdenadosPor<TKey>(Expression<Func<TEntidade, bool>> where, Expression<Func<TEntidade, TKey>> ordem, bool ascendente = true, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
             return ascendente ? ListarPor(where, includeProperties).OrderBy(ordem) : ListarPor(where, includeProperties).OrderByDescending(ordem);
         }
 
-        public TEntidade ObterPor(Func<TEntidade, bool> where, params Expression<Func<TEntidade, object>>[] includeProperties)
+        public TEntidade ObterPor(Expression<Func<TEntidade, bool>> where, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
             return Listar(includeProperties).FirstOrDefault(where);
         }
 
-        public async Task<TEntidade?> ObterPorAsync(Expression<Func<TEntidade, bool>> where, params Expression<Func<TEntidade, object>>[] includeProperties)
+        public async Task<TEntidade?> ObterPorAsync(Expression<Func<TEntidade, bool>> where, CancellationToken cancellationToken = default, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
-            return await Listar(includeProperties).FirstOrDefaultAsync(where);
+            return await Listar(includeProperties).FirstOrDefaultAsync(where, cancellationToken);
         }
 
         public TEntidade ObterPorId(TId id, params Expression<Func<TEntidade, object>>[] includeProperties)
@@ -46,14 +51,14 @@ namespace Repositories.Base
             return _context.Set<TEntidade>().Find(id);
         }
 
-        public async Task<TEntidade?> ObterPorIdAsync(TId id, params Expression<Func<TEntidade, object>>[] includeProperties)
+        public async Task<TEntidade?> ObterPorIdAsync(TId id, CancellationToken cancellationToken = default, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
             if (includeProperties.Any())
             {
-                return await Listar(includeProperties).FirstOrDefaultAsync(x => x.Id.ToString() == id.ToString());
+                return await Listar(includeProperties).FirstOrDefaultAsync(x => x.Id.ToString() == id.ToString(), cancellationToken);
             }
 
-            return await _context.Set<TEntidade>().FindAsync(id);
+            return await _context.Set<TEntidade>().FindAsync(new object[] { id }, cancellationToken);
         }
 
         public virtual IQueryable<TEntidade> Listar(params Expression<Func<TEntidade, object>>[] includeProperties)
@@ -98,9 +103,9 @@ namespace Repositories.Base
             return query;
         }
 
-        public async Task<IEnumerable<TEntidade>> ListarAsync(params Expression<Func<TEntidade, object>>[] includeProperties)
+        public async Task<IEnumerable<TEntidade>> ListarAsync(CancellationToken cancellationToken = default, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
-            return await Listar(includeProperties).ToListAsync();
+            return await Listar(includeProperties).ToListAsync(cancellationToken);
         }
 
         public IQueryable<TEntidade> ListarOrdenadosPor<TKey>(Expression<Func<TEntidade, TKey>> ordem, bool ascendente = true, params Expression<Func<TEntidade, object>>[] includeProperties)
@@ -108,9 +113,9 @@ namespace Repositories.Base
             return ascendente ? Listar(includeProperties).OrderBy(ordem) : Listar(includeProperties).OrderByDescending(ordem);
         }
 
-        public async Task<IEnumerable<TEntidade>> ListarOrdenadosPorAsync<TKey>(Expression<Func<TEntidade, TKey>> ordem, bool ascendente = true, params Expression<Func<TEntidade, object>>[] includeProperties)
+        public async Task<IEnumerable<TEntidade>> ListarOrdenadosPorAsync<TKey>(Expression<Func<TEntidade, TKey>> ordem, bool ascendente = true, CancellationToken cancellationToken = default, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
-            return await (ascendente ? Listar(includeProperties).OrderBy(ordem) : Listar(includeProperties).OrderByDescending(ordem)).ToListAsync();
+            return await (ascendente ? Listar(includeProperties).OrderBy(ordem) : Listar(includeProperties).OrderByDescending(ordem)).ToListAsync(cancellationToken);
         }
 
         public TEntidade Adicionar(TEntidade entidade)
@@ -119,9 +124,9 @@ namespace Repositories.Base
             return entity.Entity;
         }
 
-        public async Task<TEntidade> AdicionarAsync(TEntidade entidade)
+        public async Task<TEntidade> AdicionarAsync(TEntidade entidade, CancellationToken cancellationToken = default)
         {
-            var entity = await _context.AddAsync(entidade);
+            var entity = await _context.AddAsync(entidade, cancellationToken);
             return entity.Entity;
         }
 
@@ -131,7 +136,7 @@ namespace Repositories.Base
             return entidade;
         }
 
-        public async Task<TEntidade> EditarAsync(TEntidade entidade)
+        public async Task<TEntidade> EditarAsync(TEntidade entidade, CancellationToken cancellationToken = default)
         {
             _context.Entry(entidade).State = EntityState.Modified;
             return await Task.FromResult(entidade);
@@ -156,7 +161,7 @@ namespace Repositories.Base
             }
         }
 
-        public async Task RemoverAsync(TEntidade entidade)
+        public async Task RemoverAsync(TEntidade entidade, CancellationToken cancellationToken = default)
         {
             // Soft delete assíncrono
             entidade.IsDeleted = true;
@@ -165,7 +170,7 @@ namespace Repositories.Base
             await Task.CompletedTask;
         }
 
-        public async Task RemoverAsync(IEnumerable<TEntidade> entidades)
+        public async Task RemoverAsync(IEnumerable<TEntidade> entidades, CancellationToken cancellationToken = default)
         {
             // Soft delete assíncrono para múltiplas entidades
             foreach (var entidade in entidades)
@@ -177,9 +182,9 @@ namespace Repositories.Base
             await Task.CompletedTask;
         }
 
-        public async Task RemoverAsync(TId id)
+        public async Task RemoverAsync(TId id, CancellationToken cancellationToken = default)
         {
-            var entity = await ObterPorIdAsync(id);
+            var entity = await ObterPorIdAsync(id, cancellationToken);
             if (entity != null)
             {
                 entity.IsDeleted = true;
@@ -220,9 +225,9 @@ namespace Repositories.Base
         /// <summary>
         /// Restaura uma entidade que foi deletada pelo ID (soft delete)
         /// </summary>
-        public async Task<bool> RestaurarAsync(TId id)
+        public async Task<bool> RestaurarAsync(TId id, CancellationToken cancellationToken = default)
         {
-            var entity = await ListarTodos().FirstOrDefaultAsync(x => x.Id.ToString() == id.ToString() && x.IsDeleted);
+            var entity = await ListarTodos().FirstOrDefaultAsync(x => x.Id.ToString() == id.ToString() && x.IsDeleted, cancellationToken);
             if (entity != null)
             {
                 Restaurar(entity);
@@ -250,31 +255,31 @@ namespace Repositories.Base
             _context.AddRange(entidades);
         }
 
-        public async Task AdicionarListaAsync(IEnumerable<TEntidade> entidades)
+        public async Task AdicionarListaAsync(IEnumerable<TEntidade> entidades, CancellationToken cancellationToken = default)
         {
-            await _context.AddRangeAsync(entidades);
+            await _context.AddRangeAsync(entidades, cancellationToken);
         }
 
-        public bool Existe(Func<TEntidade, bool> where)
+        public bool Existe(Expression<Func<TEntidade, bool>> where)
         {
             return _context.Set<TEntidade>().Any(where);
         }
 
-        public async Task<bool> ExisteAsync(Expression<Func<TEntidade, bool>> where)
+        public async Task<bool> ExisteAsync(Expression<Func<TEntidade, bool>> where, CancellationToken cancellationToken = default)
         {
-            return await _context.Set<TEntidade>().AnyAsync(where);
+            return await _context.Set<TEntidade>().AnyAsync(where, cancellationToken);
         }
 
-        public async Task<int> ContarAsync(Expression<Func<TEntidade, bool>>? where = null)
+        public async Task<int> ContarAsync(Expression<Func<TEntidade, bool>>? where = null, CancellationToken cancellationToken = default)
         {
             if (where != null)
             {
-                return await _context.Set<TEntidade>().CountAsync(where);
+                return await _context.Set<TEntidade>().CountAsync(where, cancellationToken);
             }
-            return await _context.Set<TEntidade>().CountAsync();
+            return await _context.Set<TEntidade>().CountAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<TEntidade>> ListarPaginadoAsync(int pageNumber, int pageSize, Expression<Func<TEntidade, bool>>? where = null, params Expression<Func<TEntidade, object>>[] includeProperties)
+        public async Task<IEnumerable<TEntidade>> ListarPaginadoAsync(int pageNumber, int pageSize, Expression<Func<TEntidade, bool>>? where = null, CancellationToken cancellationToken = default, params Expression<Func<TEntidade, object>>[] includeProperties)
         {
             var query = Listar(includeProperties);
             
@@ -286,7 +291,7 @@ namespace Repositories.Base
             return await query
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
         // Enhanced methods for inventory management

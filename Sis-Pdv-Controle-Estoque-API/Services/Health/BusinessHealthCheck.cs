@@ -62,8 +62,8 @@ public class BusinessHealthCheck : IHealthCheck
         {
             var produtos = await _produtoRepository.GetAllAsync(cancellationToken);
             var totalProducts = produtos.Count();
-            var lowStockProducts = produtos.Count(p => p.QuatidadeEstoqueProduto <= p.ReorderPoint);
-            var outOfStockProducts = produtos.Count(p => p.QuatidadeEstoqueProduto <= 0);
+            var lowStockProducts = produtos.Count(p => p.QuantidadeEstoqueProduto <= p.ReorderPoint);
+            var outOfStockProducts = produtos.Count(p => p.QuantidadeEstoqueProduto <= 0);
 
             data["TotalProducts"] = totalProducts;
             data["LowStockProducts"] = lowStockProducts;
