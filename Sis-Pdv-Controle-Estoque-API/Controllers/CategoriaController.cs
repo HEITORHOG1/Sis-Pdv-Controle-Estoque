@@ -1,4 +1,4 @@
-using Commands.Categoria.AdicionarCategoria;
+ï»¿using Commands.Categoria.AdicionarCategoria;
 using Commands.Categoria.AlterarCategoria;
 using Commands.Categoria.ListarCategoria;
 using Commands.Categoria.ListarCategoriaPorId;
@@ -48,8 +48,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// **Request Body:**
         /// ```json
         /// {
-        ///   "nome": "Eletrônicos",
-        ///   "descricao": "Produtos eletrônicos e tecnologia",
+        ///   "nome": "EletrÃ´nicos",
+        ///   "descricao": "Produtos eletrÃ´nicos e tecnologia",
         ///   "parentCategoryId": null,
         ///   "isActive": true,
         ///   "sortOrder": 1
@@ -63,8 +63,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         ///   "message": "Categoria criada com sucesso",
         ///   "data": {
         ///     "id": "123e4567-e89b-12d3-a456-426614174000",
-        ///     "nome": "Eletrônicos",
-        ///     "descricao": "Produtos eletrônicos e tecnologia",
+        ///     "nome": "EletrÃ´nicos",
+        ///     "descricao": "Produtos eletrÃ´nicos e tecnologia",
         ///     "parentCategoryId": null,
         ///     "isActive": true,
         ///     "sortOrder": 1,
@@ -105,10 +105,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
 
                 return await ResponseAsync(response, cancellationToken);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("AdicionarCategoria - Erro - {@ex}", ex);
-                return BadRequest(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
 
@@ -131,7 +131,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Recupera uma categoria específica por seu identificador.
+        /// Recupera uma categoria especÃ­fica por seu identificador.
         /// </summary>
         /// <param name="id">O identificador da categoria que se deseja recuperar.</param>
         /// <returns>Retorna a categoria que corresponde ao identificador fornecido.</returns>
@@ -149,15 +149,15 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 _logger.LogInformation("ListarCategoriaPorId - Response: {@response}", result);
                 return Ok(result);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("ListarCategoriaPorId - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
 
         /// <summary>
-        /// Recupera uma categoria específica por seu nome.
+        /// Recupera uma categoria especÃ­fica por seu nome.
         /// </summary>
         /// <param name="NomeCategoria">O nome da categoria que se deseja recuperar.</param>
         /// <returns>Retorna a categoria que corresponde ao nome fornecido.</returns>
@@ -175,18 +175,18 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 _logger.LogInformation("ListarCategoriaPorNomeCategoria - Response: {@response}", result);
                 return Ok(result);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("ListarCategoriaPorNomeCategoria - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
 
         /// <summary>
-        /// Atualiza as informações de uma categoria específica.
+        /// Atualiza as informaÃ§Ãµes de uma categoria especÃ­fica.
         /// </summary>
-        /// <param name="request">O objeto contendo as novas informações da categoria.</param>
-        /// <returns>Retorna a resposta da solicitação de atualização.</returns>
+        /// <param name="request">O objeto contendo as novas informaÃ§Ãµes da categoria.</param>
+        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de atualizaÃ§Ã£o.</returns>
 
         [HttpPut]
         [Route("/api/Categoria/AlterarCategoria")]
@@ -200,18 +200,18 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 
                 return await ResponseAsync(response, cancellationToken);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("AlterarCategoria - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
 
         /// <summary>
-        /// Remove uma categoria específica do sistema.
+        /// Remove uma categoria especÃ­fica do sistema.
         /// </summary>
         /// <param name="id">O identificador da categoria que se deseja remover.</param>
-        /// <returns>Retorna a resposta da solicitação de remoção.</returns>
+        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de remoÃ§Ã£o.</returns>
         [HttpDelete]
         [Route("/api/Categoria/RemoverCategoria/{id:Guid}")]
         public async Task<IActionResult> RemoverCategoria(Guid id, CancellationToken cancellationToken)
@@ -226,10 +226,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 return await ResponseAsync(result, cancellationToken);
 
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("RemoverCategoria - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         #endregion

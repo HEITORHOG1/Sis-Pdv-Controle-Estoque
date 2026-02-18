@@ -1,4 +1,4 @@
-using Commands.ProdutoPedido.AdicionarProdutoPedido;
+﻿using Commands.ProdutoPedido.AdicionarProdutoPedido;
 using Commands.ProdutoPedido.AlterarProdutoPedido;
 using Commands.ProdutoPedido.ListarProdutoPedido;
 using Commands.ProdutoPedido.ListarProdutoPedidoPorId;
@@ -24,8 +24,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <summary>
         /// Adiciona um novo ProdutoPedido.
         /// </summary>
-        /// <param name="request">O objeto de solicitação que contém os detalhes do novo ProdutoPedido.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <param name="request">O objeto de solicitaÃ§Ã£o que contÃ©m os detalhes do novo ProdutoPedido.</param>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpPost]
         [Route("api/ProdutoPedido/AdicionarProdutoPedido")]
         public async Task<IActionResult> AdicionarProdutoPedido([FromBody] AdicionarProdutoPedidoRequest request, CancellationToken cancellationToken)
@@ -40,13 +40,13 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("AdicionarProdutoPedido - Erro - {@ex}", ex);
-                return BadRequest(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Lista todos os ProdutoPedidos.
         /// </summary>
-        /// <returns>Retorna uma ação com uma lista de todos os ProdutoPedidos.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com uma lista de todos os ProdutoPedidos.</returns>
         [HttpGet]
         [Route("api/ProdutoPedido/ListarProdutoPedido")]
         public async Task<IActionResult> ListarProdutoPedido(CancellationToken cancellationToken)
@@ -63,14 +63,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("ListarProdutoPedido - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
-        /// Lista um ProdutoPedido específico com base no ID fornecido.
+        /// Lista um ProdutoPedido especÃ­fico com base no ID fornecido.
         /// </summary>
         /// <param name="id">O ID do ProdutoPedido a ser recuperado.</param>
-        /// <returns>Retorna uma ação com os detalhes do ProdutoPedido solicitado.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com os detalhes do ProdutoPedido solicitado.</returns>
         [HttpGet]
         [Route("api/ProdutoPedido/ListarProdutoPedidoPorId/{id:Guid}")]
         public async Task<IActionResult> ListarProdutoPedidoPorId(Guid id, CancellationToken cancellationToken)
@@ -87,14 +87,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("ListarProdutoPedidoPorId - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
-        /// Lista um ProdutoPedido específico com base no código de barras fornecido.
+        /// Lista um ProdutoPedido especÃ­fico com base no cÃ³digo de barras fornecido.
         /// </summary>
-        /// <param name="CpfCnpj">O código de barras do ProdutoPedido a ser recuperado.</param>
-        /// <returns>Retorna uma ação com os detalhes do ProdutoPedido solicitado.</returns>
+        /// <param name="CpfCnpj">O cÃ³digo de barras do ProdutoPedido a ser recuperado.</param>
+        /// <returns>Retorna uma aÃ§Ã£o com os detalhes do ProdutoPedido solicitado.</returns>
         [HttpGet]
         [Route("api/ProdutoPedido/ListarProdutoPedidoPorCodigoDeBarras/{CodBarras}")]
         public async Task<IActionResult> ListarProdutoPedidoPorCodigoDeBarras(string CpfCnpj, CancellationToken cancellationToken)
@@ -111,14 +111,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("ListarProdutoPedidoPorCodigoDeBarras - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Altera os detalhes de um ProdutoPedido existente.
         /// </summary>
-        /// <param name="request">O objeto de solicitação que contém os detalhes atualizados do ProdutoPedido.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <param name="request">O objeto de solicitaÃ§Ã£o que contÃ©m os detalhes atualizados do ProdutoPedido.</param>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpPut]
         [Route("api/ProdutoPedido/AlterarProdutoPedido")]
         public async Task<IActionResult> AlterarProdutoPedido([FromBody] AlterarProdutoPedidoRequest request, CancellationToken cancellationToken)
@@ -133,14 +133,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("AlterarProdutoPedido - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Remove um ProdutoPedido existente com base no ID fornecido.
         /// </summary>
         /// <param name="id">O ID do ProdutoPedido a ser removido.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpDelete]
         [Route("api/ProdutoPedido/RemoverProdutoPedido/{id:Guid}")]
         public async Task<IActionResult> RemoverProdutoPedido(Guid id, CancellationToken cancellationToken)
@@ -157,14 +157,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("RemoverProdutoPedido - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
-        /// Lista os produtos associados a um pedido específico, com base no ID do pedido fornecido.
+        /// Lista os produtos associados a um pedido especÃ­fico, com base no ID do pedido fornecido.
         /// </summary>
         /// <param name="id">O ID do pedido para recuperar os produtos associados.</param>
-        /// <returns>Retorna uma ação com os produtos do pedido solicitado.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com os produtos do pedido solicitado.</returns>
         [HttpGet]
         [Route("api/ProdutoPedido/ListarProdutosPorPedidoId/{id:Guid}")]
         public async Task<IActionResult> ListarProdutosPorPedidoId(Guid id, CancellationToken cancellationToken)
@@ -181,7 +181,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("ListarProdutosPorPedidoId - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         #endregion

@@ -55,7 +55,7 @@ namespace Controllers
     [Produces("application/json")]
     [Tags("Inventory Management")]
     [Authorize]
-    public class InventoryController : ControllerBase
+    public class InventoryController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly IMediator _mediator;
         private readonly IApplicationLogger _appLogger;

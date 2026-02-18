@@ -7,7 +7,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class ReportsController : ControllerBase
+    public class ReportsController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly IReportService _reportService;
         private readonly ILogger<ReportsController> _logger;
@@ -21,7 +21,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         private IActionResult HandleException(Exception ex)
         {
             _logger.LogError(ex, "Error occurred in reports controller");
-            return StatusCode(500, new { message = "An error occurred while generating the report", error = ex.Message });
+            return StatusCode(500, new { message = "An error occurred while generating the report" });
         }
 
         /// <summary>

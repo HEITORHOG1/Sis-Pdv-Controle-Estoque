@@ -1,4 +1,4 @@
-using Commands.Fornecedor.AdicionarFornecedor;
+ï»¿using Commands.Fornecedor.AdicionarFornecedor;
 using Commands.Fornecedor.AlterarFornecedor;
 using Commands.Fornecedor.ListarFornecedor;
 using Commands.Fornecedor.ListarFornecedorPorId;
@@ -24,8 +24,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <summary>
         /// Adiciona um novo fornecedor.
         /// </summary>
-        /// <param name="request">O objeto de solicitação que contém os detalhes do novo fornecedor.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <param name="request">O objeto de solicitaÃ§Ã£o que contÃ©m os detalhes do novo fornecedor.</param>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpPost]
         [Route("api/Fornecedor/AdicionarFornecedor")]
         public async Task<IActionResult> AdicionarFornecedor([FromBody] AdicionarFornecedorRequest request, CancellationToken cancellationToken)
@@ -40,13 +40,13 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("AdicionarFornecedor - Erro - {@ex}", ex);
-                return BadRequest(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Lista todos os fornecedores.
         /// </summary>
-        /// <returns>Retorna uma ação com uma lista de todos os fornecedores.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com uma lista de todos os fornecedores.</returns>
         [HttpGet]
         [Route("api/Fornecedor/ListarFornecedor")]
         public async Task<IActionResult> ListarFornecedor(CancellationToken cancellationToken)
@@ -60,17 +60,17 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 _logger.LogInformation("ListarFornecedor - Response: {@response}", result);
                 return Ok(result);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("ListarFornecedor - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
-        /// Lista um fornecedor específico com base no ID fornecido.
+        /// Lista um fornecedor especÃ­fico com base no ID fornecido.
         /// </summary>
         /// <param name="id">O ID do fornecedor a ser recuperado.</param>
-        /// <returns>Retorna uma ação com os detalhes do fornecedor solicitado.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com os detalhes do fornecedor solicitado.</returns>
         [HttpGet]
         [Route("api/Fornecedor/ListarFornecedorPorId/{id:Guid}")]
         public async Task<IActionResult> ListarFornecedorPorId(Guid id, CancellationToken cancellationToken)
@@ -87,14 +87,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("ListarFornecedorPorId - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
-        /// Lista um fornecedor específico com base no CNPJ fornecido.
+        /// Lista um fornecedor especÃ­fico com base no CNPJ fornecido.
         /// </summary>
         /// <param name="Cnpj">O CNPJ do fornecedor a ser recuperado.</param>
-        /// <returns>Retorna uma ação com os detalhes do fornecedor solicitado.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com os detalhes do fornecedor solicitado.</returns>
         [HttpGet]
         [Route("api/Fornecedor/ListarFornecedorPorNomeFornecedor/{Cnpj}")]
         public async Task<IActionResult> ListarFornecedorPorNomeFornecedor(string Cnpj, CancellationToken cancellationToken)
@@ -111,14 +111,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("ListarFornecedorPorNomeFornecedor - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Altera os detalhes de um fornecedor existente.
         /// </summary>
-        /// <param name="request">O objeto de solicitação que contém os detalhes atualizados do fornecedor.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <param name="request">O objeto de solicitaÃ§Ã£o que contÃ©m os detalhes atualizados do fornecedor.</param>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpPut]
         [Route("api/Fornecedor/AlterarFornecedor")]
         public async Task<IActionResult> AlterarFornecedor([FromBody] AlterarFornecedorRequest request, CancellationToken cancellationToken)
@@ -133,14 +133,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("AlterarFornecedor - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Remove um fornecedor existente com base no ID fornecido.
         /// </summary>
         /// <param name="id">O ID do fornecedor a ser removido.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpDelete]
         [Route("api/Fornecedor/RemoverFornecedor/{id:Guid}")]
         public async Task<IActionResult> RemoverFornecedor(Guid id, CancellationToken cancellationToken)
@@ -157,7 +157,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("RemoverFornecedor - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         #endregion

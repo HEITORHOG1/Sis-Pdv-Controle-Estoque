@@ -48,13 +48,13 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
                     // Convert legacy response to new standardized format
                     return Ok(ApiResponse<object>.Ok(response.Data, "Operation completed successfully", CorrelationId));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Return 500 Internal Server Error for exceptions, not BadRequest
+                    // Note: do NOT expose ex.Message — use generic message for security
                     return StatusCode(500, ApiResponse.Error(
                         "An internal server error occurred. Please contact support if the problem persists.",
-                        ex.Message,
-                        CorrelationId));
+                        correlationId: CorrelationId));
                 }
             }
             else
@@ -119,10 +119,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
         [NonAction]
         public Task<IActionResult> ResponseExceptionAsync(Exception ex)
         {
+            // Note: do NOT expose ex.Message — use generic message for security
             return Task.FromResult<IActionResult>(StatusCode(500, ApiResponse.Error(
                 "An error occurred while processing your request",
-                ex.Message,
-                CorrelationId)));
+                correlationId: CorrelationId)));
         }
     }
     

@@ -9,7 +9,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public class HealthController : ControllerBase
+    public class HealthController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly ILogger<HealthController> _logger;
 

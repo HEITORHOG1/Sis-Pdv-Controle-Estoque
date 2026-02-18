@@ -1,4 +1,4 @@
-using Commands.Departamento.AdicionarDepartamento;
+ï»¿using Commands.Departamento.AdicionarDepartamento;
 using Commands.Departamento.AlterarDepartamento;
 using Commands.Departamento.ListarDepartamento;
 using Commands.Departamento.ListarDepartamentoPorId;
@@ -27,8 +27,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <summary>
         /// Adiciona um novo departamento.
         /// </summary>
-        /// <param name="request">O objeto de solicitação que contém os detalhes do novo departamento.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <param name="request">O objeto de solicitaÃ§Ã£o que contÃ©m os detalhes do novo departamento.</param>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpPost]
         [Route("api/Departamento/AdicionarDepartamento")]
         public async Task<IActionResult> AdicionarDepartamento([FromBody] AdicionarDepartamentoRequest request, CancellationToken cancellationToken)
@@ -43,13 +43,13 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("AdicionarDepartamento - Erro - {@ex}", ex);
-                return BadRequest(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Lista todos os departamentos.
         /// </summary>
-        /// <returns>Retorna uma ação com uma lista de todos os departamentos.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com uma lista de todos os departamentos.</returns>
         [HttpGet]
         [Route("api/Departamento/ListarDepartamento")]
         public async Task<IActionResult> ListarDepartamento(CancellationToken cancellationToken)
@@ -66,14 +66,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("ListarDepartamento - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
-        /// Lista um departamento específico com base no ID fornecido.
+        /// Lista um departamento especÃ­fico com base no ID fornecido.
         /// </summary>
         /// <param name="id">O ID do departamento a ser recuperado.</param>
-        /// <returns>Retorna uma ação com os detalhes do departamento solicitado.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com os detalhes do departamento solicitado.</returns>
         [HttpGet]
         [Route("api/Departamento/ListarDepartamentoPorId/{id:Guid}")]
         public async Task<IActionResult> ListarDepartamentoPorId(Guid id, CancellationToken cancellationToken)
@@ -87,17 +87,17 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
                 _logger.LogInformation("ListarDepartamentoPorId - Response: {@response}", result);
                 return Ok(result);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError("ListarDepartamentoPorId - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
-        /// Lista um departamento específico com base no nome do departamento fornecido.
+        /// Lista um departamento especÃ­fico com base no nome do departamento fornecido.
         /// </summary>
         /// <param name="NomeDepartamento">O nome do departamento a ser recuperado.</param>
-        /// <returns>Retorna uma ação com os detalhes do departamento solicitado.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com os detalhes do departamento solicitado.</returns>
         [HttpGet]
         [Route("api/Departamento/ListarDepartamentoPorNomeDepartamento/{NomeDepartamento}")]
         public async Task<IActionResult> ListarDepartamentoPorNomeDepartamento(string NomeDepartamento, CancellationToken cancellationToken)
@@ -114,14 +114,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("ListarDepartamentoPorNomeDepartamento - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Altera os detalhes de um departamento existente.
         /// </summary>
-        /// <param name="request">O objeto de solicitação que contém os detalhes atualizados do departamento.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <param name="request">O objeto de solicitaÃ§Ã£o que contÃ©m os detalhes atualizados do departamento.</param>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpPut]
         [Route("api/Departamento/AlterarDepartamento")]
         public async Task<IActionResult> AlterarDepartamento([FromBody] AlterarDepartamentoRequest request, CancellationToken cancellationToken)
@@ -136,14 +136,14 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("AlterarDepartamento - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         /// <summary>
         /// Remove um departamento existente com base no ID fornecido.
         /// </summary>
         /// <param name="id">O ID do departamento a ser removido.</param>
-        /// <returns>Retorna uma ação com o resultado da operação.</returns>
+        /// <returns>Retorna uma aÃ§Ã£o com o resultado da operaÃ§Ã£o.</returns>
         [HttpDelete]
         [Route("api/Departamento/RemoverDepartamento/{id:Guid}")]
         public async Task<IActionResult> RemoverDepartamento(Guid id, CancellationToken cancellationToken)
@@ -160,7 +160,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError("RemoverDepartamento - Erro - {@ex}", ex);
-                return NotFound(ex.Message);
+                return await ResponseExceptionAsync(ex);
             }
         }
         #endregion

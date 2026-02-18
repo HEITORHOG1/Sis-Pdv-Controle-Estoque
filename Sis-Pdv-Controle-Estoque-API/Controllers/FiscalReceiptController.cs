@@ -8,7 +8,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
     [ApiController]
     [Route("api/v1/[controller]")]
     [Authorize]
-    public class FiscalReceiptController : ControllerBase
+    public class FiscalReceiptController : Microsoft.AspNetCore.Mvc.ControllerBase
     {
         private readonly IFiscalService _fiscalService;
         private readonly ILogger<FiscalReceiptController> _logger;
