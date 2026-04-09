@@ -378,6 +378,10 @@ logs/
 docs/PLANEJAMENTO-PENDENCIAS.md
 docs/ANALISE-ARQUITETURAL.md
 
+# Claude agent local files
+.agent/
+.claude/settings.local.json
+
 # Arquivos de build/erro temporarios
 build_error.txt
 build_error_cmd.txt
