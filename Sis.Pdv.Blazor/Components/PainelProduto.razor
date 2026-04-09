@@ -1,0 +1,125 @@
+<div class="pdv-panel-left__content">
+    @* Campo de código de barras *@
+    <div class="pdv-barcode-input">
+        <span class="pdv-barcode-input__icon" style="font-size:0.9rem; letter-spacing:-2px;">▐▌▐▌</span>
+        <RadzenTextBox @bind-Value="ViewModel.CodigoBarras"
+                       Placeholder="Código de barras"
+                       Style="width: 100%; padding-left: 44px; font-size: 1.2rem; font-family: var(--pdv-font-mono);"
+                       Disabled="@ViewModel.IsLoading"
+                       @onkeydown="OnKeyDown"
+                       autofocus />
+    </div>
+
+    @* Quantidade e Valor Unitário *@
+    <div class="pdv-info-row">
+        <div class="pdv-info-box">
+            <div class="pdv-info-box__label">QUANTIDADE</div>
+            <div class="pdv-info-box__value">@ViewModel.Quantidade.ToString("N3")</div>
+        </div>
+        <div class="pdv-info-box">
+            <div class="pdv-info-box__label">VALOR UNITÁRIO</div>
+            <div class="pdv-info-box__value">@UltimoPreco</div>
+        </div>
+    </div>
+
+    @* Total Item *@
+    <div class="pdv-info-box pdv-info-box--full pdv-info-box--success">
+        <div class="pdv-info-box__label">TOTAL ITEM</div>
+        <div class="pdv-info-box__value">@TotalItem</div>
+    </div>
+
+    @* Mensagem de erro *@
+    @if (!string.IsNullOrEmpty(ViewModel.MensagemErro))
+    {
+        <RadzenAlert AlertStyle="AlertStyle.Danger"
+                     Shade="Shade.Lighter"
+                     AllowClose="true"
+                     Close="@(() => { })">
+            @ViewModel.MensagemErro
+        </RadzenAlert>
+    }
+
+    @* Botoes de acao (clicaveis + F-keys capturadas via JS) *@
+    <div style="flex:1;"></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:8px;">
+        <button class="pdv-btn pdv-btn--success" style="padding:16px 10px; font-size:0.95rem;" @onclick="OnDinheiro">
+            $ DINHEIRO (F3)
+        </button>
+        <button class="pdv-btn pdv-btn--info" style="padding:16px 10px; font-size:0.95rem;" @onclick="OnCartao">
+            CARTAO (F4)
+        </button>
+        <button class="pdv-btn" style="padding:16px 10px; font-size:0.95rem; background:#7B1FA2; color:#fff;" @onclick="OnPix">
+            PIX (F6)
+        </button>
+        <button class="pdv-btn pdv-btn--danger" style="padding:16px 10px; font-size:0.95rem;" @onclick="OnCancelarVenda">
+            CANCELAR (F8)
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public PdvViewModel ViewModel { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback OnBuscarProduto { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnPagamento { get; set; }
+
+    [Parameter]
+    public EventCallback OnCancelar { get; set; }
+
+    private async Task OnDinheiro()
+    {
+        ViewModel.IrParaPagamento();
+        ViewModel.FormaPagamentoSelecionada = "DINHEIRO";
+        await OnPagamento.InvokeAsync("DINHEIRO");
+    }
+
+    private async Task OnCartao()
+    {
+        ViewModel.IrParaPagamento();
+        ViewModel.FormaPagamentoSelecionada = "CARTAO_CREDITO";
+        await OnPagamento.InvokeAsync("CARTAO_CREDITO");
+    }
+
+    private async Task OnPix()
+    {
+        ViewModel.IrParaPagamento();
+        ViewModel.FormaPagamentoSelecionada = "PIX";
+        await OnPagamento.InvokeAsync("PIX");
+    }
+
+    private async Task OnCancelarVenda()
+    {
+        ViewModel.CancelarVenda("Cancelamento pelo operador");
+        await OnCancelar.InvokeAsync();
+    }
+
+    private string UltimoPreco
+    {
+        get
+        {
+            var ultimo = ViewModel.VendaAtual?.Itens.LastOrDefault(i => !i.Cancelado);
+            return ultimo?.PrecoUnitario.ToString("N2") ?? "0,00";
+        }
+    }
+
+    private string TotalItem
+    {
+        get
+        {
+            var ultimo = ViewModel.VendaAtual?.Itens.LastOrDefault(i => !i.Cancelado);
+            return ultimo?.Total.ToString("N2") ?? "0,00";
+        }
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await OnBuscarProduto.InvokeAsync();
+        }
+    }
+}

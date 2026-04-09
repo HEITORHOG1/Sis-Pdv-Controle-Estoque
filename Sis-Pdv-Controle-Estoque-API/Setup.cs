@@ -77,8 +77,9 @@ namespace Sis_Pdv_Controle_Estoque_API
                 cfg.RegisterServicesFromAssembly(typeof(RemoverProdutoRequest).GetTypeInfo().Assembly);
             });
 
-            // Add pipeline behaviors
+            // Add pipeline behaviors (order matters: Validation runs first, then SaveChanges after handler)
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Sis_Pdv_Controle_Estoque_API.Behaviors.ValidationBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(Sis_Pdv_Controle_Estoque_API.Behaviors.SaveChangesBehavior<,>));
         }
 
         public static void ConfigureRepositories(this IServiceCollection services, IConfiguration configuration)
@@ -108,6 +109,8 @@ namespace Sis_Pdv_Controle_Estoque_API
 
             services.AddTransient<IRepositoryProdutoPedido, RepositoryProdutoPedido>();
 
+            services.AddTransient<IRepositoryCupom, RepositoryCupom>();
+
             // Payment repositories
             services.AddTransient<Interfaces.Repositories.IRepositoryPayment, Sis_Pdv_Controle_Estoque_Infra.Repositories.RepositoryPayment>();
             services.AddTransient<Interfaces.Repositories.IRepositoryPaymentAudit, Sis_Pdv_Controle_Estoque_Infra.Repositories.RepositoryPaymentAudit>();
@@ -135,7 +138,6 @@ namespace Sis_Pdv_Controle_Estoque_API
             
             // Inventory services
             services.AddScoped<IStockValidationService, StockValidationService>();
-            services.AddScoped<Sis_Pdv_Controle_Estoque_API.Services.Auth.IPasswordService, PasswordService>();
             services.AddScoped<Interfaces.Services.IPasswordService, PasswordService>();
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();

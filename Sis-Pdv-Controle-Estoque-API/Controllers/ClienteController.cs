@@ -1,5 +1,10 @@
+using Interfaces;
 using Commands.Cliente.ListarClientesPaginado;
 using Commands.Cliente.AdicionarCliente;
+using Commands.Cliente.AlterarCliente;
+using Commands.Cliente.RemoverCliente;
+using Commands.Cliente.ListarClientes;
+using Commands.Cliente.ListarClientePorId;
 using Commands.Cliente.ListarClientePorCpfCnpj;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -158,6 +163,72 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         public async Task<IActionResult> ListarClientePorNomeCliente(string CpfCnpj, CancellationToken cancellationToken)
         {
             var request = new ListarClientePorCpfCnpjRequest(CpfCnpj);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
+        }
+
+        /// <summary>
+        /// Listar todos os clientes
+        /// </summary>
+        /// <param name="cancellationToken">Token de cancelamento</param>
+        /// <returns>Lista de clientes</returns>
+        [HttpGet]
+        [Route("/api/Cliente/ListarClientes")]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ListarClientes(CancellationToken cancellationToken)
+        {
+            var request = new ListarClientesRequest();
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
+        }
+
+        /// <summary>
+        /// Buscar cliente por Id
+        /// </summary>
+        /// <param name="id">Id do cliente</param>
+        /// <param name="cancellationToken">Token de cancelamento</param>
+        /// <returns>Dados do cliente</returns>
+        [HttpGet]
+        [Route("/api/Cliente/ListarClientePorId/{id:Guid}")]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ListarClientePorId(Guid id, CancellationToken cancellationToken)
+        {
+            var request = new ListarClientePorIdRequest(id);
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
+        }
+
+        /// <summary>
+        /// Alterar dados de um cliente
+        /// </summary>
+        /// <param name="request">Dados atualizados do cliente</param>
+        /// <param name="cancellationToken">Token de cancelamento</param>
+        /// <returns>Cliente atualizado</returns>
+        [HttpPut]
+        [Route("/api/Cliente/AlterarCliente")]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AlterarCliente([FromBody] AlterarClienteRequest request, CancellationToken cancellationToken)
+        {
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
+        }
+
+        /// <summary>
+        /// Remover um cliente (soft delete)
+        /// </summary>
+        /// <param name="id">Id do cliente</param>
+        /// <param name="cancellationToken">Token de cancelamento</param>
+        /// <returns>Resultado da remoção</returns>
+        [HttpDelete]
+        [Route("/api/Cliente/RemoverCliente/{id:Guid}")]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Models.ApiResponse<object>), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemoverCliente(Guid id, CancellationToken cancellationToken)
+        {
+            var request = new RemoverClienteRequest(id);
             var response = await _mediator.Send(request, cancellationToken);
             return await ResponseAsync(response, cancellationToken);
         }

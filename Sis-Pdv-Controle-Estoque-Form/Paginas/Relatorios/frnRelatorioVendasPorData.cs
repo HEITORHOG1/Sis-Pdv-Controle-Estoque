@@ -851,13 +851,25 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios
         {
             try
             {
-                int index = 0;
+                var colunas = new Dictionary<string, (string Header, int Width, bool Visible)>
+                {
+                    ["DataDoPedido"]    = ("Data",       120, true),
+                    ["FormaPagamento"]  = ("Pagamento",  150, true),
+                    ["TotalPedido"]     = ("Total",      120, true),
+                    ["Id"]              = ("ID",          80, false),
+                };
+
                 foreach (DataGridViewColumn coluna in dgvRelatorio.Columns)
                 {
-                    if (coluna.Visible && index < listaCabecalhos.Count)
+                    if (colunas.TryGetValue(coluna.Name, out var config))
                     {
-                        coluna.HeaderText = listaCabecalhos[index];
-                        index++;
+                        coluna.HeaderText = config.Header;
+                        coluna.Width = config.Width;
+                        coluna.Visible = config.Visible;
+                    }
+                    else
+                    {
+                        coluna.Visible = false;
                     }
                 }
             }

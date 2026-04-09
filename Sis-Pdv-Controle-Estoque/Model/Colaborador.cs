@@ -1,26 +1,29 @@
+using Model.Exceptions;
+
 namespace Model
 {
     public class Colaborador : EntityBase
     {
-
         public Colaborador()
         {
-            Usuario = new Usuario();
-            Departamento = new Departamento();
         }
-        public Colaborador(Guid id, string NomeColaborador,
-            Guid? DepartamentoId, string cpfColaborador,
+
+        public Colaborador(Guid id, string nomeColaborador,
+            Guid? departamentoId, string cpfColaborador,
             string cargoColaborador, string telefoneColaborador,
             string emailPessoalColaborador, string emailCorporativo, Usuario usuario)
         {
-            this.NomeColaborador = NomeColaborador;
-            this.DepartamentoId = DepartamentoId;
+            ValidarNomeColaborador(nomeColaborador);
+            ValidarCpfColaborador(cpfColaborador);
+
+            NomeColaborador = nomeColaborador;
+            DepartamentoId = departamentoId;
             CpfColaborador = cpfColaborador;
             CargoColaborador = cargoColaborador;
             TelefoneColaborador = telefoneColaborador;
             EmailPessoalColaborador = emailPessoalColaborador;
             EmailCorporativo = emailCorporativo;
-            this.Usuario = usuario;
+            Usuario = usuario;
             Id = id;
         }
 
@@ -33,20 +36,36 @@ namespace Model
         public string EmailCorporativo { get; set; }
         public virtual Usuario Usuario { get; set; }
         public virtual Departamento Departamento { get; set; }
-        public void AlterarColaborador(Guid id, string NomeColaborador, Guid Departamento, string cpfColaborador, string cargoColaborador,
+        public void AlterarColaborador(Guid id, string nomeColaborador, Guid departamento, string cpfColaborador, string cargoColaborador,
             string telefoneColaborador, string emailPessoalColaborador, string emailCorporativo, Usuario usuario)
         {
-            this.NomeColaborador = NomeColaborador;
-            DepartamentoId = Departamento;
+            ValidarNomeColaborador(nomeColaborador);
+            ValidarCpfColaborador(cpfColaborador);
+
+            NomeColaborador = nomeColaborador;
+            DepartamentoId = departamento;
             CpfColaborador = cpfColaborador;
             CargoColaborador = cargoColaborador;
             TelefoneColaborador = telefoneColaborador;
             EmailPessoalColaborador = emailPessoalColaborador;
             EmailCorporativo = emailCorporativo;
-            this.Usuario = usuario;
+            Usuario = usuario;
             Id = id;
         }
 
+        private static void ValidarNomeColaborador(string nomeColaborador)
+        {
+            if (string.IsNullOrWhiteSpace(nomeColaborador))
+                throw new DomainException("O nome do colaborador é obrigatório.");
 
+            if (nomeColaborador.Length < 2)
+                throw new DomainException("O nome do colaborador deve ter no mínimo 2 caracteres.");
+        }
+
+        private static void ValidarCpfColaborador(string cpfColaborador)
+        {
+            if (string.IsNullOrWhiteSpace(cpfColaborador))
+                throw new DomainException("O CPF do colaborador é obrigatório.");
+        }
     }
 }

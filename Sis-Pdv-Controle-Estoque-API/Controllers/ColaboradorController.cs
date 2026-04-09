@@ -1,4 +1,5 @@
-ï»¿using Commands.Colaborador.AdicionarColaborador;
+using Interfaces;
+using Commands.Colaborador.AdicionarColaborador;
 using Commands.Colaborador.AlterarColaborador;
 using Commands.Colaborador.ListarColaborador;
 using Commands.Colaborador.ListarColaboradorPorId;
@@ -27,7 +28,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// </summary>
         /// <param name="Login">O login do colaborador.</param>
         /// <param name="Senha">A senha do colaborador.</param>
-        /// <returns>Retorna a resposta da validaÃ§Ã£o do login.</returns>
+        /// <returns>Retorna a resposta da validação do login.</returns>
         [HttpGet]
         [Route("api/Colaborador/ValidarLogin/{Login}/{Senha}")]
         public async Task<IActionResult> ValidaLogin(string Login, string Senha, CancellationToken cancellationToken)
@@ -49,8 +50,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// <summary>
         /// Adiciona um novo colaborador ao sistema.
         /// </summary>
-        /// <param name="request">O objeto contendo as informaÃ§Ãµes do novo colaborador.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de adiÃ§Ã£o.</returns>
+        /// <param name="request">O objeto contendo as informações do novo colaborador.</param>
+        /// <returns>Retorna a resposta da solicitação de adição.</returns>
         [HttpPost]
         [Route("api/Colaborador/AdicionarColaborador")]
         public async Task<IActionResult> AdicionarColaborador([FromBody] AdicionarColaboradorRequest request, CancellationToken cancellationToken)
@@ -92,7 +93,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
         /// <summary>
-        /// Recupera um colaborador especÃ­fico pelo seu ID.
+        /// Recupera um colaborador específico pelo seu ID.
         /// </summary>
         /// <param name="id">O ID do colaborador que se deseja recuperar.</param>
         /// <returns>Retorna o colaborador que corresponde ao ID fornecido.</returns>
@@ -116,7 +117,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
         /// <summary>
-        /// Recupera um colaborador especÃ­fico pelo seu nome.
+        /// Recupera um colaborador específico pelo seu nome.
         /// </summary>
         /// <param name="NomeColaborador">O nome do colaborador que se deseja recuperar.</param>
         /// <returns>Retorna o colaborador que corresponde ao nome fornecido.</returns>
@@ -140,10 +141,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             }
         }
         /// <summary>
-        /// Altera as informaÃ§Ãµes de um colaborador existente.
+        /// Altera as informações de um colaborador existente.
         /// </summary>
-        /// <param name="request">O objeto contendo as novas informaÃ§Ãµes do colaborador.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de alteraÃ§Ã£o.</returns>
+        /// <param name="request">O objeto contendo as novas informações do colaborador.</param>
+        /// <returns>Retorna a resposta da solicitação de alteração.</returns>
         [HttpPut]
         [Route("api/Colaborador/AlterarColaborador")]
         public async Task<IActionResult> AlterarColaborador([FromBody] AlterarColaboradorRequest request, CancellationToken cancellationToken)
@@ -165,7 +166,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// Remove um colaborador do sistema.
         /// </summary>
         /// <param name="id">O ID do colaborador que se deseja remover.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de remoÃ§Ã£o.</returns>
+        /// <returns>Retorna a resposta da solicitação de remoção.</returns>
         [HttpDelete]
         [Route("api/Colaborador/RemoverColaborador/{id:Guid}")]
         public async Task<IActionResult> RemoverColaborador(Guid id, CancellationToken cancellationToken)
@@ -190,3 +191,4 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         #endregion
     }
 }
+

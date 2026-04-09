@@ -166,13 +166,66 @@ A API estará disponível em:
 - **Health Check:** `http://localhost:7003/health`
 - **Health Dashboard:** `http://localhost:7003/health-ui`
 
-### Docker
+### Docker (recomendado)
 
 ```bash
+# 1. Clone e entre no diretorio
+git clone https://github.com/HEITORHOG1/Sis-Pdv-Controle-Estoque.git
+cd Sis-Pdv-Controle-Estoque
+
+# 2. Copie o arquivo de ambiente
 cp .env.example .env
-# Edite o .env com suas credenciais
-docker-compose up -d
+
+# 3. Suba todos os servicos
+docker compose up -d
 ```
+
+Apos subir, todos os servicos estarao disponiveis:
+
+| Servico | URL | Descricao |
+|---------|-----|-----------|
+| **API** | http://localhost:8080 | API REST principal |
+| **Swagger** | http://localhost:8080/api-docs | Documentacao interativa da API |
+| **PDV Web** | http://localhost:8090 | Frente de caixa Blazor Server |
+| **Health** | http://localhost:8080/health | Status dos servicos |
+| **Health UI** | http://localhost:8080/health-ui | Dashboard visual de saude |
+| **RabbitMQ** | http://localhost:15672 | Painel de gerenciamento (pdvuser/pdv123456) |
+| **Nginx** | http://localhost | Reverse proxy |
+
+### Usuarios de Teste
+
+O sistema cria usuarios automaticamente no primeiro startup:
+
+| Login | Senha | Perfil |
+|-------|-------|--------|
+| **HeitorAdmin** | **HS1384@** | Administrador (acesso total) |
+| caixa1 | Caixa@123 | Operador de Caixa |
+| caixa2 | Pdv@2024 | Operador de Caixa |
+| caixa3 | Pdv@2024 | Operador de Caixa |
+| fiscal1 | Fiscal@123 | Fiscal de Caixa |
+| gerente1 | Pdv@2024 | Gerente de Loja |
+| estoque1 | Pdv@2024 | Estoquista |
+| compras1 | Pdv@2024 | Comprador |
+
+### PDV Web (Blazor Server)
+
+O PDV Web roda na porta 8090 e opera de forma **offline-first**:
+
+- Banco local MySQL separado (sincronizado via RabbitMQ)
+- Recuperacao automatica de vendas em caso de queda de energia
+- Atalhos de teclado: F3 (Dinheiro), F4 (Cartao), F6 (PIX), F8 (Cancelar)
+- Leitura de codigo de barras por scanner ou digitacao manual
+
+### PDV Desktop (WinForms)
+
+Para rodar o PDV desktop localmente:
+
+```powershell
+# A API precisa estar rodando (Docker ou local)
+dotnet run --project Sis-Pdv-Controle-Estoque-Form
+```
+
+O WinForms se conecta a API via `App.config` (porta 8080 por padrao).
 
 ## Banco de Dados
 

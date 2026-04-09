@@ -1,0 +1,85 @@
+@page "/login"
+@page "/"
+@rendermode InteractiveServer
+@layout MainLayout
+@inject LoginViewModel ViewModel
+@inject NavigationManager Navigation
+
+<PageTitle>PDV — Login</PageTitle>
+
+<div class="pdv-login">
+    <div class="pdv-login__card">
+        <div class="pdv-login__logo">🏪</div>
+        <h1 class="pdv-login__title">Frente de Caixa</h1>
+        <p class="pdv-login__subtitle">Identifique-se para operar o PDV</p>
+
+        @if (!string.IsNullOrEmpty(ViewModel.MensagemErro))
+        {
+            <RadzenAlert AlertStyle="AlertStyle.Danger"
+                         Shade="Shade.Lighter"
+                         AllowClose="false"
+                         class="rz-mb-4">
+                @ViewModel.MensagemErro
+            </RadzenAlert>
+        }
+
+        <div class="rz-mb-3">
+            <RadzenLabel Text="Usuário" Component="login" class="rz-mb-1" />
+            <RadzenTextBox @bind-Value="ViewModel.Login"
+                           Name="login"
+                           Placeholder="Digite seu login"
+                           Style="width: 100%;"
+                           AutoComplete="false"
+                           Disabled="@ViewModel.IsLoading"
+                           @onkeydown="OnKeyDown" />
+        </div>
+
+        <div class="rz-mb-4">
+            <RadzenLabel Text="Senha" Component="senha" class="rz-mb-1" />
+            <RadzenPassword @bind-Value="ViewModel.Senha"
+                            Name="senha"
+                            Placeholder="Digite sua senha"
+                            Style="width: 100%;"
+                            Disabled="@ViewModel.IsLoading"
+                            @onkeydown="OnKeyDown" />
+        </div>
+
+        <RadzenButton Text="@(ViewModel.IsLoading ? "Entrando..." : "Entrar")"
+                      Icon="login"
+                      ButtonStyle="ButtonStyle.Primary"
+                      Style="width: 100%; padding: 12px;"
+                      Disabled="@(!ViewModel.PodeLogar)"
+                      IsBusy="@ViewModel.IsLoading"
+                      Click="@RealizarLogin" />
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        ViewModel.StateChanged += () => InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RealizarLogin()
+    {
+        await ViewModel.RealizarLoginAsync();
+
+        if (ViewModel.LoginRealizado)
+        {
+            Navigation.NavigateTo("/pdv");
+        }
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && ViewModel.PodeLogar)
+        {
+            await RealizarLogin();
+        }
+    }
+
+    public void Dispose()
+    {
+        ViewModel.StateChanged -= () => InvokeAsync(StateHasChanged);
+    }
+}

@@ -1,0 +1,521 @@
+/* ===================================================================
+   PDV Blazor — Tema Azul/Roxo (Cliente)
+   =================================================================== */
+
+/* === CSS Variables — Design Tokens === */
+:root {
+    /* Cores Primarias */
+    --pdv-primary:          #00BCD4;
+    --pdv-primary-light:    #4DD0E1;
+    --pdv-primary-dark:     #00838F;
+    --pdv-primary-gradient: linear-gradient(135deg, #4DD0E1 0%, #00BCD4 30%, #7B1FA2 100%);
+
+    /* Fundos */
+    --pdv-bg-white:         #FFFFFF;
+    --pdv-bg-cream:         #E0F7FA;
+    --pdv-bg-light:         #B2EBF2;
+    --pdv-bg-card:          #FFFFFF;
+
+    /* Texto */
+    --pdv-text-primary:     #212121;
+    --pdv-text-secondary:   #757575;
+    --pdv-text-on-primary:  #FFFFFF;
+    --pdv-text-white:       #FFFFFF;
+
+    /* Status */
+    --pdv-success:          #43A047;
+    --pdv-error:            #E53935;
+    --pdv-warning:          #FF8F00;
+    --pdv-info:             #1E88E5;
+
+    /* Elementos */
+    --pdv-header-bg:        #00BCD4;
+    --pdv-statusbar-bg:     #424242;
+    --pdv-statusbar-text:   #FFFFFF;
+    --pdv-item-bar-bg:      #212121;
+    --pdv-nfce-bg:          #FFFFFF;
+    --pdv-panel-bg:         #FFFFFF;
+
+    /* Sombras */
+    --pdv-shadow-sm:        0 1px 3px rgba(0,0,0,0.12);
+    --pdv-shadow-md:        0 4px 6px rgba(0,0,0,0.15);
+    --pdv-shadow-lg:        0 10px 20px rgba(0,0,0,0.19);
+
+    /* Tipografia */
+    --pdv-font-family:      'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --pdv-font-mono:        'JetBrains Mono', 'Consolas', monospace;
+
+    /* Overrides do Radzen */
+    --rz-primary:           var(--pdv-primary);
+    --rz-primary-lighter:   var(--pdv-primary-light);
+    --rz-primary-light:     #B2EBF2;
+    --rz-primary-dark:      var(--pdv-primary-dark);
+    --rz-primary-darker:    #006064;
+    --rz-success:           var(--pdv-success);
+    --rz-danger:            var(--pdv-error);
+    --rz-warning:           var(--pdv-warning);
+    --rz-info:              var(--pdv-info);
+}
+
+/* === Import Google Fonts === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+/* === Reset & Base === */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    font-family: var(--pdv-font-family);
+    font-size: 16px;
+    color: var(--pdv-text-primary);
+    background: var(--pdv-bg-white);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* === PDV Layout Fullscreen === */
+.pdv-layout {
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    height: 100vh;
+    width: 100vw;
+    background: var(--pdv-primary-gradient);
+    overflow: hidden;
+}
+
+.pdv-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.pdv-main--livre {
+    grid-template-columns: 1fr;
+    place-items: center;
+}
+
+/* === Estado CAIXA LIVRE === */
+.pdv-caixa-livre {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 80px;
+    width: 100%;
+    height: 100%;
+}
+
+.pdv-caixa-livre__label {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--pdv-text-white);
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding: 16px 48px;
+    border-radius: 12px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    animation: pdv-pulse 3s ease-in-out infinite;
+}
+
+@keyframes pdv-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.85; transform: scale(1.02); }
+}
+
+/* === Painel Esquerdo === */
+.pdv-panel-left {
+    background: var(--pdv-primary-gradient);
+    border-right: none;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.pdv-panel-left__header {
+    background: var(--pdv-primary);
+    color: var(--pdv-text-on-primary);
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.pdv-panel-left__content {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* === Campo de Código de Barras === */
+.pdv-barcode-input {
+    position: relative;
+}
+
+.pdv-barcode-input input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    font-size: 1.2rem;
+    font-family: var(--pdv-font-mono);
+    font-weight: 700;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    outline: none;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+.pdv-barcode-input input:focus {
+    border-color: var(--pdv-primary);
+    box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
+}
+
+.pdv-barcode-input__icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: var(--pdv-primary-dark);
+}
+
+/* === Info Labels (QUANTIDADE, VALOR, TOTAL) === */
+.pdv-info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.pdv-info-box {
+    border-left: 4px solid var(--pdv-primary);
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 0 4px 4px 0;
+}
+
+.pdv-info-box--full {
+    grid-column: 1 / -1;
+}
+
+.pdv-info-box__label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--pdv-primary-dark);
+    letter-spacing: 0.5px;
+}
+
+.pdv-info-box__value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--pdv-text-primary);
+    font-family: var(--pdv-font-mono);
+}
+
+.pdv-info-box--success .pdv-info-box__label { color: var(--pdv-success); }
+.pdv-info-box--success { border-left-color: var(--pdv-success); }
+
+.pdv-info-box--error .pdv-info-box__label { color: var(--pdv-error); }
+.pdv-info-box--error { border-left-color: var(--pdv-error); }
+
+.pdv-info-box--warning .pdv-info-box__label { color: var(--pdv-warning); }
+.pdv-info-box--warning { border-left-color: var(--pdv-warning); }
+
+/* === Painel NFC-e (direito) === */
+.pdv-panel-nfce {
+    background: var(--pdv-nfce-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.pdv-panel-nfce__header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 12px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.pdv-panel-nfce__title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--pdv-text-primary);
+    letter-spacing: 1px;
+}
+
+.pdv-panel-nfce__items {
+    flex: 1;
+    padding: 12px 20px;
+    overflow-y: auto;
+    font-family: var(--pdv-font-mono);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.pdv-nfce-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px dotted #eee;
+}
+
+.pdv-nfce-item--cancelado {
+    text-decoration: line-through;
+    color: var(--pdv-error);
+    opacity: 0.6;
+}
+
+.pdv-nfce-item__desc {
+    flex: 1;
+}
+
+.pdv-nfce-item__valor {
+    font-weight: 700;
+    text-align: right;
+    min-width: 80px;
+}
+
+.pdv-nfce-item__detalhe {
+    padding-left: 20px;
+    color: var(--pdv-text-secondary);
+    font-size: 0.8rem;
+}
+
+.pdv-nfce-pagamento {
+    padding: 8px 20px;
+    border-top: 2px solid var(--pdv-primary);
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* === Carrinho Icon === */
+.pdv-carrinho {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(66,66,66,0.95);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.pdv-carrinho__icon {
+    font-size: 1.5rem;
+    color: var(--pdv-text-white);
+}
+
+.pdv-carrinho__total {
+    text-align: right;
+}
+
+.pdv-carrinho__label {
+    font-size: 0.7rem;
+    color: var(--pdv-success);
+    font-weight: 600;
+}
+
+.pdv-carrinho__valor {
+    font-size: 1.8rem;
+    color: var(--pdv-text-white);
+    font-weight: 800;
+    font-family: var(--pdv-font-mono);
+}
+
+/* === Status Bar — Item (preta) === */
+.pdv-statusbar-item {
+    background: var(--pdv-item-bar-bg);
+    color: var(--pdv-text-white);
+    padding: 10px 24px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+/* === Status Bar — Inferior (cinza) === */
+.pdv-statusbar-bottom {
+    background: var(--pdv-statusbar-bg);
+    color: var(--pdv-statusbar-text);
+    padding: 6px 24px;
+    font-size: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    min-height: 28px;
+    letter-spacing: 0.3px;
+}
+
+.pdv-statusbar-bottom__item {
+    white-space: nowrap;
+}
+
+.pdv-statusbar-bottom__label {
+    font-weight: 600;
+    color: var(--pdv-primary-light);
+}
+
+/* === Loading Spinner Overlay === */
+.pdv-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.pdv-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--pdv-bg-cream);
+    border-top: 4px solid var(--pdv-primary);
+    border-radius: 50%;
+    animation: pdv-spin 0.8s linear infinite;
+}
+
+@keyframes pdv-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* === Dialog Overlay (CPF, Obrigado) === */
+.pdv-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.pdv-dialog-card {
+    background: var(--pdv-bg-white);
+    border-radius: 20px;
+    padding: 48px;
+    box-shadow: var(--pdv-shadow-lg);
+    text-align: center;
+    min-width: 400px;
+    max-width: 500px;
+    animation: pdv-dialog-in 0.3s ease-out;
+}
+
+@keyframes pdv-dialog-in {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.pdv-dialog-card__title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--pdv-text-primary);
+    margin-bottom: 8px;
+}
+
+.pdv-dialog-card__subtitle {
+    font-size: 1rem;
+    color: var(--pdv-text-secondary);
+    margin-bottom: 24px;
+}
+
+.pdv-dialog-card__actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+/* === Botões PDV === */
+.pdv-btn {
+    padding: 12px 32px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+}
+
+.pdv-btn:hover { transform: translateY(-1px); box-shadow: var(--pdv-shadow-md); }
+.pdv-btn:active { transform: translateY(0); }
+
+.pdv-btn--primary {
+    background: var(--pdv-primary);
+    color: var(--pdv-text-on-primary);
+}
+
+.pdv-btn--success {
+    background: var(--pdv-success);
+    color: var(--pdv-text-white);
+}
+
+.pdv-btn--danger {
+    background: var(--pdv-error);
+    color: var(--pdv-text-white);
+}
+
+.pdv-btn--info {
+    background: var(--pdv-info);
+    color: var(--pdv-text-white);
+}
+
+/* === Login Page === */
+.pdv-login {
+    height: 100vh;
+    background: var(--pdv-primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pdv-login__card {
+    background: var(--pdv-bg-white);
+    border-radius: 20px;
+    padding: 48px 40px;
+    box-shadow: var(--pdv-shadow-lg);
+    width: 100%;
+    max-width: 420px;
+    animation: pdv-dialog-in 0.4s ease-out;
+}
+
+.pdv-login__title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-align: center;
+    color: var(--pdv-text-primary);
+    margin-bottom: 8px;
+}
+
+.pdv-login__subtitle {
+    text-align: center;
+    color: var(--pdv-text-secondary);
+    margin-bottom: 32px;
+}
+
+.pdv-login__logo {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 16px;
+}

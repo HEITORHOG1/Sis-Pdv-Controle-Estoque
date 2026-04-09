@@ -32,6 +32,12 @@ namespace Repositories.Map
                    .WithOne(x => x.Produto)
                    .HasForeignKey(x => x.ProdutoId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes para consultas frequentes
+            builder.HasIndex(x => x.CodBarras).IsUnique().HasDatabaseName("IX_Produto_CodBarras");
+            builder.HasIndex(x => x.NomeProduto).HasDatabaseName("IX_Produto_NomeProduto");
+            builder.HasIndex(x => x.FornecedorId).HasDatabaseName("IX_Produto_FornecedorId");
+            builder.HasIndex(x => x.CategoriaId).HasDatabaseName("IX_Produto_CategoriaId");
         }
     }
 }

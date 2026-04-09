@@ -1,3 +1,4 @@
+using Interfaces;
 using Commands;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Transactions;
@@ -33,34 +34,22 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers.Base
         }
 
         /// <summary>
-        /// Legacy method for backward compatibility with existing Response class.
-        /// Note: SaveChangesAsync here is a workaround - ideally this should be handled by the handler/service layer.
+        /// Converts a handler Response to an IActionResult.
+        /// SaveChanges is handled by SaveChangesBehavior in the MediatR pipeline.
         /// </summary>
         [NonAction]
-        public async Task<IActionResult> ResponseAsync(Response response, CancellationToken cancellationToken = default)
+        public Task<IActionResult> ResponseAsync(Response response, CancellationToken cancellationToken = default)
         {
             if (!response.Notifications.Any())
             {
-                try
-                {
-                    await _unitOfWork.SaveChangesAsync(cancellationToken);
-                    
-                    // Convert legacy response to new standardized format
-                    return Ok(ApiResponse<object>.Ok(response.Data, "Operation completed successfully", CorrelationId));
-                }
-                catch (Exception)
-                {
-                    // Return 500 Internal Server Error for exceptions, not BadRequest
-                    // Note: do NOT expose ex.Message — use generic message for security
-                    return StatusCode(500, ApiResponse.Error(
-                        "An internal server error occurred. Please contact support if the problem persists.",
-                        correlationId: CorrelationId));
-                }
+                return Task.FromResult<IActionResult>(
+                    Ok(ApiResponse<object>.Ok(response.Data, "Operation completed successfully", CorrelationId)));
             }
             else
             {
                 var errors = response.Notifications.Select(n => n.Message);
-                return BadRequest(ApiResponse.Error("Validation failed", errors, CorrelationId));
+                return Task.FromResult<IActionResult>(
+                    BadRequest(ApiResponse.Error("Validation failed", errors, CorrelationId)));
             }
         }
 

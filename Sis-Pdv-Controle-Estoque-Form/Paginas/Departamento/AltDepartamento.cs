@@ -184,7 +184,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 lblInputIcon.Text = "⚠️";
                 lblInputIcon.ForeColor = Color.FromArgb(230, 126, 34);
             }
-            else if (nome.Length > 150)
+            else if (nome.Length > 100)
             {
                 _isValid = false;
                 lblInputIcon.Text = "❌";
@@ -242,13 +242,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                     NovoNome = response.data.NomeDepartamento;
                     AlteracaoRealizada = true;
                     
-                    ExibirSucesso($"Departamento alterado para '{NovoNome}' com sucesso!");
-                    
                     AltDepartamentoLogger.LogInfo($"Departamento alterado com sucesso: ID={response.data.id}, Novo Nome={NovoNome}", "Update");
-                    
-                    // Pequeno delay para feedback visual
-                    await Task.Delay(1000);
-                    
+
                     FecharFormulario(true);
                 }
                 else
@@ -289,9 +284,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 return false;
             }
             
-            if (nome.Length > 150)
+            if (nome.Length > 100)
             {
-                ExibirAviso("O nome do departamento não pode ter mais de 150 caracteres.");
+                ExibirAviso("O nome do departamento não pode ter mais de 100 caracteres.");
                 txtNomeDepartamento.Focus();
                 txtNomeDepartamento.SelectAll();
                 return false;
@@ -510,64 +505,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         
         #endregion
         
-        #region Métodos Legados (Compatibilidade)
-        
-        // Mantido para compatibilidade com código existente
-        private async Task Alterar()
-        {
-            await ProcessarAlteracao();
-        }
-        
-        private void TxtNomeDepartamento_TextChanged(object sender, EventArgs e)
-        {
-            txtNomeDepartamento_TextChanged(sender, e);
-        }
-        
-        private void ValidarFormulario()
-        {
-            ValidarCampo();
-            VerificarAlteracoes();
-            AtualizarStatusInterface();
-        }
-        
-        private bool ValidarCampos()
-        {
-            return ValidarDados();
-        }
-        
         private void AltDepartamento_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (_isLoading)
             {
                 e.Cancel = true;
-                return;
-            }
-            
-            // Validação de fechamento já é feita em FecharFormulario()
-        }
-        
-        private void AltDepartamento_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            // Limpeza se necessária
-        }
-        
-        private async Task AtualizarFormularioPrincipal()
-        {
-            try
-            {
-                var formPrincipal = Application.OpenForms.OfType<CadDepartamento>().FirstOrDefault();
-                if (formPrincipal != null)
-                {
-                    await formPrincipal.Consultar();
-                }
-            }
-            catch (Exception ex)
-            {
-                AltDepartamentoLogger.LogError($"Erro ao atualizar formulário principal: {ex.Message}", "Integration", ex);
             }
         }
-        
-        #endregion
         
         #region Classes de Log Auxiliares
         

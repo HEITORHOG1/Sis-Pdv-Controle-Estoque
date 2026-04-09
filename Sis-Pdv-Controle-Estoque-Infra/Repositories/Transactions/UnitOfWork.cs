@@ -1,5 +1,7 @@
-﻿using Repositories.Base;
+﻿using Interfaces;
+using Repositories.Base;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
 using Microsoft.Extensions.Logging;
@@ -38,7 +40,6 @@ namespace Repositories.Transactions
             catch (MySqlException ex) when (IsDeadlock(ex))
             {
                 _logger.LogWarning(ex, "Deadlock detected, retrying operation");
-                // EF Core's EnableRetryOnFailure will handle the retry automatically
                 throw;
             }
             catch (Exception ex)
@@ -48,19 +49,19 @@ namespace Repositories.Transactions
             }
         }
 
-        public async Task<IDbContextTransaction> BeginTransactionAsync(
+        public async Task BeginTransactionAsync(
             IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,
             CancellationToken cancellationToken = default)
         {
             if (_currentTransaction != null)
             {
                 _logger.LogWarning("Transaction already in progress");
-                return _currentTransaction;
+                return;
             }
 
-            _currentTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            // EF Core Transaction
+            _currentTransaction = await _context.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
             _logger.LogInformation("Transaction started with isolation level: {IsolationLevel}", isolationLevel);
-            return _currentTransaction;
         }
 
         public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)

@@ -1,0 +1,44 @@
+<div class="pdv-panel-nfce__header">
+    <span class="pdv-panel-nfce__title">NFC-e</span>
+</div>
+
+<div class="pdv-panel-nfce__items" @ref="_itemsList">
+    @if (ViewModel.VendaAtual?.Itens is { Count: > 0 })
+    {
+        @foreach (var item in ViewModel.VendaAtual.Itens)
+        {
+            <div class="pdv-nfce-item @(item.Cancelado ? "pdv-nfce-item--cancelado" : "")">
+                <span class="pdv-nfce-item__desc">@item.TextoNfce</span>
+                <span class="pdv-nfce-item__valor">@item.Total.ToString("N2")</span>
+            </div>
+            <div class="pdv-nfce-item__detalhe">
+                @item.DetalheNfce
+            </div>
+        }
+
+        @* Linha de pagamento se já definido *@
+        @if (!string.IsNullOrEmpty(ViewModel.VendaAtual.FormaPagamento))
+        {
+            <div class="pdv-nfce-pagamento">
+                <span>@ViewModel.VendaAtual.FormaPagamento.ToUpperInvariant():</span>
+                <span>@ViewModel.VendaAtual.ValorRecebido.ToString("N2")</span>
+            </div>
+        }
+    }
+</div>
+
+@* Carrinho Icon *@
+<div class="pdv-carrinho">
+    <span class="pdv-carrinho__icon">🛒</span>
+    <div class="pdv-carrinho__total">
+        <div class="pdv-carrinho__label">R$</div>
+        <div class="pdv-carrinho__valor">@ViewModel.TotalVenda.ToString("N2")</div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public PdvViewModel ViewModel { get; set; } = default!;
+
+    private ElementReference _itemsList;
+}

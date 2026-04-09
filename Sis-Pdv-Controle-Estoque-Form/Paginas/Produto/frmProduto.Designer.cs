@@ -62,6 +62,10 @@
             this.gpAtivo = new System.Windows.Forms.GroupBox();
             this.ckbInativo = new System.Windows.Forms.CheckBox();
             this.btnConsulta = new FontAwesome.Sharp.IconButton();
+            this.btnLimpar = new System.Windows.Forms.Button();
+            this.lblPaginacao = new System.Windows.Forms.Label();
+            this.btnPaginaAnterior = new System.Windows.Forms.Button();
+            this.btnProximaPagina = new System.Windows.Forms.Button();
             this.msktDataFabricacao = new System.Windows.Forms.MaskedTextBox();
             this.msktDataVencimento = new System.Windows.Forms.MaskedTextBox();
             this.txbId = new System.Windows.Forms.TextBox();
@@ -485,7 +489,7 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White;
             this.dgvProduto.RowsDefaultCellStyle = dataGridViewCellStyle3;
             this.dgvProduto.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvProduto.Size = new System.Drawing.Size(975, 177);
+            this.dgvProduto.Size = new System.Drawing.Size(975, 150);
             this.dgvProduto.TabIndex = 24;
             this.dgvProduto.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvProduto_CellDoubleClick);
             // 
@@ -506,7 +510,7 @@
             // ckbInativo
             // 
             this.ckbInativo.AutoSize = true;
-            this.ckbInativo.Location = new System.Drawing.Point(533, 380);
+            this.ckbInativo.Location = new System.Drawing.Point(650, 380);
             this.ckbInativo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.ckbInativo.Name = "ckbInativo";
             this.ckbInativo.Size = new System.Drawing.Size(62, 19);
@@ -536,7 +540,55 @@
             this.btnConsulta.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnConsulta.UseVisualStyleBackColor = false;
             this.btnConsulta.Click += new System.EventHandler(this.btnConsulta_Click);
-            // 
+            //
+            // btnLimpar
+            //
+            this.btnLimpar.BackColor = System.Drawing.Color.Azure;
+            this.btnLimpar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnLimpar.FlatAppearance.BorderSize = 0;
+            this.btnLimpar.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.btnLimpar.ForeColor = System.Drawing.Color.Gray;
+            this.btnLimpar.Location = new System.Drawing.Point(533, 368);
+            this.btnLimpar.Name = "btnLimpar";
+            this.btnLimpar.Size = new System.Drawing.Size(100, 40);
+            this.btnLimpar.TabIndex = 40;
+            this.btnLimpar.Text = "Limpar";
+            this.btnLimpar.UseVisualStyleBackColor = false;
+            this.btnLimpar.Click += new System.EventHandler(this.btnLimpar_Click);
+            //
+            // lblPaginacao
+            //
+            this.lblPaginacao.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblPaginacao.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.lblPaginacao.ForeColor = System.Drawing.Color.White;
+            this.lblPaginacao.Location = new System.Drawing.Point(400, 570);
+            this.lblPaginacao.Name = "lblPaginacao";
+            this.lblPaginacao.Size = new System.Drawing.Size(200, 20);
+            this.lblPaginacao.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblPaginacao.Text = "Pagina 1 de 1";
+            //
+            // btnPaginaAnterior
+            //
+            this.btnPaginaAnterior.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnPaginaAnterior.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPaginaAnterior.ForeColor = System.Drawing.Color.White;
+            this.btnPaginaAnterior.Location = new System.Drawing.Point(360, 568);
+            this.btnPaginaAnterior.Name = "btnPaginaAnterior";
+            this.btnPaginaAnterior.Size = new System.Drawing.Size(35, 24);
+            this.btnPaginaAnterior.Text = "<";
+            this.btnPaginaAnterior.Click += new System.EventHandler(this.btnPaginaAnterior_Click);
+            //
+            // btnProximaPagina
+            //
+            this.btnProximaPagina.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnProximaPagina.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnProximaPagina.ForeColor = System.Drawing.Color.White;
+            this.btnProximaPagina.Location = new System.Drawing.Point(605, 568);
+            this.btnProximaPagina.Name = "btnProximaPagina";
+            this.btnProximaPagina.Size = new System.Drawing.Size(35, 24);
+            this.btnProximaPagina.Text = ">";
+            this.btnProximaPagina.Click += new System.EventHandler(this.btnProximaPagina_Click);
+            //
             // msktDataFabricacao
             // 
             this.msktDataFabricacao.Location = new System.Drawing.Point(28, 324);
@@ -614,6 +666,10 @@
             this.Controls.Add(this.lblId);
             this.Controls.Add(this.msktDataVencimento);
             this.Controls.Add(this.msktDataFabricacao);
+            this.Controls.Add(this.btnProximaPagina);
+            this.Controls.Add(this.lblPaginacao);
+            this.Controls.Add(this.btnPaginaAnterior);
+            this.Controls.Add(this.btnLimpar);
             this.Controls.Add(this.btnConsulta);
             this.Controls.Add(this.ckbInativo);
             this.Controls.Add(this.gpAtivo);
@@ -686,5 +742,9 @@
         private System.Windows.Forms.Label lblId;
         private ComboBox cmbCategoria;
         private Label label1;
+        private System.Windows.Forms.Button btnLimpar;
+        private System.Windows.Forms.Label lblPaginacao;
+        private System.Windows.Forms.Button btnPaginaAnterior;
+        private System.Windows.Forms.Button btnProximaPagina;
     }
 }

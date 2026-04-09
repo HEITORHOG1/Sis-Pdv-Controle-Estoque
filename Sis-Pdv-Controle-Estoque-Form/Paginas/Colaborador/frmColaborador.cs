@@ -244,13 +244,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
                         "E-mail Pessoal", "E-mail Corp", "IdLogin", "Login", "Senha", "Status"
                     });
 
-                    // Oculta colunas sensíveis
-                    if (lstGrid.Columns["id"] != null)
-                        lstGrid.Columns["id"].Visible = false;
-                    if (lstGrid.Columns["idlogin"] != null)
-                        lstGrid.Columns["idlogin"].Visible = false;
-                    if (lstGrid.Columns["senha"] != null)
-                        lstGrid.Columns["senha"].Visible = false;
+                    // Colunas sensiveis (id, idlogin, senha) ocultadas pelo DefinirCabecalhos
 
                     lstGrid.Refresh();
                     
@@ -468,14 +462,28 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Colaborador
 
         private void DefinirCabecalhos(List<string> listaCabecalhos)
         {
-            int index = 0;
+            var colunas = new Dictionary<string, (string Header, int Width)>
+            {
+                ["NomeColaborador"]          = ("Nome",          160),
+                ["CpfColaborador"]           = ("CPF",           110),
+                ["CargoColaborador"]         = ("Cargo",         130),
+                ["TelefoneColaborador"]      = ("Telefone",      110),
+                ["EmailPessoalColaborador"]  = ("E-mail Pessoal", 170),
+                ["EmailCorporativo"]         = ("E-mail Corp.",   170),
+                ["StatusAtivo"]              = ("Status",          60),
+            };
 
             foreach (DataGridViewColumn coluna in lstGrid.Columns)
             {
-                if (coluna.Visible && index < listaCabecalhos.Count)
+                if (colunas.TryGetValue(coluna.Name, out var config))
                 {
-                    coluna.HeaderText = listaCabecalhos[index];
-                    index++;
+                    coluna.HeaderText = config.Header;
+                    coluna.Width = config.Width;
+                    coluna.Visible = true;
+                }
+                else
+                {
+                    coluna.Visible = false;
                 }
             }
         }

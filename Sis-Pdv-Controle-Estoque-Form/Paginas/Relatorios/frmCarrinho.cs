@@ -33,14 +33,26 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Relatorios
 
         private void DefinirCabecalhos(List<String> ListaCabecalhos)
         {
-            int _index = 0;
+            var colunas = new Dictionary<string, (string Header, int Width)>
+            {
+                ["QuantidadeItemPedido"] = ("Quantidade", 90),
+                ["NomeProduto"]          = ("Nome",      200),
+                ["PrecoVenda"]           = ("Preco",     100),
+                ["TotalProdutoPedido"]   = ("Total",     100),
+                ["CodBarras"]            = ("Cod. Barras", 120),
+            };
 
             foreach (DataGridViewColumn coluna in dgvListaProdutos.Columns)
             {
-                if (coluna.Visible)
+                if (colunas.TryGetValue(coluna.Name, out var config))
                 {
-                    coluna.HeaderText = ListaCabecalhos[_index];
-                    _index++;
+                    coluna.HeaderText = config.Header;
+                    coluna.Width = config.Width;
+                    coluna.Visible = true;
+                }
+                else
+                {
+                    coluna.Visible = false;
                 }
             }
         }

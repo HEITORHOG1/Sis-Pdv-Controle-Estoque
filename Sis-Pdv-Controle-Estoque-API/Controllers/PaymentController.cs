@@ -1,3 +1,4 @@
+using Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MediatR;
@@ -25,7 +26,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             IPaymentService paymentService,
             IPaymentReconciliationService reconciliationService,
             ILogger<PaymentController> logger,
-            Repositories.Transactions.IUnitOfWork unitOfWork) : base(unitOfWork)
+            IUnitOfWork unitOfWork) : base(unitOfWork)
         {
             _mediator = mediator;
             _paymentService = paymentService;

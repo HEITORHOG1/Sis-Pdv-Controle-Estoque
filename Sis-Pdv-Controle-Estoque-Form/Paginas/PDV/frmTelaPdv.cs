@@ -362,11 +362,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             
             if (string.IsNullOrWhiteSpace(texto))
             {
-                // Campo vazio — reseta feedback
-                lblUltimoItemNome.Text = "---";
-                lblUltimoItemNome.ForeColor = Color.White;
-                lblUltimoItemPreco.Text = 0m.FormatarMoeda();
-                lblUltimoItemQtd.Text = "";
+                // Campo vazio — mantem o ULTIMO ITEM exibido
                 return;
             }
             
@@ -925,12 +921,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.PDV
             txbQuantidade.Text = "1";
             txbTotalRecebido.Clear();
             
-            // Reseta display ULTIMO ITEM
-            lblUltimoItemNome.Text = "---";
-            lblUltimoItemNome.ForeColor = Color.White;
-            lblUltimoItemPreco.Text = 0m.FormatarMoeda();
-            lblUltimoItemQtd.Text = "";
-            lblUltimoItemQtd.ForeColor = Color.LightGray;
+            // ULTIMO ITEM mantido — so reseta ao iniciar nova venda
             
             // Reseta contadores do scanner
             _keystrokeCount = 0;

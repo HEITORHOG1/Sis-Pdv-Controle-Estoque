@@ -1,3 +1,4 @@
+using Interfaces;
 using Commands.Produto.AdicionarProduto;
 using Commands.Produto.AlterarProduto;
 using Commands.Produto.AtualizarEstoque;
@@ -160,3 +161,4 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         #endregion
     }
 }
+

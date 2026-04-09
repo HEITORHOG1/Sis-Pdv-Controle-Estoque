@@ -1,6 +1,7 @@
 using Repositories.Base;
 using Model;
 using Microsoft.EntityFrameworkCore;
+using Interfaces.Services;
 using Sis_Pdv_Controle_Estoque_API.Services.Auth;
 
 namespace Sis_Pdv_Controle_Estoque_API.Services

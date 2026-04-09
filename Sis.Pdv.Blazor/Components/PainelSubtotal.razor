@@ -1,0 +1,47 @@
+<div class="pdv-panel-left__header">SUBTOTAL</div>
+
+<div class="pdv-panel-left__content">
+    <div class="pdv-info-box pdv-info-box--full pdv-info-box--warning">
+        <div class="pdv-info-box__label">VALOR DA COMPRA</div>
+        <div class="pdv-info-box__value">@ViewModel.VendaAtual?.ValorTotal.ToString("N2")</div>
+    </div>
+
+    <div class="pdv-info-row">
+        <div class="pdv-info-box">
+            <div class="pdv-info-box__label">VALOR A PAGAR</div>
+            <div class="pdv-info-box__value">@ViewModel.VendaAtual?.ValorFinal.ToString("N2")</div>
+        </div>
+        <div class="pdv-info-box pdv-info-box--success">
+            <div class="pdv-info-box__label">VALOR PAGO</div>
+            <div class="pdv-info-box__value">@ViewModel.VendaAtual?.ValorRecebido.ToString("N2")</div>
+        </div>
+    </div>
+
+    <div class="pdv-info-box pdv-info-box--full">
+        <div class="pdv-info-box__label">RESTANTE</div>
+        <div class="pdv-info-box__value">@Restante.ToString("N2")</div>
+    </div>
+
+    <div style="margin-top: auto; padding: 8px;">
+        <span style="font-size: 1.5rem; color: var(--pdv-text-secondary);">💳</span>
+        <span style="margin-left: 8px; font-weight: 600;">
+            @(ViewModel.VendaAtual?.FormaPagamento ?? "---")
+        </span>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public PdvViewModel ViewModel { get; set; } = default!;
+
+    private decimal Restante
+    {
+        get
+        {
+            if (ViewModel.VendaAtual is null) return 0m;
+
+            var restante = ViewModel.VendaAtual.ValorFinal - ViewModel.VendaAtual.ValorRecebido;
+            return restante > 0 ? restante : 0m;
+        }
+    }
+}

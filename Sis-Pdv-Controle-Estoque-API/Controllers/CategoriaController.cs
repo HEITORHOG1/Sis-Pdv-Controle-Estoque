@@ -1,4 +1,5 @@
-ï»¿using Commands.Categoria.AdicionarCategoria;
+using Interfaces;
+using Commands.Categoria.AdicionarCategoria;
 using Commands.Categoria.AlterarCategoria;
 using Commands.Categoria.ListarCategoria;
 using Commands.Categoria.ListarCategoriaPorId;
@@ -48,8 +49,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         /// **Request Body:**
         /// ```json
         /// {
-        ///   "nome": "EletrÃ´nicos",
-        ///   "descricao": "Produtos eletrÃ´nicos e tecnologia",
+        ///   "nome": "Eletrônicos",
+        ///   "descricao": "Produtos eletrônicos e tecnologia",
         ///   "parentCategoryId": null,
         ///   "isActive": true,
         ///   "sortOrder": 1
@@ -63,8 +64,8 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         ///   "message": "Categoria criada com sucesso",
         ///   "data": {
         ///     "id": "123e4567-e89b-12d3-a456-426614174000",
-        ///     "nome": "EletrÃ´nicos",
-        ///     "descricao": "Produtos eletrÃ´nicos e tecnologia",
+        ///     "nome": "Eletrônicos",
+        ///     "descricao": "Produtos eletrônicos e tecnologia",
         ///     "parentCategoryId": null,
         ///     "isActive": true,
         ///     "sortOrder": 1,
@@ -131,7 +132,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Recupera uma categoria especÃ­fica por seu identificador.
+        /// Recupera uma categoria específica por seu identificador.
         /// </summary>
         /// <param name="id">O identificador da categoria que se deseja recuperar.</param>
         /// <returns>Retorna a categoria que corresponde ao identificador fornecido.</returns>
@@ -157,7 +158,7 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Recupera uma categoria especÃ­fica por seu nome.
+        /// Recupera uma categoria específica por seu nome.
         /// </summary>
         /// <param name="NomeCategoria">O nome da categoria que se deseja recuperar.</param>
         /// <returns>Retorna a categoria que corresponde ao nome fornecido.</returns>
@@ -183,10 +184,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Atualiza as informaÃ§Ãµes de uma categoria especÃ­fica.
+        /// Atualiza as informações de uma categoria específica.
         /// </summary>
-        /// <param name="request">O objeto contendo as novas informaÃ§Ãµes da categoria.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de atualizaÃ§Ã£o.</returns>
+        /// <param name="request">O objeto contendo as novas informações da categoria.</param>
+        /// <returns>Retorna a resposta da solicitação de atualização.</returns>
 
         [HttpPut]
         [Route("/api/Categoria/AlterarCategoria")]
@@ -208,10 +209,10 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         }
 
         /// <summary>
-        /// Remove uma categoria especÃ­fica do sistema.
+        /// Remove uma categoria específica do sistema.
         /// </summary>
         /// <param name="id">O identificador da categoria que se deseja remover.</param>
-        /// <returns>Retorna a resposta da solicitaÃ§Ã£o de remoÃ§Ã£o.</returns>
+        /// <returns>Retorna a resposta da solicitação de remoção.</returns>
         [HttpDelete]
         [Route("/api/Categoria/RemoverCategoria/{id:Guid}")]
         public async Task<IActionResult> RemoverCategoria(Guid id, CancellationToken cancellationToken)
@@ -235,3 +236,4 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
         #endregion
     }
 }
+

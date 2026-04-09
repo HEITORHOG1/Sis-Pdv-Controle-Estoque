@@ -1,0 +1,30 @@
+@using Sis.Pdv.Blazor.Configuration
+
+<div class="pdv-statusbar-bottom">
+    <span class="pdv-statusbar-bottom__item">
+        <span class="pdv-statusbar-bottom__label">LOJA:</span>@Settings.NomeLoja
+    </span>
+    <span class="pdv-statusbar-bottom__item">
+        <span class="pdv-statusbar-bottom__label">CAIXA:</span>@Settings.NumeroCaixa
+    </span>
+    <span class="pdv-statusbar-bottom__item">
+        <span class="pdv-statusbar-bottom__label">Série:</span>@Settings.Serie
+    </span>
+    <span class="pdv-statusbar-bottom__item">
+        @Settings.Ambiente
+    </span>
+    <span class="pdv-statusbar-bottom__item">
+        <span class="pdv-statusbar-bottom__label">OPERADOR:</span>@NomeOperador
+    </span>
+    <span class="pdv-statusbar-bottom__item">
+        <span class="pdv-statusbar-bottom__label">Versão:</span>@Settings.Versao
+    </span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public PdvSettings Settings { get; set; } = default!;
+
+    [Parameter]
+    public string NomeOperador { get; set; } = "---";
+}

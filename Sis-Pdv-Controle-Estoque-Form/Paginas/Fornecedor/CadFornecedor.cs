@@ -279,9 +279,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
                         "Bairro", "Cidade", "CEP", "Ativo", "CNPJ", "Rua" 
                     });
                     
-                    // Oculta a coluna Id
-                    if (dgvFornecedor.Columns["Id"] != null)
-                        dgvFornecedor.Columns["Id"].Visible = false;
+                    // Colunas configuradas pelo DefinirCabecalhos
 
                     dgvFornecedor.Refresh();
                     
@@ -339,8 +337,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
                         "Bairro", "Cidade", "CEP", "Ativo", "CNPJ", "Rua" 
                     });
 
-                    if (dgvFornecedor.Columns["Id"] != null)
-                        dgvFornecedor.Columns["Id"].Visible = false;
+                    // Colunas configuradas pelo DefinirCabecalhos
 
                     if (fornecedoresList.Count == 0)
                     {
@@ -631,14 +628,32 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Fornecedor
 
         private async Task DefinirCabecalhos(List<string> listaCabecalhos)
         {
-            int index = 0;
+            await Task.CompletedTask;
+            var colunas = new Dictionary<string, (string Header, int Width)>
+            {
+                ["Cnpj"]               = ("CNPJ",            140),
+                ["NomeFantasia"]       = ("Nome Fantasia",    180),
+                ["InscricaoEstadual"]  = ("Insc. Estadual",   120),
+                ["Uf"]                 = ("UF",                45),
+                ["Cidade"]             = ("Cidade",           120),
+                ["Bairro"]             = ("Bairro",           100),
+                ["Rua"]                = ("Rua",              120),
+                ["Numero"]             = ("Numero",            60),
+                ["CepFornecedor"]      = ("CEP",               80),
+                ["StatusAtivo"]        = ("Ativo",             55),
+            };
 
             foreach (DataGridViewColumn coluna in dgvFornecedor.Columns)
             {
-                if (coluna.Visible && index < listaCabecalhos.Count)
+                if (colunas.TryGetValue(coluna.Name, out var config))
                 {
-                    coluna.HeaderText = listaCabecalhos[index];
-                    index++;
+                    coluna.HeaderText = config.Header;
+                    coluna.Width = config.Width;
+                    coluna.Visible = true;
+                }
+                else
+                {
+                    coluna.Visible = false;
                 }
             }
         }

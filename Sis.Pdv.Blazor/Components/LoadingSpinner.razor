@@ -1,0 +1,14 @@
+<div class="pdv-loading-overlay">
+    <div class="pdv-spinner"></div>
+    @if (!string.IsNullOrEmpty(Mensagem))
+    {
+        <p style="margin-top: 16px; font-weight: 600; color: var(--pdv-text-secondary);">
+            @Mensagem
+        </p>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? Mensagem { get; set; }
+}

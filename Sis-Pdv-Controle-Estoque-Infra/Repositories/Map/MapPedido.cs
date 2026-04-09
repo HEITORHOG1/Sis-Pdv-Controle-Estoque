@@ -22,6 +22,12 @@ namespace Repositories.Map
                 .WithMany()
                 .HasForeignKey(x => x.ClienteId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Indexes para consultas frequentes
+            builder.HasIndex(x => x.Status).HasDatabaseName("IX_Pedido_Status");
+            builder.HasIndex(x => x.DataDoPedido).HasDatabaseName("IX_Pedido_DataDoPedido");
+            builder.HasIndex(x => x.ClienteId).HasDatabaseName("IX_Pedido_ClienteId");
+            builder.HasIndex(x => x.ColaboradorId).HasDatabaseName("IX_Pedido_ColaboradorId");
         }
     }
 }

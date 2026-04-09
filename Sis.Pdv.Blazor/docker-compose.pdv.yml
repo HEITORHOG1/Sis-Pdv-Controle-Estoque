@@ -1,0 +1,31 @@
+services:
+  pdv-db:
+    image: mysql:8.0
+    container_name: pdv-db-local
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: pdv_local
+      MYSQL_USER: pdv_user
+      MYSQL_PASSWORD: pdv_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - pdv_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: pdv-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+
+volumes:
+  pdv_db_data:

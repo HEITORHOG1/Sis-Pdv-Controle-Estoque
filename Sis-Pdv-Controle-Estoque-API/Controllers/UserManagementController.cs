@@ -1,3 +1,4 @@
+using Interfaces;
 using Commands.Usuarios.RegistrarUsuario;
 using Commands.Usuarios.AlterarSenha;
 using Commands.Usuarios.AtualizarPerfil;
@@ -7,6 +8,7 @@ using Commands.Usuarios.RevogarSessao;
 using Commands.Usuarios.AtribuirRoles;
 using Commands.Usuarios.AlterarStatusUsuario;
 using Commands.Usuarios.ResetarSenha;
+using Commands.Usuarios.ListarUsuarioPorId;
 using Commands.Usuarios.Login;
 using Commands.Roles.CriarRole;
 using Commands.Roles.ListarRoles;
@@ -335,6 +337,23 @@ namespace Sis_Pdv_Controle_Estoque_API.Controllers
             request.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             request.UserAgent = HttpContext.Request.Headers["User-Agent"].ToString();
 
+            var response = await _mediator.Send(request, cancellationToken);
+            return await ResponseAsync(response, cancellationToken);
+        }
+
+        /// <summary>
+        /// Buscar usuário por Id
+        /// </summary>
+        /// <param name="userId">Id do usuário</param>
+        /// <param name="cancellationToken">Token de cancelamento</param>
+        /// <returns>Dados do usuário</returns>
+        [HttpGet("{userId:guid}")]
+        [Authorize(Policy = "RequireUserManagementPermission")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUserById(Guid userId, CancellationToken cancellationToken)
+        {
+            var request = new ListarUsuarioPorIdRequest(userId);
             var response = await _mediator.Send(request, cancellationToken);
             return await ResponseAsync(response, cancellationToken);
         }

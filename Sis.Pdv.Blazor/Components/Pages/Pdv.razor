@@ -1,0 +1,274 @@
+@page "/pdv"
+@rendermode InteractiveServer
+@layout MainLayout
+@inject PdvViewModel ViewModel
+@inject LoginViewModel LoginVm
+@inject IOptions<Sis.Pdv.Blazor.Configuration.PdvSettings> PdvSettings
+@inject IJSRuntime JS
+
+
+<PageTitle>PDV — Frente de Caixa</PageTitle>
+
+@* === AREA PRINCIPAL === *@
+<div class="pdv-main @(ViewModel.EstadoAtual is EstadoPdv.CaixaLivre or EstadoPdv.Finalizada ? "pdv-main--livre" : "")">
+
+    @if (ViewModel.EstadoAtual == EstadoPdv.CaixaLivre)
+    {
+        @* --- CAIXA LIVRE: input captura scanner/teclado --- *@
+        <div class="pdv-caixa-livre" @onclick="FocarInputBarcode">
+            <div class="pdv-caixa-livre__label">CAIXA LIVRE</div>
+
+            <input @ref="_barcodeInput"
+                   @bind="ViewModel.CodigoBarras"
+                   @bind:event="oninput"
+                   @onkeydown="OnBarcodeKeyDown"
+                   style="position:absolute; opacity:0; width:1px; height:1px;"
+                   autofocus />
+
+            @if (!string.IsNullOrEmpty(ViewModel.MensagemErro))
+            {
+                <div style="color:#c0392b; background:rgba(255,255,255,0.9); padding:8px 16px; border-radius:6px; margin-top:12px; font-weight:bold;">
+                    @ViewModel.MensagemErro
+                </div>
+            }
+        </div>
+    }
+    else if (ViewModel.EstadoAtual == EstadoPdv.Finalizada)
+    {
+        @* --- TELA OBRIGADO (fullscreen) --- *@
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%;">
+            <div class="pdv-dialog-card" style="text-align:center; padding:48px 64px;">
+                <div style="font-size:4rem; margin-bottom:16px;">🛍️✅</div>
+                <div class="pdv-dialog-card__title" style="font-size:2rem;">Obrigado por sua compra!</div>
+                <div class="pdv-dialog-card__subtitle" style="font-size:1.1rem; margin-top:8px;">
+                    Agradecemos pela preferencia, volte sempre!
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @* --- PAINEL ESQUERDO --- *@
+        <div class="pdv-panel-left">
+            @if (ViewModel.EstadoAtual == EstadoPdv.VendaEmAndamento)
+            {
+                <PainelProduto ViewModel="ViewModel" OnBuscarProduto="BuscarProduto" />
+            }
+            else if (ViewModel.EstadoAtual == EstadoPdv.Subtotal)
+            {
+                <PainelSubtotal ViewModel="ViewModel" />
+            }
+            else if (ViewModel.EstadoAtual == EstadoPdv.Pagamento)
+            {
+                <PainelPagamento ViewModel="ViewModel" />
+            }
+        </div>
+
+        @* --- PAINEL DIREITO (NFC-e) --- *@
+        <div class="pdv-panel-nfce">
+            <PainelNfce ViewModel="ViewModel" />
+
+            @if (ViewModel.IsLoading)
+            {
+                <LoadingSpinner Mensagem="@ViewModel.MensagemStatus" />
+            }
+        </div>
+    }
+</div>
+
+@* === DIALOG DE RECUPERACAO DE VENDA === *@
+@if (_mostrarDialogRecuperacao)
+{
+    <div class="pdv-dialog-overlay" @onkeydown="OnRecoveryKeyDown" tabindex="0" @ref="_recoveryDialog">
+        <div class="pdv-dialog-card">
+            <div style="font-size:3rem; margin-bottom:12px;">⚠️</div>
+            <div class="pdv-dialog-card__title">Venda Pendente Encontrada</div>
+            <div class="pdv-dialog-card__subtitle">
+                Foi encontrada uma venda em andamento que nao foi finalizada.<br/>
+                Deseja retomar essa venda ou descartar e iniciar uma nova?
+            </div>
+            <div class="pdv-dialog-card__actions">
+                <button class="pdv-btn pdv-btn--success" style="padding:14px 32px; font-size:1.1rem;" @onclick="RecuperarVenda">
+                    RETOMAR (ENTER)
+                </button>
+                <button class="pdv-btn pdv-btn--danger" style="padding:14px 32px; font-size:1.1rem;" @onclick="DescartarRascunho">
+                    DESCARTAR (ESC)
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@* === BARRA DE STATUS DO ITEM (PRETA) === *@
+<StatusBarVenda Descricao="@(ViewModel.UltimoItemDescricao ?? "")" />
+
+@* === BARRA INFERIOR (CINZA) === *@
+<StatusBar Settings="PdvSettings.Value" NomeOperador="@(ViewModel.VendaAtual?.NomeOperador ?? "---")" />
+
+@implements IDisposable
+@inject Sis.Pdv.Blazor.Services.IKeyboardService KeyboardService
+
+@code {
+    private ElementReference _barcodeInput;
+    private ElementReference _recoveryDialog;
+
+    private bool _mostrarDialogRecuperacao;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel.StateChanged += OnViewModelStateChanged;
+        KeyboardService.KeyDown += OnGlobalKeyDown;
+
+        // Pega operador do LoginViewModel (preenchido no login via API)
+        var usuario = LoginVm.Usuario;
+        if (usuario != null)
+        {
+            ViewModel.DefinirOperador(usuario.Id, usuario.Nome ?? usuario.Login ?? "Operador");
+        }
+        else
+        {
+            ViewModel.DefinirOperador(Guid.NewGuid(), "Caixa");
+        }
+
+        // Verifica se tem venda pendente (queda de energia / crash)
+        var temRascunho = await ViewModel.VerificarRascunhoPendenteAsync();
+        if (temRascunho)
+        {
+            _mostrarDialogRecuperacao = true;
+        }
+        else
+        {
+            ViewModel.IniciarNovaVenda();
+        }
+    }
+
+    private async Task RecuperarVenda()
+    {
+        _mostrarDialogRecuperacao = false;
+        await ViewModel.RecuperarVendaAsync();
+    }
+
+    private async Task DescartarRascunho()
+    {
+        _mostrarDialogRecuperacao = false;
+        await ViewModel.DescartarRascunhoAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Inicializa captura de teclado global (F-keys com preventDefault no browser)
+            await KeyboardService.InitializeAsync();
+        }
+
+        // Foca dialog de recuperacao se visivel
+        if (_mostrarDialogRecuperacao)
+        {
+            try { await _recoveryDialog.FocusAsync(); } catch { }
+            return;
+        }
+
+        // Forca foco no input de barcode apos cada render (essencial para scanner)
+        if (ViewModel.EstadoAtual == EstadoPdv.CaixaLivre)
+        {
+            try { await _barcodeInput.FocusAsync(); } catch { }
+        }
+        else if (ViewModel.EstadoAtual == EstadoPdv.VendaEmAndamento)
+        {
+            try { await JS.InvokeVoidAsync("eval", "document.querySelector('.pdv-barcode-input input')?.focus()"); } catch { }
+        }
+    }
+
+    private async Task OnRecoveryKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await RecuperarVenda();
+        else if (e.Key == "Escape")
+            await DescartarRascunho();
+    }
+
+    private async Task FocarInputBarcode()
+    {
+        try { await _barcodeInput.FocusAsync(); } catch { }
+    }
+
+    private void OnViewModelStateChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task BuscarProduto()
+    {
+        await ViewModel.BuscarProdutoAsync();
+    }
+
+    private async Task OnBarcodeKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            if (ViewModel.EstadoAtual == EstadoPdv.CaixaLivre
+                && string.IsNullOrWhiteSpace(ViewModel.CodigoBarras))
+            {
+                // Enter sem codigo no CAIXA LIVRE → abre a venda
+                ViewModel.AbrirVenda();
+            }
+            else
+            {
+                await BuscarProduto();
+            }
+        }
+    }
+
+    private async void OnGlobalKeyDown(object? sender, Sis.Pdv.Blazor.Core.Enum.JSKeys key)
+    {
+        await InvokeAsync(async () =>
+        {
+            // Atalhos específicos do modo PAGAMENTO
+            if (ViewModel.EstadoAtual == EstadoPdv.Pagamento)
+            {
+                if (key == Sis.Pdv.Blazor.Core.Enum.JSKeys.Enter)
+                {
+                    await ViewModel.ConfirmarPagamento();
+                }
+                else if (key == Sis.Pdv.Blazor.Core.Enum.JSKeys.Esc)
+                {
+                    ViewModel.CancelarPagamento();
+                }
+                return;
+            }
+
+            // F5: Buscar / Iniciar Venda
+            if (key == Sis.Pdv.Blazor.Core.Enum.JSKeys.F5)
+            {
+                await BuscarProduto();
+            }
+            // Pagamentos Diretos
+            else if (key == Sis.Pdv.Blazor.Core.Enum.JSKeys.F3)
+            {
+                ViewModel.IrParaPagamento();
+                ViewModel.FormaPagamentoSelecionada = "DINHEIRO";
+            }
+            else if (key == Sis.Pdv.Blazor.Core.Enum.JSKeys.F4)
+            {
+                ViewModel.IrParaPagamento();
+                ViewModel.FormaPagamentoSelecionada = "CARTAO_CREDITO";
+            }
+            else if (key == Sis.Pdv.Blazor.Core.Enum.JSKeys.F6)
+            {
+                ViewModel.IrParaPagamento();
+                ViewModel.FormaPagamentoSelecionada = "PIX";
+            }
+            else if (key == Sis.Pdv.Blazor.Core.Enum.JSKeys.F12)
+            {
+                ViewModel.IrParaPagamento();
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        ViewModel.StateChanged -= OnViewModelStateChanged;
+        KeyboardService.KeyDown -= OnGlobalKeyDown;
+    }
+}

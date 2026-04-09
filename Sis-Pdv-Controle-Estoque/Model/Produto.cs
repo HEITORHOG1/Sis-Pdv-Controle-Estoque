@@ -10,8 +10,6 @@ namespace Model
         // Construtor para EF Core
         public Produto()
         {
-            Fornecedor = new Fornecedor();
-            Categoria = new Categoria();
         }
         
         public Produto(

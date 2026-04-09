@@ -1,22 +1,24 @@
+using Model.Exceptions;
+
 namespace Model
 {
     public class ProdutoPedido : EntityBase
     {
         public ProdutoPedido()
         {
-
         }
-        public ProdutoPedido(Guid pedidoId,
-                             Guid produtoId,
-                            string CodBarras,
-                            int QuantidadeItemPedido,
-                            decimal TotalProdutoPedido)
+
+        public ProdutoPedido(Guid pedidoId, Guid produtoId, string codBarras,
+            int quantidadeItemPedido, decimal totalProdutoPedido)
         {
+            ValidarIds(pedidoId, produtoId);
+            ValidarQuantidade(quantidadeItemPedido);
+
             PedidoId = pedidoId;
             ProdutoId = produtoId;
-            this.CodBarras = CodBarras;
-            this.QuantidadeItemPedido = QuantidadeItemPedido;
-            this.TotalProdutoPedido = TotalProdutoPedido;
+            CodBarras = codBarras;
+            QuantidadeItemPedido = quantidadeItemPedido;
+            TotalProdutoPedido = totalProdutoPedido;
         }
 
 
@@ -30,13 +32,31 @@ namespace Model
         public decimal? TotalProdutoPedido { get; set; }
 
 
-        internal void AlterarProdutoPedido(Guid pedidoId, Guid produtoId, string CodBarras, int QuantidadeItemPedido, decimal TotalProdutoPedido)
+        internal void AlterarProdutoPedido(Guid pedidoId, Guid produtoId, string codBarras, int quantidadeItemPedido, decimal totalProdutoPedido)
         {
-            new Pedido { Id = pedidoId };
-            new Produto { Id = produtoId };
-            this.CodBarras = CodBarras;
-            this.QuantidadeItemPedido = QuantidadeItemPedido;
-            this.TotalProdutoPedido = TotalProdutoPedido;
+            ValidarIds(pedidoId, produtoId);
+            ValidarQuantidade(quantidadeItemPedido);
+
+            PedidoId = pedidoId;
+            ProdutoId = produtoId;
+            CodBarras = codBarras;
+            QuantidadeItemPedido = quantidadeItemPedido;
+            TotalProdutoPedido = totalProdutoPedido;
+        }
+
+        private static void ValidarIds(Guid pedidoId, Guid produtoId)
+        {
+            if (pedidoId == Guid.Empty)
+                throw new DomainException("O Id do pedido é obrigatório.");
+
+            if (produtoId == Guid.Empty)
+                throw new DomainException("O Id do produto é obrigatório.");
+        }
+
+        private static void ValidarQuantidade(int quantidade)
+        {
+            if (quantidade <= 0)
+                throw new DomainException("A quantidade do item deve ser maior que zero.");
         }
     }
 }

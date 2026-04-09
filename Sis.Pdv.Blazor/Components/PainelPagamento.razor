@@ -1,0 +1,134 @@
+<div class="pdv-panel-left__header">PAGAMENTO</div>
+
+<div class="pdv-panel-left__content">
+
+    <!-- Valor Total -->
+    <div class="pdv-info-box pdv-info-box--full pdv-info-box--success" style="margin-bottom: 20px;">
+        <div class="pdv-info-box__label">TOTAL A PAGAR</div>
+        <div class="pdv-info-box__value">@ViewModel.VendaAtual?.ValorFinal.ToString("C2")</div>
+    </div>
+
+    <!-- Input CPF/CNPJ -->
+    <div class="pdv-payment-input-group" style="margin-bottom: 20px;">
+        <label>CPF/CNPJ na Nota (Opcional)</label>
+        <input type="text" 
+               @bind="ViewModel.VendaAtual!.CpfCnpjCliente" 
+               class="pdv-input-large" 
+               style="font-size: 1.5rem; text-align: left;"
+               placeholder="Apenas números" />
+    </div>
+
+    <!-- Seleção de Forma -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+        @foreach (var forma in new[] { "DINHEIRO", "CARTAO_CREDITO", "CARTAO_DEBITO", "PIX" })
+        {
+            var isSelected = ViewModel.FormaPagamentoSelecionada == forma;
+            <button class="btn-pdv-payment @(isSelected ? "selected" : "")"
+                    @onclick="() => SelecionarForma(forma)">
+                @forma.Replace("_", " ")
+            </button>
+        }
+    </div>
+
+    <!-- Input Valor -->
+    <div class="pdv-payment-input-group">
+        <label>Valor Recebido (R$)</label>
+        <input type="number" step="0.01" 
+               @bind="ViewModel.ValorPagoInput" 
+               @bind:event="oninput"
+               class="pdv-input-large" 
+               @ref="_valorInput" />
+    </div>
+
+    <!-- Troco / Restante -->
+    <div class="pdv-info-box pdv-info-box--full @(ViewModel.TrocoPreview >= 0 ? "pdv-info-box--success" : "pdv-info-box--error")" 
+         style="margin-top: 20px;">
+        <div class="pdv-info-box__label">@(ViewModel.TrocoPreview >= 0 ? "TROCO" : "FALTAM")</div>
+        <div class="pdv-info-box__value">
+            @Math.Abs(ViewModel.TrocoPreview).ToString("C2")
+        </div>
+    </div>
+
+    <!-- Ações -->
+    <div style="margin-top: auto; display: flex; gap: 10px;">
+        <button class="btn-pdv-action btn-cancel" @onclick="Cancelar">Cancelar (Esc)</button>
+        <button class="btn-pdv-action btn-confirm" @onclick="Confirmar" disabled="@(ViewModel.TrocoPreview < 0)">Confirmar (Enter)</button>
+    </div>
+
+</div>
+
+<style>
+    .btn-pdv-payment {
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: 2px solid #ccc;
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+        text-transform: uppercase;
+    }
+    .btn-pdv-payment.selected {
+        border-color: #4CAF50;
+        background-color: #E8F5E9;
+        color: #2E7D32;
+    }
+    .pdv-input-large {
+        width: 100%;
+        font-size: 2.5rem;
+        padding: 10px;
+        text-align: right;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        font-weight: bold;
+        color: #333;
+    }
+    .pdv-input-large:focus {
+        border-color: #2196F3;
+        outline: none;
+    }
+    .pdv-payment-input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+        font-size: 0.9rem;
+    }
+    .btn-pdv-action {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        color: white;
+    }
+    .btn-cancel { background-color: #F44336; }
+    .btn-confirm { background-color: #4CAF50; }
+    .btn-confirm:disabled { background-color: #ccc; cursor: not-allowed; }
+</style>
+
+@code {
+    [Parameter, EditorRequired] public PdvViewModel ViewModel { get; set; } = default!;
+    private ElementReference _valorInput;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _valorInput.FocusAsync();
+        }
+    }
+
+    private void SelecionarForma(string forma)
+    {
+        ViewModel.FormaPagamentoSelecionada = forma;
+        // Ao trocar forma, focar input novamente?
+        // Talvez.
+    }
+
+    private async Task Confirmar() => await ViewModel.ConfirmarPagamento();
+    private void Cancelar() => ViewModel.CancelarPagamento();
+}

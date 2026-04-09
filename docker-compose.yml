@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   pdv-api:
     build:
@@ -10,7 +8,7 @@ services:
       - "8080:8080"
       - "8081:8081"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Docker
       - DOTNET_RUNNING_IN_CONTAINER=true
       - DB_SERVER=mysql
       - DB_NAME=PDV_PROD
@@ -38,6 +36,26 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+
+  pdv-blazor:
+    build:
+      context: .
+      dockerfile: Sis.Pdv.Blazor/Dockerfile
+    container_name: pdv-blazor
+    ports:
+      - "8090:8090"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    depends_on:
+      pdv-api:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - pdv-network
+    restart: unless-stopped
 
   mysql:
     image: mysql:8.0

@@ -148,13 +148,8 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                     ExclusaoRealizada = true;
                     _exclusaoConfirmada = true;
                     
-                    ExibirSucesso($"Departamento '{_NomeDepartamento}' excluído com sucesso!");
-                    
                     ExcluirDepartamentoLogger.LogInfo($"Departamento excluído com sucesso: ID={_departamentoId}, Nome={_NomeDepartamento}", "Delete");
-                    
-                    // Pequeno delay para feedback visual
-                    await Task.Delay(1500);
-                    
+
                     FecharFormulario(true);
                 }
                 else
@@ -179,37 +174,14 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         private bool ConfirmarExclusao()
         {
             var confirmacao = MessageBox.Show(
-                $"🚨 CONFIRMAÇÃO FINAL DE EXCLUSÃO\n\n" +
-                $"Departamento: {_NomeDepartamento}\n" +
-                $"ID: {_departamentoId}\n\n" +
-                $"⚠️ ATENÇÃO:\n" +
-                $"• Esta ação é IRREVERSÍVEL\n" +
-                $"• O departamento será excluído permanentemente\n" +
-                $"• Todos os dados serão perdidos\n" +
-                $"• Verifique se não há colaboradores vinculados\n\n" +
-                $"Você tem CERTEZA ABSOLUTA que deseja excluir este departamento?",
-                "⚠️ CONFIRMAR EXCLUSÃO PERMANENTE",
+                $"Deseja excluir o departamento '{_NomeDepartamento}'?\n\n" +
+                $"O departamento sera desativado e podera ser restaurado posteriormente.",
+                "Confirmar Exclusao",
                 MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button2); // Padrão é "Não"
-            
-            if (confirmacao == DialogResult.Yes)
-            {
-                // Segunda confirmação para operações críticas
-                var segundaConfirmacao = MessageBox.Show(
-                    $"🔴 ÚLTIMA CONFIRMAÇÃO\n\n" +
-                    $"Esta é sua última chance de cancelar!\n\n" +
-                    $"Departamento '{_NomeDepartamento}' será excluído PERMANENTEMENTE.\n\n" +
-                    $"Continuar com a exclusão?",
-                    "🔴 ÚLTIMA CHANCE",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Stop,
-                    MessageBoxDefaultButton.Button2);
-                
-                return segundaConfirmacao == DialogResult.Yes;
-            }
-            
-            return false;
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2);
+
+            return confirmacao == DialogResult.Yes;
         }
         
         private async Task<bool> PodeExcluirDepartamento()
@@ -370,45 +342,13 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         
         #endregion
         
-        #region Métodos Legados (Compatibilidade)
-        
-        // Mantido para compatibilidade com código existente
-        private async Task Excluir()
-        {
-            await ProcessarExclusao();
-        }
-        
-        private async Task AtualizarFormularioPrincipal()
-        {
-            try
-            {
-                var formPrincipal = Application.OpenForms.OfType<CadDepartamento>().FirstOrDefault();
-                if (formPrincipal != null)
-                {
-                    await formPrincipal.Consultar();
-                }
-            }
-            catch (Exception ex)
-            {
-                ExcluirDepartamentoLogger.LogError($"Erro ao atualizar formulário principal: {ex.Message}", "Integration", ex);
-            }
-        }
-        
         private void ExcluirDepartamento_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (_isLoading)
             {
                 e.Cancel = true;
-                ExibirAviso(
-                    "Aguarde a conclusão da operação de exclusão.",
-                    "Operação em Andamento");
-                return;
             }
-            
-            // Não precisa mais da atualização manual - DialogResult resolve isso
         }
-        
-        #endregion
         
         #region Classes de Log Auxiliares
         

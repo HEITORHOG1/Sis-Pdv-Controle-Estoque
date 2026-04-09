@@ -4,9 +4,9 @@ namespace Commands.Cliente.ListarClientePorCpfCnpj
 {
     public class ListarClientePorCpfCnpjRequest : IRequest<Commands.Response>
     {
-        public ListarClientePorCpfCnpjRequest(string CpfCnpj)
+        public ListarClientePorCpfCnpjRequest(string cpfCnpj)
         {
-            CpfCnpj = CpfCnpj;
+            CpfCnpj = cpfCnpj;
         }
 
         public string CpfCnpj { get; set; }

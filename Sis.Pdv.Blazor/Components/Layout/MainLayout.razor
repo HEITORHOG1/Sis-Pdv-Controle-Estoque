@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+@inject Sis.Pdv.Blazor.Services.IKeyboardService KeyboardService
+
+<div class="pdv-layout">
+    @Body
+</div>
+
+<RadzenDialog />
+<RadzenNotification />
+<RadzenTooltip />
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await KeyboardService.InitializeAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao inicializar atalhos: {ex.Message}");
+            }
+        }
+    }
+}

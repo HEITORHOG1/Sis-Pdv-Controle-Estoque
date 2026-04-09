@@ -1,3 +1,4 @@
+using Interfaces;
 using Commands.Produto.ListarProdutosPaginado;
 using Commands.Produto.AdicionarProduto;
 using Commands.Produto.AlterarProduto;

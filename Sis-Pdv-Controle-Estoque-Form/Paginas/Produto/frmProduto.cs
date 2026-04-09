@@ -17,7 +17,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
         private FornecedorService fornecedorService;
         private CategoriaService categoriaService;
         private BindingList<ProdutoDto> produtosList;
+        private List<ProdutoDto> todosOsProdutos = new();
         private bool isLoading = false;
+        private int paginaAtual = 1;
+        private const int ItensPorPagina = 20;
 
         public frmProduto()
         {
@@ -166,33 +169,17 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                 if (response.IsValidResponse())
                 {
-                    produtosList.Clear();
-                        if (response.data != null)
-                        {
-                    foreach (var produto in response.data)
+                    todosOsProdutos.Clear();
+                    if (response.data != null)
                     {
-                        produtosList.Add(produto.ToDto());
-                    }
+                        foreach (var produto in response.data)
+                        {
+                            todosOsProdutos.Add(produto.ToDto());
                         }
+                    }
 
-                    dgvProduto.DataSource = null;
-                    dgvProduto.DataSource = produtosList;
-                    DefinirCabecalhos(new List<string>() {
-                        "ID", "C�d barras", "Nome", "Descri��o", "P. Custo", "P. Venda",
-                        "Margem", "Dt. Fabri.", "Dt. Venci.", "Qtd.", "Fornecedor", "Categoria", "Ativo"
-                    });
-
-                    // Oculta colunas desnecess�rias
-                    if (dgvProduto.Columns["Id"] != null)
-                        dgvProduto.Columns["Id"].Visible = false;
-
-                    // Formata colunas de pre�o
-                    FormatarColunas();
-                    
-                    // Aplica cores baseadas em alertas
-                    AplicarCoresAlertas();
-
-                    dgvProduto.Refresh();
+                    paginaAtual = 1;
+                    AplicarPaginacao();
                     
                     ProdutoLogger.LogInfo($"Listagem conclu�da com {produtosList.Count} produtos", "Listagem");
                 }
@@ -253,10 +240,7 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
                     dgvProduto.DataSource = null;
                     dgvProduto.DataSource = produtosList;
-                    DefinirCabecalhos(new List<string>() {
-                        "ID", "C�d barras", "Nome", "Descri��o", "P. Custo", "P. Venda",
-                        "Margem", "Dt. Fabri.", "Dt. Venci.", "Qtd.", "Fornecedor", "Categoria", "Ativo"
-                    });
+                    DefinirCabecalhos(null);
 
                     FormatarColunas();
                     AplicarCoresAlertas();
@@ -691,22 +675,40 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private void FormatarColunas()
         {
-            // Formatar colunas de pre�o
             if (dgvProduto.Columns["PrecoCusto"] != null)
                 dgvProduto.Columns["PrecoCusto"].DefaultCellStyle.Format = "C2";
-            
+
             if (dgvProduto.Columns["PrecoVenda"] != null)
                 dgvProduto.Columns["PrecoVenda"].DefaultCellStyle.Format = "C2";
-            
+
             if (dgvProduto.Columns["MargemLucro"] != null)
                 dgvProduto.Columns["MargemLucro"].DefaultCellStyle.Format = "F2";
 
-            // Formatar datas
             if (dgvProduto.Columns["DataFabricao"] != null)
                 dgvProduto.Columns["DataFabricao"].DefaultCellStyle.Format = "dd/MM/yyyy";
-            
+
+            if (dgvProduto.Columns["QuantidadeEstoqueProduto"] != null)
+                dgvProduto.Columns["QuantidadeEstoqueProduto"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
+            // Registra evento para formatar StatusAtivo como Sim/Nao (remove handler anterior para evitar duplicacao)
+            dgvProduto.CellFormatting -= DgvProduto_CellFormatting;
+            dgvProduto.CellFormatting += DgvProduto_CellFormatting;
+
             if (dgvProduto.Columns["DataVencimento"] != null)
                 dgvProduto.Columns["DataVencimento"].DefaultCellStyle.Format = "dd/MM/yyyy";
+        }
+
+        private void DgvProduto_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            var colName = dgvProduto.Columns[e.ColumnIndex].Name;
+
+            if (colName == "StatusAtivo" && e.Value != null)
+            {
+                e.Value = e.Value.ToString() == "1" ? "Sim" : "Nao";
+                e.FormattingApplied = true;
+            }
         }
 
         private void AplicarCoresAlertas()
@@ -716,12 +718,21 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
                 if (row.DataBoundItem is ProdutoDto produto)
                 {
                     var cor = produto.GetCorAlerta();
-                    
-                    // Aplica cor apenas se n�o for verde (normal)
-                    if (cor != System.Drawing.Color.Green)
+
+                    if (cor == System.Drawing.Color.Red)
                     {
-                        row.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(30, cor);
-                        row.DefaultCellStyle.SelectionBackColor = cor;
+                        row.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 230, 230);
+                        row.DefaultCellStyle.ForeColor = System.Drawing.Color.DarkRed;
+                    }
+                    else if (cor == System.Drawing.Color.Orange)
+                    {
+                        row.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 243, 224);
+                        row.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(150, 80, 0);
+                    }
+                    else if (cor == System.Drawing.Color.Yellow)
+                    {
+                        row.DefaultCellStyle.BackColor = System.Drawing.Color.FromArgb(255, 255, 224);
+                        row.DefaultCellStyle.ForeColor = System.Drawing.Color.FromArgb(120, 100, 0);
                     }
                 }
             }
@@ -905,14 +916,31 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
         private void DefinirCabecalhos(List<string> listaCabecalhos)
         {
-            int index = 0;
+            var colunasMapeadas = new Dictionary<string, (string Header, int Width)>
+            {
+                ["CodBarras"]                = ("Cod. Barras",   130),
+                ["NomeProduto"]              = ("Nome",          160),
+                ["DescricaoProduto"]         = ("Descricao",     150),
+                ["PrecoCusto"]               = ("P. Custo",       90),
+                ["PrecoVenda"]               = ("P. Venda",       90),
+                ["MargemLucro"]              = ("Margem %",       75),
+                ["DataFabricao"]             = ("Dt. Fabri.",     95),
+                ["DataVencimento"]           = ("Dt. Venci.",     95),
+                ["QuantidadeEstoqueProduto"] = ("Qtd.",           60),
+                ["StatusAtivo"]              = ("Ativo",          55),
+            };
 
             foreach (DataGridViewColumn coluna in dgvProduto.Columns)
             {
-                if (coluna.Visible && index < listaCabecalhos.Count)
+                if (colunasMapeadas.TryGetValue(coluna.Name, out var config))
                 {
-                    coluna.HeaderText = listaCabecalhos[index];
-                    index++;
+                    coluna.HeaderText = config.Header;
+                    coluna.Width = config.Width;
+                    coluna.Visible = true;
+                }
+                else
+                {
+                    coluna.Visible = false;
                 }
             }
         }
@@ -984,6 +1012,55 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Produto
 
             // Reset cor da margem
             txbMargemDeLucro.BackColor = System.Drawing.SystemColors.Window;
+        }
+
+        private void btnLimpar_Click(object sender, EventArgs e)
+        {
+            LimparCampos();
+            txbCodigoBarras.Focus();
+        }
+
+        private void btnPaginaAnterior_Click(object sender, EventArgs e)
+        {
+            if (paginaAtual > 1)
+            {
+                paginaAtual--;
+                AplicarPaginacao();
+            }
+        }
+
+        private void btnProximaPagina_Click(object sender, EventArgs e)
+        {
+            var totalPaginas = (int)Math.Ceiling((double)todosOsProdutos.Count / ItensPorPagina);
+            if (paginaAtual < totalPaginas)
+            {
+                paginaAtual++;
+                AplicarPaginacao();
+            }
+        }
+
+        private void AplicarPaginacao()
+        {
+            var totalPaginas = Math.Max(1, (int)Math.Ceiling((double)todosOsProdutos.Count / ItensPorPagina));
+
+            var itensPagina = todosOsProdutos
+                .Skip((paginaAtual - 1) * ItensPorPagina)
+                .Take(ItensPorPagina)
+                .ToList();
+
+            produtosList.Clear();
+            foreach (var p in itensPagina)
+                produtosList.Add(p);
+
+            dgvProduto.DataSource = null;
+            dgvProduto.DataSource = produtosList;
+            DefinirCabecalhos(null);
+            FormatarColunas();
+            AplicarCoresAlertas();
+
+            lblPaginacao.Text = $"Pagina {paginaAtual} de {totalPaginas} ({todosOsProdutos.Count} produtos)";
+            btnPaginaAnterior.Enabled = paginaAtual > 1;
+            btnProximaPagina.Enabled = paginaAtual < totalPaginas;
         }
 
         private void SetLoadingState(bool loading)

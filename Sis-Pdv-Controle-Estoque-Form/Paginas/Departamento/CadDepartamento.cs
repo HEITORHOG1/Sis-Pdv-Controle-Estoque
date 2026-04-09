@@ -590,9 +590,9 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
                 return false;
             }
             
-            if (nome.Length > 150)
+            if (nome.Length > 100)
             {
-                ExibirAviso("O nome do departamento não pode ter mais de 150 caracteres.");
+                ExibirAviso("O nome do departamento não pode ter mais de 100 caracteres.");
                 txtNomeDepartamento.Focus();
                 return false;
             }
@@ -750,18 +750,27 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         
         private void lstGrid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            SelecionarDepartamentoDoGrid(e.RowIndex);
+        }
+
+        private void lstGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            SelecionarDepartamentoDoGrid(e.RowIndex);
+        }
+
+        private void SelecionarDepartamentoDoGrid(int rowIndex)
+        {
             try
             {
-                if (e.RowIndex < 0 || e.RowIndex >= _departamentosList.Count) return;
-                
-                var departamento = _departamentosList[e.RowIndex];
-                
+                if (rowIndex < 0 || rowIndex >= _departamentosList.Count) return;
+
+                var departamento = _departamentosList[rowIndex];
+
                 txtNomeDepartamento.Text = departamento.NomeDepartamento;
                 LblId.Text = departamento.Id;
-                txtNomeDepartamento.Enabled = false;
-                
+
                 AtualizarStatusInterface();
-                
+
                 DepartamentoLogger.LogInfo($"Departamento selecionado: ID={departamento.Id}, Nome={departamento.NomeDepartamento}", "Selection");
             }
             catch (Exception ex)
@@ -922,48 +931,10 @@ namespace Sis_Pdv_Controle_Estoque_Form.Paginas.Departamento
         
         #endregion
         
-        #region Métodos Legados (Compatibilidade)
-        
-        // Mantidos para compatibilidade com código existente
         public async Task Consultar()
         {
             await AtualizarLista();
         }
-        
-        private async Task ConsultarPorNomeDepartamento(string NomeDepartamento)
-        {
-            await ConsultarPorNome(NomeDepartamento);
-        }
-        
-        private void DefinirCabecalhos(List<string> listaCabecalhos)
-        {
-            // Método legado - nova implementação usa FormatarGrid()
-            FormatarGrid();
-        }
-        
-        private bool ValidarCamposCadastro()
-        {
-            return ValidarDados();
-        }
-        
-        private bool ValidarSelecao(string acao)
-        {
-            if (string.IsNullOrEmpty(txtNomeDepartamento.Text?.Trim()) || string.IsNullOrEmpty(LblId.Text))
-            {
-                DepartamentoLogger.LogWarning($"Tentativa de {acao} sem seleção", "Validacao");
-                ExibirAviso($"Selecione um departamento para {acao}.");
-                return false;
-            }
-            
-            return true;
-        }
-        
-        private void CadDepartamento_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            DepartamentoLogger.LogOperation("FormularioFechado");
-        }
-        
-        #endregion
         
         #region Classes de Log Auxiliares
         

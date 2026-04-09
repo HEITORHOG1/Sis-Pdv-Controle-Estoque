@@ -362,6 +362,29 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# Markdown files (except README.md)
-*.md
-!README.md
+# Environment files with secrets
+.env
+!.env.example
+
+# Log files
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.tmp.md
+
+# Docs internos de analise (nao sao do projeto)
+docs/PLANEJAMENTO-PENDENCIAS.md
+docs/ANALISE-ARQUITETURAL.md
+
+# Arquivos de build/erro temporarios
+build_error.txt
+build_error_cmd.txt
+build_log.txt
+blazor_build_err.txt
+errors.txt
+run_api_log*.txt
+
+# Imagens de screenshots de debug
+docs/image/
