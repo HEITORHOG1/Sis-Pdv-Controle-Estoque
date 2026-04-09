@@ -65,6 +65,7 @@ builder.Services.ConfigureRepositories(builder.Configuration);
 builder.Services.ConfigureMediatR();
 builder.Services.ConfigureValidation();
 builder.Services.ConfigureHealthChecks(builder.Configuration);
+builder.Services.AddMessagingConfiguration(builder.Configuration);
 
 // Configure API versioning
 builder.Services.ConfigureApiVersioning();
